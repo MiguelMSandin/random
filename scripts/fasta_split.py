@@ -35,7 +35,7 @@ for pos in position.split('+'):
     positions[pos] = file_i
 
 if args.directory is not None:
-    d = args.directory
+    d = args.directory + "/"
     if not os.path.exists(args.directory):
         os.makedirs(args.directory)
 else:
@@ -44,7 +44,7 @@ else:
 for i in list(range(0, len(positions)-1)):
     b=list(positions.keys())[i]
     e=list(positions.keys())[i+1]
-    fileout = d + "/" + ".".join(args.file_in.split(".")[:-1]) + "_" + str(i+1) + "." + re.sub(".*\.", "", args.file_in)
+    fileout = d + ".".join(args.file_in.split(".")[:-1]) + "_" + str(i+1) + "." + re.sub(".*\.", "", args.file_in)
     print("  Writing file ", int(i+1), " to '", fileout, "'", sep='')
     r = 0
     u = 0
@@ -73,7 +73,8 @@ for i in list(range(0, len(positions)-1)):
                 if list(set(f.seq)) == list(''):
                     u += 1
     if args.remove is not None:
-        print("   ", r, "sequence(s) contain only gaps ('-'), so they were removed.")
+        if r > 0: 
+            print("   ", r, "sequence(s) contain only gaps ('-'), so they were removed.")
     if args.remove is None:
         if u > 0:
             print("   Warning! There are", u, "empty sequence(s). Consider using the '-r/--remove' option.")
