@@ -3,7 +3,6 @@
 import argparse
 from Bio import SeqIO
 import sys
-#import os
 
 parser = argparse.ArgumentParser(description="Concatenate multiple fasta files. Bear in mind that the sequence names should be exactly the same in every file.")
 
@@ -33,25 +32,42 @@ for filei in args.files_in:
         f[line.id] = str(line.seq)
     files[filei] = f
 
-out = files[list(files.keys())[0]]
+out = {}
+for i in list(range(0, len(files))):
+    if i == 0:
+        filen = list(files.keys())[i]
+        tmp = files[filen]
+        for key, value in tmp.items():
+            out[key] = value
+    else:
+        filen = list(files.keys())[i]
+        tmp = files[filen]
+        for key, value in tmp.items():
+            if key in out.keys():
+                out[key] = (out[key] + value)
+            elif key not in out.keys() and args.align is not None:
+                r = len(out[list(out.keys())[1]])
+                out[key] = ("-" * r + value)
+            elif key not in out.keys():
+                out[key] = value
+        for key, value in tmp.items():
+            if key not in out.keys():
+                if args.align is not None:
+                    r = len(tmp[list(tmp.keys())[1]])
+                    out[key] = (value + "-" * r)
+                else:
+                    out[key] = value
 
-d = 0
-for i in list(range(1, len(files))):
-    filen = list(files.keys())[i]
-    tmp = files[filen]
-    for key, value in tmp.items():
-        if key in out:
-            out[key] = [out[key], value]
-        elif key in out and args.drop is not None:
-            d += 1
-            del out[key]
-        elif key not in out and args.align is not None:
-            r = len(out[list(out.keys())[1]])
-            out[key] = ["-" * r, value]
-    for key, value in out.items():
-        if key not in tmp.keys():
-            r = len(tmp[list(tmp.keys())[1]])
-            out[key] = [value, "-" * r]
+if args.drop is not None:
+    d = len(out.keys())
+    toRemove = set()
+    for key in out.keys():
+        for i in files:
+            tmp = files[i]
+            if key not in tmp.keys():
+                toRemove.add(key)
+    for i in toRemove:
+        del out[i]
 
 with open(args.file_out, "w") as outfile:
     for line in out:
@@ -62,9 +78,24 @@ print("  Final file contains", len(out), "sequences.")
 if args.align is not None:
     tmp = out[list(out.keys())[1]]
     tmp = ''.join(tmp)
-    tmp = len(tmp)
-    print("    And has", tmp, "aligned positions.")
+    tmp = len(tmp)    
+    l = set()
+    for s in out.values():
+        l.add(len(s))
+    if len(l) > 0:
+        print("    Warning! sequences in input files were not aligned.")
+    else:
+        print("    And has", tmp, "aligned positions.")
 if args.drop is not None:
-    print("   ", d, "sequences were in the input files and are not in the final fasta.")
-    
-    
+    print("   ", d-len(out.keys()), "sequences were in the input files and are not in the final fasta.")
+
+if args.drop is None and args.align is None:        
+    l = set()
+    for s in out.values():
+        l.add(len(s))
+    g = 0
+    for val in out.values():
+        if "-" in val:
+            g += 1
+    if g > 0 and len(l) > 0:
+        print("  Warning!\n    You haven't selected any option to deal with gaps.\n    The final file has sequences of different length and with gaps.")
