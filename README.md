@@ -1,4 +1,4 @@
-# fasta_functions
+# fasta-functions
 
 Random scripts to deal with common fasta files manipulations. Such as splitting an alignment, concatenating sequences, extract sequences, ...
 
