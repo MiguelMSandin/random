@@ -3,7 +3,7 @@
 import argparse
 from Bio import SeqIO
 
-parser = argparse.ArgumentParser(description="Extracting sequences from a fasta file (-f) that match a pattern (-p) and exporting to output file (-o)")
+parser = argparse.ArgumentParser(description="Extracting sequences from a fasta file (-f) that match a pattern (-p) in their name and exporting to output file (-o)")
 
 # Add the arguments to the parser
 parser.add_argument("-p", "--patern", dest="patern", required=True,
