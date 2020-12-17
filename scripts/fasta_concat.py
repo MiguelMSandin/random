@@ -34,14 +34,12 @@ for filei in args.files_in:
 
 out = {}
 for i in list(range(0, len(files))):
+    filen = list(files.keys())[i]
+    tmp = files[filen]
     if i == 0:
-        filen = list(files.keys())[i]
-        tmp = files[filen]
         for key, value in tmp.items():
             out[key] = value
     else:
-        filen = list(files.keys())[i]
-        tmp = files[filen]
         for key, value in tmp.items():
             if key in out.keys():
                 out[key] = (out[key] + value)
@@ -50,13 +48,11 @@ for i in list(range(0, len(files))):
                 out[key] = ("-" * r + value)
             elif key not in out.keys():
                 out[key] = value
-        for key, value in tmp.items():
-            if key not in out.keys():
+        for key, value in out.items():
+            if key not in tmp.keys():
                 if args.align is not None:
                     r = len(tmp[list(tmp.keys())[1]])
                     out[key] = (value + "-" * r)
-                else:
-                    out[key] = value
 
 if args.drop is not None:
     d = len(out.keys())
@@ -82,7 +78,7 @@ if args.align is not None:
     l = set()
     for s in out.values():
         l.add(len(s))
-    if len(l) > 0:
+    if len(l) > 1:
         print("    Warning! sequences in input files were not aligned.")
     else:
         print("    And has", tmp, "aligned positions.")
