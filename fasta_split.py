@@ -20,6 +20,9 @@ parser.add_argument("-o", "--outputDir", dest="directory", required=False, defau
 parser.add_argument("-r", "--remove", dest="remove", required=False, default=None, action="store_true",
                         help="If selected, will remove sequences composed only by gaps ('-').")
 
+parser.add_argument("-u", "--unaligned", dest="unalign", required=False, default=None, action="store_true",
+                        help="If selected, removes gaps ('-') in output files.")
+
 args = parser.parse_args()
 
 position = re.sub("^\+", "0+", args.position)
@@ -41,9 +44,10 @@ else:
 for i in list(range(0, len(positions)-1)):
     b=list(positions.keys())[i]
     e=list(positions.keys())[i+1]
-    fileout = d + ".".join(args.file_in.split(".")[:-1]) + "_" + str(i+1) + "." + re.sub(".*\.", "", args.file_in)
+    fileout = d + "/" + ".".join(args.file_in.split(".")[:-1]) + "_" + str(i+1) + "." + re.sub(".*\.", "", args.file_in)
     print("  Writing file ", int(i+1), " to '", fileout, "'", sep='')
     r = 0
+    u = 0
     with open(fileout, "w") as outfile:
         for f in SeqIO.parse(open(args.file_in), "fasta"):
             if e == "end":
@@ -52,11 +56,25 @@ for i in list(range(0, len(positions)-1)):
                 f.seq = f.seq[int(b):(int(e))]
             if args.remove is not None:
                 if list(set(f.seq)) != list('-'):
-                    SeqIO.write(f, outfile, 'fasta')
+                    if args.unalign is not None:
+                        f.seq = f.seq.ungap("-")
+                        SeqIO.write(f, outfile, 'fasta')
+                    else:
+                        SeqIO.write(f, outfile, 'fasta')
                 else:
                     r += 1
             else:
-                SeqIO.write(f, outfile, 'fasta')
-    print("   ", r, "sequences contain only gaps ('-'), so they were removed.")
-
+                if args.unalign is not None:
+                    f.seq = f.seq.ungap("-")
+                    SeqIO.write(f, outfile, 'fasta')
+                else:
+                    SeqIO.write(f, outfile, 'fasta')
+            if args.remove is None:
+                if list(set(f.seq)) == list(''):
+                    u += 1
+    if args.remove is not None:
+        print("   ", r, "sequence(s) contain only gaps ('-'), so they were removed.")
+    if args.remove is None:
+        if u > 0:
+            print("   Warning! There are", u, "empty sequence(s). Consider using the '-r/--remove' option.")
 
