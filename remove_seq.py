@@ -1,10 +1,10 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 
 import argparse
 from Bio import SeqIO
 import re
 
-parser = argparse.ArgumentParser(description="Remove sequences from a fasta file (-f) that listed in a list (-l) and exporting to output file (-o)")
+parser = argparse.ArgumentParser(description="Remove sequences from a fasta file (-f) that are listed in a list (-l) and exporting to output file (-o)")
 
 # Add the arguments to the parser
 parser.add_argument("-l", "--list", dest="listSeq", required=True,
@@ -29,13 +29,3 @@ for i in SeqIO.parse(open(args.file_in), "fasta"):
     else:
         print("Sequence '", i , "' not found in the fasta file", sep="")
 
-
-#with open(args.file_out, "w") as outfile:
-#    for i in SeqIO.parse(open(args.file_in), "fasta"):
-#        if i.id not in toRemove:
-#            SeqIO.write([i], outfile, "fasta")  
-#
-#with open(file_outr, "w") as outfiler:
-#    for i in SeqIO.parse(open(args.file_in), "fasta"):
-#        if i.id in toRemove:
-#            SeqIO.write([i], outfiler, "fasta")
