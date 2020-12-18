@@ -14,7 +14,7 @@ parser.add_argument("-o", "--output", dest="file_out", required=True,
                     help="The output file name.")
 
 parser.add_argument("-a", "--align", dest="align", required=False, default=None, action="store_true",
-                        help="If selected, will replace by gaps ('-') those sequences not present in a file. This understands you are providing aligned fasta files.")
+                        help="If selected, will replace by gaps ('-') those sequences not present in a file to preserve the aligned structure. This understands you are providing aligned fasta files.")
 
 parser.add_argument("-d", "--drop", dest="drop", required=False, default=None, action="store_true",
                         help="If selected, will only print sequences present in all files.")
@@ -79,11 +79,12 @@ if args.align is not None:
     for s in out.values():
         l.add(len(s))
     if len(l) > 1:
-        print("    Warning! sequences in input files were not aligned.")
+        print("    Warning!\n    You have selected the option '-a/--align' in order to keep the aligned structure.\n    But sequences are not aligned.")
     else:
         print("    And has", tmp, "aligned positions.")
 if args.drop is not None:
     print("   ", d-len(out.keys()), "sequences were in the input files and are not in the final fasta.")
+    
 
 if args.drop is None and args.align is None:        
     l = set()
@@ -93,5 +94,7 @@ if args.drop is None and args.align is None:
     for val in out.values():
         if "-" in val:
             g += 1
-    if g > 0 and len(l) > 0:
+    if g > 0 and len(l) > 1:
         print("  Warning!\n    You haven't selected any option to deal with gaps.\n    The final file has sequences of different length and with gaps.")
+
+        
