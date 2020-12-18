@@ -12,7 +12,7 @@ parser.add_argument("-f", "--file", dest="file_in", required=True,
                     help="A fasta file (.fasta, .fst or .fa)")
 
 parser.add_argument("-p", "--positions", dest="position", required=True,
-                    help="Positions to split the fasta file given in a string and separated by a '+' (i.e.; '1832+2204'). Each position should be the position at which each file will start. If you want to split from beginning to end of the fasta file, include a plus at the beginning and/or end of the string (i.e.; '+1832+2204+')")
+                    help="Positions to split the fasta file given in a string and separated by a '+' (i.e.; '1832+2204'). Each position should be the position at which each file will end. If you want to split from beginning to end of the fasta file, include a plus at the beginning and/or end of the string (i.e.; '+1832+2204+')")
 
 parser.add_argument("-o", "--outputDir", dest="directory", required=False, default=None,
                     help="If selected, output files will be exported to the given directory.")
@@ -72,10 +72,14 @@ for i in list(range(0, len(positions)-1)):
             if args.remove is None:
                 if list(set(f.seq)) == list(''):
                     u += 1
+                if list(set(f.seq)) == list('-'):
+                    r += 1
     if args.remove is not None:
         if r > 0: 
             print("   ", r, "sequence(s) contain only gaps ('-'), so they were removed.")
+    else:
+        if r > 0:
+            print("   Warning!", r, "sequence(s) contain only gaps, consider using the option '-r/--remove'")
     if args.remove is None:
         if u > 0:
             print("   Warning! There are", u, "empty sequence(s). Consider using the '-r/--remove' option.")
-
