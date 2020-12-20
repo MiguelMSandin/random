@@ -83,3 +83,4 @@ for i in list(range(0, len(positions)-1)):
     if args.remove is None:
         if u > 0:
             print("   Warning! There are", u, "empty sequence(s). Consider using the '-r/--remove' option.")
+  
