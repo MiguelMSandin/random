@@ -68,7 +68,7 @@ if args.verbose is not None:
             if l not in seqsid:
                 missing.add(l)
         if len(missing) > 0:
-            print("  Sequences present in the list and not found in the input fasta file:\n", "\n ".join(missing))
+            print("  The following sequences from the list are not found in the input fasta file:\n", "\n ".join(missing))
     print("  Sequences in: ", seq_in)
     print("  Sequences out:", seq_out)
         
