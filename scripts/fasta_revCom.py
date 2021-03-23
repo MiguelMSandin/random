@@ -34,4 +34,4 @@ with open(args.file_out, "w") as outfile:
             sequence = sequence.complement()
         if args.reverse is not None:
             sequence = sequence[::-1]
-        print(">" + str(name) + "\n" + str(sequence) + "\n", file=outfile)
+        print(">" + str(name) + "\n" + str(sequence), file=outfile)
