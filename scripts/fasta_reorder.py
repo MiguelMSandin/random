@@ -13,7 +13,7 @@ parser.add_argument("-t", "--tree", dest="tree", required=True,
                         help="Rooted tree file.")
 
 parser.add_argument("-F", "--format", dest="format", required=False, default="nexus",
-                        help="Tree file format, defaul='nexus'")
+                        help="Tree file format (newick, nexus, nexml, phyloxml or cdao), default='nexus'.")
 
 parser.add_argument("-o", "--output", dest="file_out", required=True,
                     help="The output fasta file name.")
