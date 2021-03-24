@@ -7,7 +7,7 @@ parser = argparse.ArgumentParser(description="Reorders a fasta file based on a r
 
 # Add the arguments to the parser
 parser.add_argument("-f", "--fasta", dest="file_in", required=True,
-                    help="Fasta files.")
+                    help="Fasta file.")
 
 parser.add_argument("-t", "--tree", dest="tree", required=True,
                         help="Rooted tree file.")
