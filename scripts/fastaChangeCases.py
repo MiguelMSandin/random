@@ -2,7 +2,7 @@
 
 import argparse
 
-parser = argparse.ArgumentParser(description="Converts a fasta file where the sequences are in multiple lines to a fasta file where each sequence is in one line.")
+parser = argparse.ArgumentParser(description="Converts the cases of a fasta file from lower to upper or the other way around.")
 
 parser.add_argument("-f", "--file", dest="file_in", required=True,
                     help="Input fasta file.")
