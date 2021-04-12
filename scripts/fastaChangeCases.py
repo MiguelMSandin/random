@@ -10,7 +10,7 @@ parser.add_argument("-f", "--file", dest="file_in", required=True,
 parser.add_argument("-o", "--output", dest="file_out", required=True,
                     help="Output fasta file.")
 
-parser.add_argument("-c", "--case", dest="case", required=True,
+parser.add_argument("-c", "--case", dest="case", required=True, choices=['u', 'upper', 'l', 'lower'],
                     help="Changes from lower to upper cases ('u' or 'upper') or the other way around ('l' or 'lower').")
 
 args = parser.parse_args()
