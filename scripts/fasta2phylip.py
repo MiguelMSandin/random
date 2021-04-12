@@ -6,7 +6,7 @@ import re
 import sys
 
 
-parser = argparse.ArgumentParser(description="Converts a fasta file to phylip format, respecting the sequence name length")
+parser = argparse.ArgumentParser(description="Converts a fasta file to phylip format, respecting the sequence name length.")
 
 parser.add_argument("-f", "--file", dest="file_in", required=True,
                     help="Input fasta file. Remember to replace spaces in sequence name beforehand, or the sequence name will be truncated at the spaces.")
