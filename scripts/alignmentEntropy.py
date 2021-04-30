@@ -6,7 +6,7 @@ import re
 import sys
 import math
 
-parser = argparse.ArgumentParser(description="Calculates Shannon entropy, richness, unique bases, number of repetitions, the alignment coverage and the smooth (mean shannon entropy at given range) at every position in an aligned fasta file.")
+parser = argparse.ArgumentParser(description="Calculates Shannon entropy, richness, unique bases, number of repetitions, the alignment coverage and/or the running mean of the Shannon entropy (mean shannon entropy at given window/range) at every position in an aligned fasta file.")
 
 # Add the arguments to the parser
 parser.add_argument("-f", "--file", dest="fastaFile", required=True,
