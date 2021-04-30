@@ -6,7 +6,7 @@ import re
 import sys
 import math
 
-parser = argparse.ArgumentParser(description="Calculates Shannon entropy, richness, unique bases, number of repetitions, the alignment coverage and/or the running mean of the Shannon entropy (mean shannon entropy at given window/range) at every position in an aligned fasta file.")
+parser = argparse.ArgumentParser(description="Calculates Shannon entropy, richness, unique bases, number of repetitions, the alignment coverage and/or the running mean of the Shannon entropy (mean shannon entropy at given window) at every position in an aligned fasta file.")
 
 # Add the arguments to the parser
 parser.add_argument("-f", "--file", dest="fastaFile", required=True,
@@ -22,7 +22,7 @@ parser.add_argument("-b", "--base", dest="base", required=False, action='store',
                     help="Base of the Shannon entropy. Default: 'e'.")
 
 parser.add_argument("-r", "--range", dest="rangeSmooth", required=False, action='store', type=int, default=50,
-                    help="The smooth value. Calculates the average Shannon entropy values at each position in a given range/window (position +- range; window=2*range). Default: 50.")
+                    help="The smooth value. Calculates the average Shannon entropy values at each position in a given window (position +- range; window=2*range). Default: 50.")
 
 parser.add_argument("-g", "--gaps", dest="clean", required=False, default=None, action="store_true",
                         help="If selected, will also compute values of Shannon entropy removing gaps (-).")
