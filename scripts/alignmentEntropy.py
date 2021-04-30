@@ -21,8 +21,8 @@ parser.add_argument("-c", "--columns", dest="fields", required=False, default=No
 parser.add_argument("-b", "--base", dest="base", required=False, action='store', type=int, default=math.e,
                     help="Base of the Shannon entropy. Default: 'e'.")
 
-parser.add_argument("-r", "--range", dest="rangeSmooth", required=False, action='store', type=int, default=100,
-                    help="The smooth value. Calculates the average Shannon entropy values at each position in a given range/window (+-range). Default: 100.")
+parser.add_argument("-r", "--range", dest="rangeSmooth", required=False, action='store', type=int, default=50,
+                    help="The smooth value. Calculates the average Shannon entropy values at each position in a given range/window (position +- range; window=2*range). Default: 50.")
 
 parser.add_argument("-g", "--gaps", dest="clean", required=False, default=None, action="store_true",
                         help="If selected, will also compute values of Shannon entropy removing gaps (-).")
@@ -151,7 +151,7 @@ for key, value in nucleotides.items():
 if 'smooth' in fields:
 	if args.verbose:
 		print("\n  Smoothing...")
-	if rangeSmooth > (len(shan) * 0.1):		
+	if (rangeSmooth * 2) > (len(shan) * 0.1):		
 		print("    Warning!: You have chosen a running mean above the ", int((rangeSmooth / len(shan))*100), "% of the length of the alignment.", sep="")
 	for i in range(1, len(shan)+1):
 		if i-rangeSmooth < 1:
