@@ -81,10 +81,10 @@ if args.base is math.e:
 else:
 	base = args.base
 
-if args.rangeSmooth != 100:
+if args.rangeSmooth != 50:
 	rangeSmooth = args.rangeSmooth
 else:
-	rangeSmooth = 100
+	rangeSmooth = 50
 
 def shannon(values):
 	uniques = set(values)
