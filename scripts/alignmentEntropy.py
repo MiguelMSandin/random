@@ -10,7 +10,7 @@ parser = argparse.ArgumentParser(description="Calculates Shannon entropy, richne
 
 # Add the arguments to the parser
 parser.add_argument("-f", "--file", dest="fastaFile", required=True,
-                    help="A fasta file.")
+                    help="An aligned fasta file.")
 
 parser.add_argument("-o", "--output", dest="outFile", required=False, default=None,
                     help="The output name of the alignment information file. By default will add '_alignmentInfo.tsv' to file name excluding the extension.")
