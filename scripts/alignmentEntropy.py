@@ -96,7 +96,6 @@ def shannon(values):
 		lpi = math.log(pi, base)
 		si = pi * lpi
 		entropies.append(si)
-	#S = -(sum(entropies))
 	s = sum(entropies)
 	if s == 0.0:
 		S = s
@@ -152,7 +151,8 @@ if 'smooth' in fields:
 	if args.verbose:
 		print("\n  Smoothing...")
 	if (rangeSmooth * 2) > (len(shan) * 0.1):		
-		print("    Warning!: You have chosen a running mean above the ", int((rangeSmooth / len(shan))*100), "% of the length of the alignment.", sep="")
+			if (rangeSmooth * 2) > (len(shan) * 0.1):		
+		print("    Warning!: You have chosen a running mean window above the ", int(((rangeSmooth*2) / len(shan))*100), "% of the length of the alignment:\n              ", len(shan), " alignment positions and a ", (rangeSmooth*2), " bp window.", sep="")
 	for i in range(1, len(shan)+1):
 		if i-rangeSmooth < 1:
 			b = 0
