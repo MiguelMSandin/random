@@ -38,6 +38,8 @@ args = parser.parse_args()
 if args.verbose is not None:
 	verbose = True
 	print("  Setting variables...")
+else:
+	verbose = False
 
 # Setting the range of lengths _____________________________________________________________________
 if '+' in args.length:
