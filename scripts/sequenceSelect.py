@@ -17,13 +17,13 @@ parser.add_argument("-l", "--list", dest="listSeq", required=False, default=None
                     help="List of sequences to be selected. This must be a different file with each sequence name in a different line.")
 
 parser.add_argument("-p", "--pattern", dest="pattern", required=False, default=None,
-                    help="Pattern to be matched for selection of the sequences.")
+                    help="Pattern to be matched for selection of the sequences. When using this option in combination with '--action keep', it might be faster to use 'grep -A 1 PATTERN FILE_IN > FILE_OUT'")
 
 parser.add_argument("-a", "--action", dest="action", required=True, default='keep', choices=['k', 'keep', 'r', 'remove'],
-                    help="Either 'remove' or 'keep' (default), if you want to remove or export (keep) selected sequences. Their initials are also working.")
+                    help="Either 'remove' or 'keep' (default), if you want to remove ('remove') or export ('keep') selected sequences. Their initials are also working.")
 
 parser.add_argument("-v", "--verbose", dest="verbose", required=False, default=None, action="store_true",
-                    help="If selected, will print information of sequences selected.")
+                    help="If selected, will print information to the console.")
 
 args = parser.parse_args()
    
