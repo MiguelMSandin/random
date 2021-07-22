@@ -164,14 +164,17 @@ if args.most is not None:
 
 if args.ambiguities is None and args.removeGaps is None and args.most is None:
 	sequence = str(consensus['consensus'])
+elif args.most is not None:
+	if args.removeGaps is not None:
+		sequence = str(re.sub("-", "", consensus['most']))
+	else:
+		sequence = str(consensus['most'])
 elif args.ambiguities is not None and args.removeGaps is not None:
 	sequence = str(consensus['consensusGaps'])
 elif args.ambiguities is not None:
 	sequence = str(consensus['ambiguities'])
 elif args.removeGaps is not None:
 	sequence = str(consensus['gaps'])
-elif args.most is not None:
-	sequence = str(consensus['most'])
 
 if args.outFile is not None:
 	f = open(args.outFile, "w")
@@ -179,16 +182,17 @@ if args.outFile is not None:
 	f.write(str(sequence))
 	f.close()
 else:
-	print("")
 	print("  Consensus sequence:")
 	print("")
 	print(str(sequence))
+	print("")
 
 if args.verbose:
-	print("")
 	print("  Consensus positions:   ", len(sequence)-sequence.count("-"))
-	print("  Of which are ambiguous:", len(sequence)-len(re.sub("[^ACTG-]", "", sequence)))
-	print("  Of which are gaps:     ", sequence.count("-"))
+	if args.most is None:
+		print("  Of which are ambiguous:", len(sequence)-len(re.sub("[^ACTG-]", "", sequence)))
+	if args.removeGaps is None:
+		print("  Of which are gaps:     ", sequence.count("-"))
 	print("")
 
 # __________________________________________________________________________________________________
