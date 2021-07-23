@@ -1,0 +1,17 @@
+#!/bin/bash
+
+echo ""
+echo "IUPAC conversion table:"
+echo ""
+echo "  AC: M      |     K: GT"
+echo "  AG: R      |     M: AC"
+echo "  AT: W      |     R: AG"
+echo "  CT: Y      |     S: GC"
+echo "  GC: S      |     W: AT"
+echo "  GT: K      |     Y: CT"
+echo ""
+echo "  ACG: V     |     B: CGT"
+echo "  AGT: D     |     D: AGT"
+echo "  ACT: H     |     H: ACT"
+echo "  CGT: B     |     V: ACG"
+echo ""
