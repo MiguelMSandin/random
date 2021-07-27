@@ -13,7 +13,7 @@ parser.add_argument("-f", "--file", dest="inFile", required=True,
                     help="An aligned fasta file.")
 
 parser.add_argument("-o", "--output", dest="outFile", required=False, default=None,
-                    help="The output name of the file to write the consensus sequence (in fasta format). By default, the consensus sequence will be printed in the console.")
+                    help="The output name of the file to write the consensus sequence (in fasta format). If the file exists, it will append the consensus sequence at the end of the file. By default, the consensus sequence will be printed in the console.")
 
 parser.add_argument("-t", "--threshold", dest="threshold", required=False, action='store', type=int, default=70,
                     help="The threshold to build a consensus given in percentage (0-100). Default=70.")
@@ -59,6 +59,7 @@ iupac = {"A":"A", "C":"C", "G":"G", "T":"T", "AG":"R", "GA":"R", "CT":"Y", "TC":
 # __________________________________________________________________________________________________
 if args.verbose:
 	print("  Reading alignment...", end="")
+
 fasta =  AlignIO.read(args.inFile, "fasta")
 
 length = set()
@@ -76,6 +77,7 @@ else:
 # __________________________________________________________________________________________________
 if args.verbose:
 	print("\r  Reading alignment and asigning positions...", end="")
+
 nucleotides = {}
 for position in range(length):
 	p = position +1
@@ -103,6 +105,7 @@ if args.most is not None:
 for position, value in nucleotides.items():
 	if args.verbose:
 		print("\r    ", position, "/", length, sep="", end="")
+	
 	# Create a dataframe with the bases and its frequencies in each position
 	bases = {}
 	for u in set(value):
@@ -177,9 +180,10 @@ elif args.removeGaps is not None:
 	sequence = str(consensus['gaps'])
 
 if args.outFile is not None:
-	f = open(args.outFile, "w")
-	f.write(str(">" + "consensus_t" + str(args.threshold) + "_b" + str(args.baseThreshold) + "_g" + str(args.gaps) + ext + "\n"))
-	f.write(str(sequence))
+	f = open(args.outFile, "a")
+	tmp = re.sub("\\.[^\\.]+$", "", args.inFile)
+	f.write(str(">" + str(tmp) + "_consensus_t" + str(args.threshold) + "_b" + str(args.baseThreshold) + "_g" + str(args.gaps) + ext + "\n"))
+	f.write(str(str(sequence) + "\n"))
 	f.close()
 else:
 	print("  Consensus sequence:")
