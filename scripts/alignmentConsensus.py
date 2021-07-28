@@ -128,7 +128,10 @@ for position, value in nucleotides.items():
 	
 	# dealing now with the consensus
 	if args.most is not None:
-		consensus['most'] = (consensus['most'] + list(bases['bases'][bases['percentage']==max(bases['percentage'])]))
+		baseMost = bases['bases'][bases['percentage']==max(bases['percentage'])]
+		if len(baseMost) != 1:
+			baseMost="N"
+		consensus['most'] = (consensus['most'] + list(baseMost))
 	if len(bases['bases']) > 1:
 		bases = bases[bases['percentage'] > args.baseThreshold/100]
 		bases['percentage'] = (bases['occurrence']) / sum(bases['occurrence'])
@@ -148,7 +151,8 @@ for position, value in nucleotides.items():
 					base = v
 	consensus['consensus'] = (consensus['consensus'] + list(base))
 
-print("\n")
+if args.verbose:
+	print("\n")
 
 consensus['consensus'] = ''.join(consensus['consensus'])
 ext=""
