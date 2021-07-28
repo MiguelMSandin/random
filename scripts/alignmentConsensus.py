@@ -130,7 +130,7 @@ for position, value in nucleotides.items():
 	if args.most is not None:
 		baseMost = bases['bases'][bases['percentage']==max(bases['percentage'])]
 		if len(baseMost) != 1:
-			baseMost="N"
+			baseMost=iupac[''.join(baseMost)]
 		consensus['most'] = (consensus['most'] + list(baseMost))
 	if len(bases['bases']) > 1:
 		bases = bases[bases['percentage'] > args.baseThreshold/100]
