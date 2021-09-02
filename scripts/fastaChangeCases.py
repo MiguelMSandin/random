@@ -2,16 +2,18 @@
 
 import argparse
 
-parser = argparse.ArgumentParser(description="Converts the cases of a fasta file from lower to upper or the other way around.")
+parser = argparse.ArgumentParser(description="Converts a fasta file where the sequences are in multiple lines to a fasta file where each sequence is in one line.")
 
-parser.add_argument("-f", "--file", dest="file_in", required=True,
+requiredArgs = parser.add_argument_group('required arguments')
+
+requiredArgs.add_argument("-f", "--file", dest="file_in", required=True,
                     help="Input fasta file.")
 
-parser.add_argument("-o", "--output", dest="file_out", required=True,
+requiredArgs.add_argument("-o", "--output", dest="file_out", required=True,
                     help="Output fasta file.")
 
-parser.add_argument("-c", "--case", dest="case", required=True, choices=['u', 'upper', 'l', 'lower'],
-                    help="Changes from lower to upper cases ('u' or 'upper') or the other way around ('l' or 'lower').")
+parser.add_argument("-c", "--case", dest="case", required=False, default="u", choices=['u', 'upper', 'l', 'lower'],
+                    help="Changes from lower to upper cases ('u' or 'upper', default) or the other way around ('l' or 'lower').")
 
 args = parser.parse_args()
 
