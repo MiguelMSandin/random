@@ -7,10 +7,12 @@ import sys
 parser = argparse.ArgumentParser(description="Concatenate multiple fasta files. Bear in mind that the sequence names should be exactly the same in every file.")
 
 # Add the arguments to the parser
-parser.add_argument("-f", "--files", dest="files_in", nargs='+', required=True,
+requiredArgs = parser.add_argument_group('required arguments')
+
+requiredArgs.add_argument("-f", "--files", dest="files_in", nargs='+', required=True,
                     help="Fasta files to be concatenated in the given order.")
 
-parser.add_argument("-o", "--output", dest="file_out", required=True,
+requiredArgs.add_argument("-o", "--output", dest="file_out", required=True,
                     help="The output file name.")
 
 parser.add_argument("-a", "--align", dest="align", required=False, default=None, action="store_true",
@@ -97,4 +99,3 @@ if args.drop is None and args.align is None:
     if g > 0 and len(l) > 1:
         print("  Warning!\n    You haven't selected any option to deal with gaps.\n    The final file has sequences of different length and with gaps.")
 
-        
