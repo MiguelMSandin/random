@@ -7,19 +7,21 @@ import sys
 
 parser = argparse.ArgumentParser(description="Select sequence in a fasta file either from a list or that match a pattern and extract them or remove them.")
 
-parser.add_argument("-f", "--file", dest="file_in", required=True,
+requiredArgs = parser.add_argument_group('required arguments')
+
+requiredArgs.add_argument("-f", "--file", dest="file_in", required=True,
                     help="Input fasta file.")
 
-parser.add_argument("-o", "--output", dest="file_out", required=True,
+requiredArgs.add_argument("-o", "--output", dest="file_out", required=True,
                     help="Output file.")
 
 parser.add_argument("-l", "--list", dest="listSeq", required=False, default=None,
                     help="List of sequences to be selected. This must be a different file with each sequence name in a different line.")
 
 parser.add_argument("-p", "--pattern", dest="pattern", required=False, default=None,
-                    help="Pattern to be matched for selection of the sequences. When using this option in combination with '--action keep', it might be faster to use 'grep -A 1 PATTERN FILE_IN > FILE_OUT'")
+                                        help="Pattern to be matched for selection of the sequences. When using this option in combination with '--action keep', it might be faster to use 'grep -A 1 PATTERN FILE_IN > FILE_OUT'")
 
-parser.add_argument("-a", "--action", dest="action", required=True, default='keep', choices=['k', 'keep', 'r', 'remove'],
+parser.add_argument("-a", "--action", dest="action", required=False, default='k', choices=['k', 'keep', 'r', 'remove'],
                     help="Either 'remove' or 'keep' (default), if you want to remove ('remove') or export ('keep') selected sequences. Their initials are also working.")
 
 parser.add_argument("-v", "--verbose", dest="verbose", required=False, default=None, action="store_true",
@@ -71,4 +73,3 @@ if args.verbose is not None:
             print("  The following sequences from the list are not found in the input fasta file:\n", "\n ".join(missing))
     print("  Sequences in: ", seq_in)
     print("  Sequences out:", seq_out)
-        
