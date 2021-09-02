@@ -42,3 +42,5 @@ with open(args.file_out, "w") as outfile:
 				sys.exit(1)
 			else:
 				print(name, "  ", sequence, file=outfile)
+
+				
