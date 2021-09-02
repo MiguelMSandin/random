@@ -9,7 +9,9 @@ import math
 parser = argparse.ArgumentParser(description="Calculates Shannon entropy, richness, unique bases, number of repetitions, the alignment coverage and/or the running mean of the Shannon entropy (mean shannon entropy at given window) at every position in an aligned fasta file.")
 
 # Add the arguments to the parser
-parser.add_argument("-f", "--file", dest="fastaFile", required=True,
+requiredArgs = parser.add_argument_group('required arguments')
+
+requiredArgs.add_argument("-f", "--file", dest="fastaFile", required=True,
                     help="An aligned fasta file.")
 
 parser.add_argument("-o", "--output", dest="outFile", required=False, default=None,
@@ -96,6 +98,7 @@ def shannon(values):
 		lpi = math.log(pi, base)
 		si = pi * lpi
 		entropies.append(si)
+	#S = -(sum(entropies))
 	s = sum(entropies)
 	if s == 0.0:
 		S = s
@@ -151,7 +154,6 @@ if 'smooth' in fields:
 	if args.verbose:
 		print("\n  Smoothing...")
 	if (rangeSmooth * 2) > (len(shan) * 0.1):		
-			if (rangeSmooth * 2) > (len(shan) * 0.1):		
 		print("    Warning!: You have chosen a running mean window above the ", int(((rangeSmooth*2) / len(shan))*100), "% of the length of the alignment:\n              ", len(shan), " alignment positions and a ", (rangeSmooth*2), " bp window.", sep="")
 	for i in range(1, len(shan)+1):
 		if i-rangeSmooth < 1:
