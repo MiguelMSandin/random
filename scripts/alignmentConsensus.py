@@ -9,7 +9,9 @@ import pandas as pd
 parser = argparse.ArgumentParser(description="Builds the consensus sequence of an alignment.")
 
 # Add the arguments to the parser
-parser.add_argument("-f", "--file", dest="inFile", required=True,
+requiredArgs = parser.add_argument_group('required arguments')
+
+requiredArgs.add_argument("-f", "--file", dest="inFile", required=True,
                     help="An aligned fasta file.")
 
 parser.add_argument("-o", "--output", dest="outFile", required=False, default=None,
