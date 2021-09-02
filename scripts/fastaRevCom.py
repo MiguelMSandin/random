@@ -6,10 +6,12 @@ import sys
 
 parser = argparse.ArgumentParser(description="Reverse and(/or) complement sequeces in a fasta file.")
 
-parser.add_argument("-f", "--file", dest="file_in", required=True,
+requiredArgs = parser.add_argument_group('required arguments')
+
+requiredArgs.add_argument("-f", "--file", dest="file_in", required=True,
                     help="Input fasta file.")
 
-parser.add_argument("-o", "--output", dest="file_out", required=True,
+requiredArgs.add_argument("-o", "--output", dest="file_out", required=True,
                     help="Output fasta file.")
 
 parser.add_argument("-c", "--complement", dest="complement", required=False, default=None, action="store_true",
