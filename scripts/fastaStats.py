@@ -18,6 +18,7 @@ args = parser.parse_args()
 
 seqs = 0
 lengths = []
+lengthsRaw = []
 As = 0
 Cs = 0
 Gs = 0
@@ -28,7 +29,8 @@ ambiguities = list()
 for i in SeqIO.parse(open(args.fileIn), "fasta"):
 	seqs += 1
 	seq = i.seq
-	lengths.append(len(seq))
+	lengthsRaw.append(len(seq))
+	lengths.append(len(re.sub("-", "", str(seq))))
 	a = seq.upper().count("A")
 	As += a
 	c = seq.upper().count("C")
@@ -51,10 +53,10 @@ ambiguities = set(ambiguities)
 totalbp = As + Cs + Gs + Ts + Ns
 
 print("File:\t", args.fileIn)
-if(len(set(lengths)) > 1):
+if(len(set(lengthsRaw)) > 1):
 	print("  Not aligned")
 else:
-	print("  Aligned")
+	print("  Aligned positions:\t", *set(lengthsRaw))
 print("")
 print("Number of sequences:\t", seqs)
 print("")
@@ -74,7 +76,7 @@ print("  C:\t", Cs, "bp\t", round(Cs/totalbp*100, 2), "%")
 print("  G:\t", Gs, "bp\t", round(Gs/totalbp*100, 2), "%")
 print("  T:\t", Ts, "bp\t", round(Ts/totalbp*100, 2), "%")
 if Ns > 0:
-	print("  Ambiguities:\t", Ns, "bp\t", round(Ns/totalbp, 2), "%. Bases:", ", ".join(ambiguities))
+	print("  Ambiguities:\t", Ns, "bp\t", round(Ns/totalbp*100, 2), "%. Bases:", ", ".join(ambiguities))
 else:
 	print("  No ambiguities found")
 print("Total bases:\t", totalbp)
