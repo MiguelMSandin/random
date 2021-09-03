@@ -79,5 +79,11 @@ if Ns > 0:
 	print("  Ambiguities:\t", Ns, "bp\t", round(Ns/totalbp*100, 2), "%. Bases:", ", ".join(ambiguities))
 else:
 	print("  No ambiguities found")
-print("Total bases:\t", totalbp)
+if(len(set(lengthsRaw)) > 1):
+	print("Total bases:\t", totalbp)
+else:
+	totalPositions = int(*set(lengthsRaw)) * seqs
+	gaps = totalPositions - totalbp
+	print("Gaps in alignment:\t", gaps, "\t", round(gaps / totalPositions * 100, 2), "%")
+	print("Total bases:      \t", totalbp, "\t", round( totalbp / totalPositions * 100, 2), "%")
 print("")
