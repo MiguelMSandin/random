@@ -15,7 +15,7 @@ requiredArgs.add_argument("-f", "--file", dest="fastaFile", required=True,
                     help="An aligned fasta file.")
 
 parser.add_argument("-o", "--output", dest="outFile", required=False, default=None,
-                    help="The output name of the alignment information file. By default will add '_alignmentInfo.tsv' to file name excluding the extension.")
+                    help="The output name of the alignment information file. By default will add '_positionInfo.tsv' to file name excluding the extension.")
 
 parser.add_argument("-c", "--columns", dest="fields", required=False, default=None,
                     help="Values or fields to be computed. By default: 'position+shannon+richness+unique+repetitions+cover+smooth'.")
