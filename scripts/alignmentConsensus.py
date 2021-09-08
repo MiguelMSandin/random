@@ -200,8 +200,9 @@ else:
 
 if args.verbose:
 	print("  Consensus positions:   ", len(sequence)-sequence.count("-"))
-	if args.most is None:
-		print("  Of which are ambiguous:", len(sequence)-len(re.sub("[^ACTG-]", "", sequence)))
+	amb = len(sequence)-len(re.sub("[^ACTG-]", "", sequence))
+	if amb > 0:
+		print("  Of which are ambiguous:", amb)
 	if args.removeGaps is None:
 		print("  Of which are gaps:     ", sequence.count("-"))
 	print("")
