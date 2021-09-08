@@ -3,7 +3,7 @@
 import argparse
 from Bio import SeqIO
 
-parser = argparse.ArgumentParser(description="Remove duplicate sequences in a fasta file either from its headers (identifiers) or from the sequence itself (default both).")
+parser = argparse.ArgumentParser(description="Remove sequences in a fasta file that are duplicated and (optional) that are shorter than 'length' bp.")
 
 requiredArgs = parser.add_argument_group('required arguments')
 
@@ -19,6 +19,9 @@ parser.add_argument("-i", "--headers", dest="headers", required=False, default=N
 parser.add_argument("-s", "--sequences", dest="sequences", required=False, default=None, action="store_true",
                     help="If selected, will only check for duplicate sequences.")
 
+parser.add_argument("-l", "--length", dest="length", required=False, default=None, type=float, action="store",
+                    help="If selected, will remove sequences shorter than 'length' bp.")
+
 parser.add_argument("-v", "--verbose", dest="verbose", required=False, default=None, action="store_true",
                     help="If selected, will print information to the console.")
 
@@ -33,18 +36,22 @@ with open(args.file_out, "w") as outfile:
 		seq_in += 1
 		seqid_i=i.id
 		seq_i=str(i.seq)
+		writing = False
 		if args.headers is not None and args.sequences is None:
 			if seqid_i not in seqsid:
-				SeqIO.write([i], outfile, "fasta")
-				seq_out += 1
+				writing = True
 		elif args.sequences is not None and args.headers is None:
 			if seq_i not in seqs:
-				SeqIO.write([i], outfile, "fasta")
-				seq_out += 1
+				writing = True
 		else:
 			if (seqid_i not in seqsid) and (seq_i not in seqs):
-				SeqIO.write([i], outfile, "fasta")
-				seq_out += 1
+				writing = True
+		if args.length is not None:
+			if len(seq_i) < args.length:
+				writing = False
+		if writing:
+			SeqIO.write([i], outfile, "fasta")
+			seq_out += 1
 		seqsid.add(seqid_i)
 		seqs.add(seq_i)
 
