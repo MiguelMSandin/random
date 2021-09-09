@@ -6,8 +6,7 @@ import re
 import sys
 import pandas as pd
 
-parser = argparse.ArgumentParser(description="Builds the consensus sequence of an alignment.",
-								 epilog="This script is based on the 'consension' script from Johan Bengtsson-Palme (https://microbiology.se/software/consension/)")
+parser = argparse.ArgumentParser(description="Builds the consensus sequence of an alignment.")
 
 # Add the arguments to the parser
 requiredArgs = parser.add_argument_group('required arguments')
