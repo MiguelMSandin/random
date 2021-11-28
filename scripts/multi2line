@@ -1,0 +1,49 @@
+#!/bin/bash
+
+usage()
+{
+    echo ""
+    echo "Transform a multiline fasta file to a single line fasta."
+    echo ""
+    echo "Usage: multi2line.sh -f FILE -o OUTPUT"
+    echo ""
+    echo "  -h    Print this information"
+    echo ""
+    echo "  -f    Input fasta file."
+    echo "  -o    Output fasta file."
+    echo ""
+}
+
+while getopts "hf:o:" opt; do
+        case ${opt} in
+                h )
+                        usage
+                        exit
+                        ;;
+                f )
+                        FILE=$OPTARG
+                        ;;
+                o )
+                        OUT=$OPTARG
+                        ;;
+        esac
+done
+
+SEQS=$(grep -c ">" $FILE)
+
+i=0
+while read LINE; do
+	if echo $LINE | grep -q ">"; then
+		((i=i+1))
+		echo -n -e "\r    $i/$SEQS"
+		if (( $i == 1 )); then
+			echo "$LINE" > $OUT
+		else
+			echo -e "\n$LINE" >> $OUT
+		fi
+	else
+		echo -n "$LINE" >> $OUT
+	fi
+done < "${FILE}"
+
+echo ""
