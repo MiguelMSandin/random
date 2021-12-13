@@ -69,7 +69,8 @@ if not args.verbose:
 
 # Writing file -------------------------------------------------------------------------------------
 if args.branch_length:
-	print("    Branch-lengths removed")
+	if not args.verbose:
+		print("    Branch-lengths removed")
 	Phylo.write(T, out, formatOut, plain=True)
 else:
 	Phylo.write(T, out, formatOut)
