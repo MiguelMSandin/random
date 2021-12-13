@@ -64,7 +64,6 @@ if allGoodT2F == False:
 if allGoodF2T == False:
 	print("")
 	print("The following sequences are not found in the tree file:")
-	print("  ", *seqsF2T)
 	if len(seqsF2T) < 10:
 		print("  ", *seqsF2T)
 	else:
