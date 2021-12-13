@@ -58,6 +58,7 @@ if args.verbose:
 	print("  Extracting names")
 allGood = True
 seqs = set()
+excluded = list()
 for line in T.get_terminals():
 	sp = line.name
 	warnings = 0
@@ -77,6 +78,7 @@ for line in T.get_terminals():
 				warnings += 1
 		if warnings == len(fasta):
 			print("    Warning! Taxa '", sp, "' has no matching sequences", sep="")
+			excluded.append(sp)
 			allGood = False
 		if repeated > 0:
 			print("    Warning!! There are '", repeated, "' repeated sequences when looking for '", sp, "', also matching:", sep="")
@@ -95,6 +97,14 @@ if allGood:
 	print("")
 	print("All tree tips are found in the fasta file and there are no repeated tree tips.")
 	print("Ready to replace names :) !")
+	print("")
+else:
+	excluded_out = outDir + "_notFound.list"
+	with open(excluded_out, "w") as tmp:
+		for sp in excluded:
+			print(sp, file=tmp)
+	print("")
+	print("  Taxa not found in fasta file exported to:", excluded_out)
 	print("")
 
 if args.verbose:
