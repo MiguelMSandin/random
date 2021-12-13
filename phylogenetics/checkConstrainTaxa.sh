@@ -40,31 +40,35 @@ do
 	((i=i+1))
 	echo -n -e "\r  $i/$LENGTH: $FILE                    "
 	
-	echo "$FILE" >> $OUT
-	
-	echo "	PR2 search" >> $OUT
-	if [ $(grep -c "PR2_" "$DIRECTORY/$FILE") == 0 ]; then
-		echo "No matches" >> $OUT
-	fi
-	grep "PR2_" "$DIRECTORY/$FILE" | \
-		cut -d'|' -f 3,4,5,6 | \
-		sort | \
-		uniq | \
-		sed 's/|/\t/g' >> $OUT
+	if [ -s "$DIRECTORY/$FILE" ]; then
+		echo "$FILE" >> $OUT
 		
-	echo "	PacBio search" >> $OUT
-	if [ $(grep -c "PacBio_" "$DIRECTORY/$FILE") == 0 ]; then
-		echo "No matches" >> $OUT
+		echo "	PR2 search" >> $OUT
+		if [ $(grep -c "PR2_" "$DIRECTORY/$FILE") == 0 ]; then
+			echo "No matches" >> $OUT
+		fi
+		grep "PR2_" "$DIRECTORY/$FILE" | \
+			cut -d'|' -f 3,4,5,6 | \
+			sort | \
+			uniq | \
+			sed 's/|/\t/g' >> $OUT
+			
+		echo "	PacBio search" >> $OUT
+		if [ $(grep -c "PacBio_" "$DIRECTORY/$FILE") == 0 ]; then
+			echo "No matches" >> $OUT
+		fi
+		grep "PacBio_" "$DIRECTORY/$FILE" | \
+			sed 's/_X/-X/g' | \
+			sed 's/.*Eukaryota_//g' | \
+			cut -d'_' -f 1,2,3,4,5 | \
+			sort | \
+			uniq | \
+			sed 's/_/\t/g' >> $OUT
+			
+		echo "" >> $OUT
+	else
+		rm -f "$DIRECTORY/$FILE"
 	fi
-	grep "PacBio_" "$DIRECTORY/$FILE" | \
-		sed 's/_X/-X/g' | \
-		sed 's/.*Eukaryota_//g' | \
-		cut -d'_' -f 1,2,3,4,5 | \
-		sort | \
-		uniq | \
-		sed 's/_/\t/g' >> $OUT
-		
-	echo "" >> $OUT
 done
 
 echo -e "\rDone                                        "
