@@ -16,11 +16,13 @@ requiredArgs.add_argument("-t", "--tree", dest="tree", required=True,
 requiredArgs.add_argument("-f", "--fasta", dest="fasta", required=True,
 						  help="A Fasta file.")
 
+parser.add_argument("-c", "--check", dest="check", required=False, default=None, choices=['t', 'treeInFasta', 'f', 'fastaInTree'],
+						  help="Only checks in one way: either if all tree tips are present in the fasta file ('t' or 'treeInFasta') or if all sequences in the fasta file are present in the tree file ('f' or 'fastaInTree').")
+
 args = parser.parse_args()
 
 # Reading files ------------------------------------------------------------------------------------
 T = Phylo.read(args.tree, 'newick')
-
 tree = list()
 for line in T.get_terminals():
 	tree.append(line.name)
@@ -30,19 +32,33 @@ for line in SeqIO.parse(open(args.fasta), "fasta"):
 	fasta.append(line.id)
 
 # Start the search ---------------------------------------------------------------------------------
-allGoodT2F = True
-seqsT2F = set()
-for tip in tree:
-	if tip not in fasta:
-		allGoodT2F = False
-		seqsT2F.add(tip)
+if args.check is None:
+	checkT = True
+	checkF = True
+elif args.check == "t" or args.check == "treeInFasta":
+	allGoodF2T = None
+	checkT = True
+	checkF = False
+elif args.check == "f" or args.check == "fastaInTree":
+	allGoodT2F = None
+	checkT = False
+	checkF = True
 
-allGoodF2T = True
-seqsF2T = set()
-for seq in fasta:
-	if seq not in tree:
-		allGoodF2T = False
-		seqsF2T.add(seq)
+if checkT == True:
+	allGoodT2F = True
+	seqsT2F = set()
+	for tip in tree:
+		if tip not in fasta:
+			allGoodT2F = False
+			seqsT2F.add(tip)
+
+if checkF == True:
+	allGoodF2T = True
+	seqsF2T = set()
+	for seq in fasta:
+		if seq not in tree:
+			allGoodF2T = False
+			seqsF2T.add(seq)
 
 if allGoodT2F and allGoodF2T:
 	print("")
