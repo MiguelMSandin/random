@@ -51,12 +51,17 @@ print("File:\t", args.tree)
 
 count = 0
 if T.is_bifurcating():
-	print("The tree is strictly bifurcating.")
+	print("The tree is strictly bifurcating")
 else:
-	print("The tree is NOT strictly bifurcating.")
+	print("The tree is NOT strictly bifurcating")
 	for i in lengths:
 		if i == 0:
 			count += 1
+
+if T.rooted:
+	print("The tree is rooted")
+else:
+	print("The tree is NOT roted")
 
 print("")
 print("Number of tips:        \t", ntips)
@@ -78,4 +83,3 @@ print("  75th percentile:     \t", round(np.percentile(lengths, 75), r))
 print("  95th percentile:     \t", round(np.percentile(lengths, 95), r))
 print("Longest branch length: \t", round(max(lengths), r))
 print("")
-
