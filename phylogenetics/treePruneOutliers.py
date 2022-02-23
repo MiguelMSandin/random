@@ -75,7 +75,7 @@ if args.method == "zscores":
 	s = statistics.stdev(lengths)
 	if args.threshold is None:
 		t = a/s
-		ext = "(default value)"
+		ext = "(default value: μ/σ)"
 	else:
 		t = float(args.threshold)
 		ext = ""
@@ -118,7 +118,7 @@ if args.method == "gesd":
 		ext1 = ""
 	if args.maximum is None:
 		m = int(len(tips)/10)
-		ext2 = "(default value)"
+		ext2 = "(default value: 10%)"
 	else:
 		m = args.maximum
 		ext2 = ""
@@ -177,9 +177,7 @@ if args.table:
 		for tip, length, iden in zips:
 			print(str(tip) + '\t' + str(length) + '\t' + str(iden), file=outtable)
 
-
 if args.verbose:
 	print("  Tips in input tree: ", len(tips))
 	print("  Tips in output tree:", T.count_terminals())
 	print("Done")
-	
