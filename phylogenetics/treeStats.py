@@ -61,7 +61,7 @@ else:
 if T.rooted:
 	print("The tree is rooted")
 else:
-	print("The tree is NOT roted")
+	print("The tree is NOT rooted")
 
 print("")
 print("Number of tips:        \t", ntips)
@@ -70,16 +70,19 @@ print("")
 print("Total branch lengths:  \t", round(tbranchl, r))
 print("")
 
-if count != 0:
-	print("Shortest branch length:\t", round(min(lengths), r), "\t(found", count, "times)")
+if None in lengths:
+	print("Warning! Some (or all) branch lengths are not found")
 else:
-	print("Shortest branch length:\t", round(min(lengths), r))
-print("  5th percentile:      \t", round(np.percentile(lengths, 5), r))
-print("  25th percentile:     \t", round(np.percentile(lengths, 25), r))
-print("  Median:              \t", round(np.percentile(lengths, 50), r))
-print("Average branch length: \t", round(statistics.mean(lengths), r))
-print("  Standard deviation:  \t", round(statistics.stdev(lengths), r))
-print("  75th percentile:     \t", round(np.percentile(lengths, 75), r))
-print("  95th percentile:     \t", round(np.percentile(lengths, 95), r))
-print("Longest branch length: \t", round(max(lengths), r))
+	if count != 0:
+		print("Shortest branch length:\t", round(min(lengths), r), "\t(found", count, "times)")
+	else:
+		print("Shortest branch length:\t", round(min(lengths), r))
+	print("  5th percentile:      \t", round(np.percentile(lengths, 5), r))
+	print("  25th percentile:     \t", round(np.percentile(lengths, 25), r))
+	print("  Median:              \t", round(np.percentile(lengths, 50), r))
+	print("Average branch length: \t", round(statistics.mean(lengths), r))
+	print("  Standard deviation:  \t", round(statistics.stdev(lengths), r))
+	print("  75th percentile:     \t", round(np.percentile(lengths, 75), r))
+	print("  95th percentile:     \t", round(np.percentile(lengths, 95), r))
+	print("Longest branch length: \t", round(max(lengths), r))
 print("")
