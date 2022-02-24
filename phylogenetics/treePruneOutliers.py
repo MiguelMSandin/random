@@ -7,8 +7,8 @@ import numpy as np
 import sys
 import re
 
-parser = argparse.ArgumentParser(description="Prunes a tree based on identified outliers.",
-								 epilog="*Depending on the method outliers are defined if (i—μ)/σ > t for Z-scores, i < q1-(t*iqr) OR i > q3+(t*iqr) for IQR (being 'i' the given branch length, 'µ' the average branch length, 'σ' the standard deviation of the branch lengths, 't' the chosen threshold, 'q1' the 25th quartile, 'q3' the 75th quartile and 'iqr' the difference between 'q3' and 'q1') and for gESD method see Rosner, Bernard (May 1983), Percentage Points for a Generalized ESD Many-Outlier Procedure,Technometrics, 25(2), pp. 165-172.")
+parser = argparse.ArgumentParser(description="Prunes a tree of tips which their branch length are identified as outliers by either the Z-scores, the interquartile range or the generalized extreme studentized deviate method.",
+								 epilog="*Depending on the method, outliers are defined if; Z-scores:|i—μ|/σ > t; IQR: i < q1-(t*iqr) OR i > q3+(t*iqr), being 'i' the given branch length, 'µ' the average branch length, 'σ' the standard deviation, 't' the chosen threshold, 'q1' the 25th quartile, 'q3' the 75th quartile and 'iqr' the difference between 'q3' and 'q1'; and for gESD method see Rosner, Bernard (1983), Percentage Points for a Generalized ESD Many-Outlier Procedure,Technometrics, 25(2), pp. 165-172.")
 
 # Add the arguments to the parser
 requiredArgs = parser.add_argument_group('required arguments')
@@ -26,7 +26,7 @@ parser.add_argument("-m", "--method", dest="method", required=False, default='zs
 					help="The method to identify outliers: Either by Z-scores ('zscores', default), by the InterQuartile Range ('iqr') or by the generalized Extreme Studentized Deviate (gESD: 'gesd')")
 
 parser.add_argument("-r", "--threshold", dest="threshold", required=False, default=None,
-					help="The threshold to identify outliers. By default: zscores=μ/σ; iqr:1.5; gesd: 0.05 (refers to the significance)")
+					help="The threshold to identify outliers. By default: zscores=2; iqr:1.5; gesd: 0.05 (refers to the significance)")
 
 parser.add_argument("-n", "--maximum", dest="maximum", required=False, default=None,
 					help="For gESD method only, an estimate of the maximum number of outliers in the dataset. Default= 1/10 of the number of tips.")
@@ -74,8 +74,8 @@ if args.method == "zscores":
 	a = statistics.mean(lengths)
 	s = statistics.stdev(lengths)
 	if args.threshold is None:
-		t = a/s
-		ext = "(default value: μ/σ)"
+		t = 2
+		ext = "(default value)"
 	else:
 		t = float(args.threshold)
 		ext = ""
@@ -84,7 +84,7 @@ if args.method == "zscores":
 		print("    Average:           ", a)
 		print("    Standard deviation:", s)
 		print("    Threshold:         ", t, ext)
-		print("      Formula: ( i —", round(a, 2), " ) /", round(s, 2), ">", round(t, 2))
+		print("      Formula: | i —", round(a, 2), " | /", round(s, 2), " >", round(t, 2))
 
 # IQR
 if args.method == "iqr":
@@ -135,7 +135,7 @@ zips = zip(tips, lengths)
 # Z-scores
 if args.method == "zscores":
 	for tip, length in zips:
-		j = (length - a) / s
+		j = abs((length - a)) / s
 		if j > t:
 			toPrune.append(tip)
 
