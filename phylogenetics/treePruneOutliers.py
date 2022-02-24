@@ -8,7 +8,7 @@ import sys
 import re
 
 parser = argparse.ArgumentParser(description="Prunes a tree of tips which their branch length are identified as outliers by either the Z-scores, the interquartile range or the generalized extreme studentized deviate method.",
-								 epilog="*Depending on the method, outliers are defined if; Z-scores:|i—μ|/σ > t; IQR: i < q1-(t*iqr) OR i > q3+(t*iqr), being 'i' the given branch length, 'µ' the average branch length, 'σ' the standard deviation, 't' the chosen threshold, 'q1' the 25th quartile, 'q3' the 75th quartile and 'iqr' the difference between 'q3' and 'q1'; and for gESD method see Rosner, Bernard (1983), Percentage Points for a Generalized ESD Many-Outlier Procedure,Technometrics, 25(2), pp. 165-172.")
+								 epilog="*Depending on the method, outliers are defined if; Z-scores:|i—μ|/σ > t; IQR: i < q1-(t*iqr) OR i > q3+(t*iqr) (being 'i' the given branch length, 'µ' the average branch length, 'σ' the standard deviation, 't' the chosen threshold, 'q1' the 25th quartile, 'q3' the 75th quartile and 'iqr' the difference between 'q3' and 'q1'); and gESD: Rosner, Bernard (1983), Percentage Points for a Generalized ESD Many-Outlier Procedure,Technometrics, 25(2), pp. 165-172.")
 
 # Add the arguments to the parser
 requiredArgs = parser.add_argument_group('required arguments')
