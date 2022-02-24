@@ -20,7 +20,7 @@ parser.add_argument("-f", "--format", dest="formaTree", required=False, default=
 					help="The tree file format: accepted formats are: newick (default), nexus, nexml, phyloxml or cdao.")
 
 parser.add_argument("-o", "--output", dest="output", required=False, default=None,
-					help="The output file name. By default will add '_pruned' to the file name.")
+					help="The output file name. By default will add '_pruned' to the file name. If output='false', the tree will not be exported.")
 
 parser.add_argument("-m", "--method", dest="method", required=False, default='zscores', choices=['zscores', 'iqr', 'gesd'],
 					help="The method to identify outliers: Either by Z-scores ('zscores', default), by the InterQuartile Range ('iqr') or by the generalized Extreme Studentized Deviate (gESD: 'gesd')")
@@ -158,9 +158,13 @@ for tip in toPrune:
 	T.prune(tip)
 
 # Writing files ------------------------------------------------------------------------------------
-if args.verbose:
-	print("  Writing pruned tree to", outFile)
-Phylo.write(T, outFile, args.formaTree)
+if outFile == "false":
+	if args.verbose:
+		print("  Pruned tree is NOT exported")
+if outFile != "false":
+	if args.verbose:
+		print("  Writing pruned tree to", outFile)
+	Phylo.write(T, outFile, args.formaTree)
 
 if args.table:
 	outTable = re.sub("\\.[^\\.]+$", "_branchLengths.tsv", args.tree)
