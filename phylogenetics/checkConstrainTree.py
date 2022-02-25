@@ -91,6 +91,7 @@ for line in T.get_terminals():
 					for j in seqsRep:
 						if string.search(j):
 							names.add(name)
+			excluded.append(str(str(sp)+" also matches "+str(names)))
 			print("     ", *names)
 
 if allGood:
@@ -104,7 +105,7 @@ else:
 		for sp in excluded:
 			print(sp, file=tmp)
 	print("")
-	print("  Taxa not found in fasta file exported to:", excluded_out)
+	print("  Taxa not found in fasta file or conflicting with other taxa are exported to:", excluded_out)
 	print("")
 
 if args.verbose:
