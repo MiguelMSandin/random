@@ -114,13 +114,13 @@ if args.method == "gesd":
 		t = 0.05
 		ext1 = "(default value)"
 	else:
-		t = args.threshold
+		t = int(args.threshold)
 		ext1 = ""
 	if args.maximum is None:
 		m = int(len(tips)/10)
 		ext2 = "(default value: 10%)"
 	else:
-		m = args.maximum
+		m = int(args.maximum)
 		ext2 = ""
 	if args.verbose:
 		print("  Using gESD method for outlier identification")
