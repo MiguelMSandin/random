@@ -114,7 +114,7 @@ if args.method == "gesd":
 		t = 0.05
 		ext1 = "(default value)"
 	else:
-		t = int(args.threshold)
+		t = float(args.threshold)
 		ext1 = ""
 	if args.maximum is None:
 		m = int(len(tips)/10)
@@ -152,10 +152,14 @@ if args.method == "gesd":
 		toPrune.append(tips[j])
 
 # Pruning ------------------------------------------------------------------------------------------
-if args.verbose:
-	print("  Prunning a total of", len(toPrune), "tips...")
-for tip in toPrune:
-	T.prune(tip)
+if outFile == "false":
+	if args.verbose:
+		print("  In total", len(toPrune), "tips were considered as outliers")
+if outFile != "false":
+	if args.verbose:
+		print("  Prunning a total of", len(toPrune), "tips...")
+	for tip in toPrune:
+		T.prune(tip)
 
 # Writing files ------------------------------------------------------------------------------------
 if outFile == "false":
@@ -182,6 +186,7 @@ if args.table:
 			print(str(tip) + '\t' + str(length) + '\t' + str(iden), file=outtable)
 
 if args.verbose:
-	print("  Tips in input tree: ", len(tips))
-	print("  Tips in output tree:", T.count_terminals())
+	if outFile != "false":
+		print("  Tips in input tree: ", len(tips))
+		print("  Tips in output tree:", T.count_terminals())
 	print("Done")
