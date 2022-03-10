@@ -14,11 +14,11 @@ requiredArgs.add_argument("-f", "--fasta", dest="file_in", required=True,
 requiredArgs.add_argument("-t", "--tree", dest="tree", required=True,
 					help="Rooted tree file.")
 
-parser.add_argument("-F", "--format", dest="format", required=False, default="nexus",
-					help="Tree file format (newick, nexus, nexml, phyloxml or cdao), default='nexus'.")
-
 requiredArgs.add_argument("-o", "--output", dest="file_out", required=True,
 					help="The output fasta file name.")
+
+parser.add_argument("-F", "--format", dest="format", required=False, default="newick",
+					help="Tree file format (newick, nexus, nexml, phyloxml or cdao), default='newick'.")
 
 parser.add_argument("-d", "--drawTree", dest="draw", required=False, action="store_true", default=None,
 					help="If selected, draws the tree in the console while reordering the fasta file.")
