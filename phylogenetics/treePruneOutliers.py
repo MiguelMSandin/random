@@ -34,6 +34,18 @@ parser.add_argument("-n", "--maximum", dest="maximum", required=False, default=N
 parser.add_argument("-l", "--list", dest="table", required=False, action="store_true",
 					help="If selected, will write the tips, its branch lengths and whether it was considered an outlier or not a tab delimited table to the input file adding '_branchLengths.tsv'")
 
+parser.add_argument("-i", "--internal", dest="internal", required=False, action="store_true",
+					help="If selected, will also remove internal branches with their doughter branches. WARNING! This option is still in development... Might not be optimized.")
+
+parser.add_argument("-R", "--thresholdInternals", dest="thresholdi", required=False, default=None,
+					help="The threshold to identify outliers in internal branches. By default 'r*4' (except for 'gesd': 0.001) to remove only badly resolved or conflicting groups.")
+
+parser.add_argument("-T", "--tipsInternal", dest="tipsMax", required=False, default=4, type=int,
+					help="If an internal branch has equal or more than 'T' childs, it is not pruned. Default=4")
+
+parser.add_argument("-N", "--maximumInternal", dest="maximumi", required=False, default=None,
+					help="For gESD method only, an estimate of the maximum number of internal branches outliers in the dataset. Default= 1/100 of the number of branches.")
+
 parser.add_argument("-v", "--verbose", dest="verbose", required=False, action="store_false",
 					help="If selected, will not print information to the console.")
 
@@ -54,6 +66,14 @@ lengths = list()
 for line in T.get_terminals():
 	tips.append(line.name)
 	lengths.append(line.branch_length)
+
+if args.internal:
+	branches = 0
+	tipsi = 0
+	lengthsi = list()
+	for line in T.get_nonterminals():
+		lengthsi.append(line.branch_length)
+	lengthsi = [i for i in lengthsi if i is not None]
 
 # Setting variables --------------------------------------------------------------------------------
 
@@ -85,10 +105,18 @@ if args.method == "zscores":
 		print("    Standard deviation:", s)
 		print("    Threshold:         ", t, ext)
 		print("      Formula: | i —", round(a, 2), " | /", round(s, 2), " >", round(t, 2))
+	if args.internal:
+		if args.thresholdi is None:
+			ti = t*4
+		else:
+			ti = float(args.thresholdi)
+		ai = statistics.mean(lengthsi)
+		si = statistics.stdev(lengthsi)
+		if args.verbose:
+			print("      Using threshold", ti, "for internal branches with less than", args.tipsMax, "tips")
 
 # IQR
 if args.method == "iqr":
-	
 	q1 = np.percentile(lengths, 25)
 	q3 = np.percentile(lengths, 75)
 	iqr = q3 - q1
@@ -106,6 +134,18 @@ if args.method == "iqr":
 		print("    75th quartile:", q3)
 		print("    Threshold:    ", t, ext)
 		print("      Formula: i <", round(q1, 4), "- (", t, "*", round(iqr, 4), ") OR i >", round(q3, 4),"+ (", t, "*", round(iqr, 4), ") = i <", round(lower, 4), "| i >", round(upper, 4))
+	if args.internal:
+		if args.thresholdi is None:
+			ti = t*4
+		else:
+			ti = float(args.thresholdi)
+		q1i = np.percentile(lengthsi, 25)
+		q3i = np.percentile(lengthsi, 75)
+		iqri = q3i - q1i
+		loweri = q1i-(ti*iqri)
+		upperi = q3i+(ti*iqri)
+		if args.verbose:
+			print("      Using threshold", ti, "for internal branches with less than", args.tipsMax, "tips")
 
 # gESD
 if args.method == "gesd":
@@ -114,7 +154,7 @@ if args.method == "gesd":
 		t = 0.05
 		ext1 = "(default value)"
 	else:
-		t = float(args.threshold)
+		t = int(args.threshold)
 		ext1 = ""
 	if args.maximum is None:
 		m = int(len(tips)/10)
@@ -126,11 +166,25 @@ if args.method == "gesd":
 		print("  Using gESD method for outlier identification")
 		print("    Significance:                      ", t, ext1)
 		print("    Maximum number of outliers allowed:", m, ext2)
+	if args.internal:
+		if args.thresholdi is None:
+			ti = 0.001
+		else:
+			ti = float(args.thresholdi)
+		if args.maximumi is None:
+			mi = int((len(lengthsi)+1)/100)
+		else:
+			mi = int(args.maximumi)
+		if args.verbose:
+			print("      Using significance: ", ti, "; and maximum: ", mi, " for internal branches with less than ", args.tipsMax, " tips", sep="")
 
 
 # Calculating outliers -----------------------------------------------------------------------------
 toPrune = list()
 zips = zip(tips, lengths)
+
+if args.internal and args.verbose:
+	print("  Removing also internal branches and their childs. This might take a while...")
 
 # Z-scores
 if args.method == "zscores":
@@ -138,28 +192,78 @@ if args.method == "zscores":
 		j = abs((length - a)) / s
 		if j > t:
 			toPrune.append(tip)
+	if args.internal:
+		internals = list()
+		for i in lengthsi:
+			ji = abs((i - ai)) / si
+			if ji > ti:
+				branches += 1
+				for line in T.get_nonterminals():
+					if i == line.branch_length:
+						tmp = list()
+						for l in line.get_terminals():
+							tmp.append(l.name)
+							tipsi += 1
+						if len(tmp) < args.tipsMax:
+							internals = internals + tmp
+						else:
+							branches -= 1
 
 # IQR
 if args.method == "iqr":
 	for tip, length in zips:
 		if length < lower or length > upper:
 			toPrune.append(tip)
+	if args.internal:
+		internals = list()
+		for i in lengthsi:
+			if i < loweri or i > upperi:
+				branches += 1
+				for line in T.get_nonterminals():
+					if i == line.branch_length:
+						tmp = list()
+						for l in line.get_terminals():
+							tmp.append(l.name)
+							tipsi += 1
+						if len(tmp) < args.tipsMax:
+							internals = internals + tmp
+						else:
+							branches -= 1
 
 # gESD
 if args.method == "gesd":
 	gesd = pyasl.generalizedESD(lengths, m, t)
 	for j in gesd[1]:
 		toPrune.append(tips[j])
+	if args.internal:
+		internals = list()
+		gesdi = pyasl.generalizedESD(lengthsi, mi, ti)
+		for j in gesdi[1]:
+			i = lengthsi[j]
+			branches += 1
+			for line in T.get_nonterminals():
+				if i == line.branch_length:
+					tmp = list()
+					for l in line.get_terminals():
+						tmp.append(l.name)
+						tipsi += 1
+					if len(tmp) < args.tipsMax:
+						internals = internals + tmp
+					else:
+						branches -= 1
 
 # Pruning ------------------------------------------------------------------------------------------
-if outFile == "false":
+if args.internal:
 	if args.verbose:
-		print("  In total", len(toPrune), "tips were considered as outliers")
-if outFile != "false":
+		print("  Prunning a total of", len(toPrune+internals), "tips...")
+		print("    Of which", len(toPrune), "are terminal and", len(internals), "are from", branches, "long internal branches")
+		
+	toPrune = list(set(toPrune+internals))
+else:
 	if args.verbose:
 		print("  Prunning a total of", len(toPrune), "tips...")
-	for tip in toPrune:
-		T.prune(tip)
+for tip in toPrune:
+	T.prune(tip)
 
 # Writing files ------------------------------------------------------------------------------------
 if outFile == "false":
@@ -186,7 +290,6 @@ if args.table:
 			print(str(tip) + '\t' + str(length) + '\t' + str(iden), file=outtable)
 
 if args.verbose:
-	if outFile != "false":
-		print("  Tips in input tree: ", len(tips))
-		print("  Tips in output tree:", T.count_terminals())
+	print("  Tips in input tree: ", len(tips))
+	print("  Tips in output tree:", T.count_terminals())
 	print("Done")
