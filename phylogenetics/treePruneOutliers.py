@@ -20,7 +20,7 @@ parser.add_argument("-f", "--format", dest="formaTree", required=False, default=
 					help="The tree file format: accepted formats are: newick (default), nexus, nexml, phyloxml or cdao.")
 
 parser.add_argument("-o", "--output", dest="output", required=False, default=None,
-					help="The output file name. By default will add '_pruned' to the file name. If output='false', the tree will not be exported.")
+					help="The output file name. By default will add '_pruned' to the file name (including '-iqr' or '-gesd' if selected). If output='false', the tree will not be exported.")
 
 parser.add_argument("-m", "--method", dest="method", required=False, default='zscores', choices=['zscores', 'iqr', 'gesd'],
 					help="The method to identify outliers: Either by Z-scores ('zscores', default), by the InterQuartile Range ('iqr') or by the generalized Extreme Studentized Deviate (gESD: 'gesd')")
@@ -79,15 +79,21 @@ if args.internal:
 
 # Output file
 if args.output is None:
-        outFile = re.sub("\\.[^\\.]+$", "_pruned.", args.tree) + re.sub(".*\\.", "", args.tree)
+	if args.method == "gesd":
+		ext = "-gesd"
+	elif args.method == "iqr":
+		ext = "-iqr"
+	else:
+		ext = ""
+	outFile = re.sub("\\.[^\\.]+$", "_pruned", args.tree) + ext + re.sub(".*\\.", ".", args.tree)
 else:
-        outFile = args.output
+	outFile = args.output
 
 # Branch lengths file if applicable
 if args.table:
-        outTable = re.sub("\\.[^\\.]+$", "_branchLengths.tsv", args.tree)
+	outTable = re.sub("\\.[^\\.]+$", "_branchLengths.tsv", args.tree)
 else:
-        outTable = args.table
+	outTable = args.table
 
 # Z-Scores
 if args.method == "zscores":
