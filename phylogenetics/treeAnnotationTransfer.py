@@ -66,6 +66,21 @@ for line in T.get_nonterminals():
 			if i == 1 or i == tips:
 				tmp.append(tip.name)
 		annot[line.name] = list(tmp)
+	elif line.comment is not None:
+		annotation = line.comment
+		annotation = re.sub('\[|\]|"', "", annotation)
+		annotation = annotation.split(",")[0]
+		annotation = re.sub(".*=", "", annotation)
+		if 'collapsed' not in annotation and 'rotate' not in line.comment:
+			tips = line.count_terminals()
+			tmp = list()
+			i = 0
+			for tip in line.get_terminals():
+				i += 1
+				if i == 1 or i == tips:
+					
+					tmp.append(re.sub("\'", "", tip.name))
+			annot[annotation] = list(tmp)
 
 # Transfer the annotations ------------------------------------------------------------------------
 if args.verbose:
@@ -91,8 +106,10 @@ if len(annotated) != len(annot):
 	for annotation in annot.keys():
 		if annotation not in annotated:
 			notFound.append(annotation)
-
-if len(annotated) == len(annot):
+if len(annot) == 0:
+	if args.verbose:
+		print("  No annotations were found")
+elif len(annotated) == len(annot):
 	if args.verbose:
 		print("  All '", len(annotated), "' annotations were successfully transferred", sep="")
 else:
@@ -100,7 +117,7 @@ else:
 	print("  Warning!! Not all annotations were transferred successfully")
 	print("  Annotated nodes in input tree: ", len(annot))
 	print("  Annotated nodes in output tree:", len(annotated))
-	if len(notFound) > 0 and len(notFound) < 11:
+	if len(notFound) > 0 and len(notFound) < 51:
 		print("    The following annotations were not found in the tree to be annotated:")
 		for a in notFound:
 			print("    -", a)
@@ -109,7 +126,7 @@ else:
 		with open(tmp, "w") as tmp1:
 			for a in notFound:
 				print(a, file=tmp1)
-		print("    More than 10 annotations were not found in the tree to be annotated")
+		print("    More than 50 annotations were not found in the tree to be annotated")
 		print("    Please check '", tmp,"' for more details", sep="")
 	print("")
 
