@@ -106,6 +106,7 @@ if len(annotated) != len(annot):
 	for annotation in annot.keys():
 		if annotation not in annotated:
 			notFound.append(annotation)
+
 if len(annot) == 0:
 	if args.verbose:
 		print("  No annotations were found")
