@@ -91,7 +91,13 @@ else:
 
 # Branch lengths file if applicable
 if args.table:
-	outTable = re.sub("\\.[^\\.]+$", "_branchLengths.tsv", args.tree)
+	if args.method == "gesd":
+		ext = "-gesd"
+	elif args.method == "iqr":
+		ext = "-iqr"
+	else:
+		ext = ""
+	outTable = re.sub("\\.[^\\.]+$", "_branchLengths", args.tree) + ext + ".tsv"
 else:
 	outTable = args.table
 
@@ -281,7 +287,6 @@ if outFile != "false":
 	Phylo.write(T, outFile, args.formaTree)
 
 if args.table:
-	outTable = re.sub("\\.[^\\.]+$", "_branchLengths.tsv", args.tree)
 	if args.verbose:
 		print("  Writing branch lengths to", outTable)
 	identified = list()
