@@ -53,18 +53,15 @@ else:
 
 # Loop through internal nodes and look for childs -------------------------------------------------
 if args.verbose:
-	print("  Extracting annotations")
+	print("  Extracting annotations and tip names")
 
 annot={}
 for line in T.get_nonterminals():
 	if line.name is not None:
 		tips = line.count_terminals()
 		tmp = list()
-		i = 0
 		for tip in line.get_terminals():
-			i += 1
-			if i == 1 or i == tips:
-				tmp.append(tip.name)
+			tmp.append(tip.name)
 		annot[line.name] = list(tmp)
 	elif line.comment is not None:
 		annotation = line.comment
@@ -74,21 +71,31 @@ for line in T.get_nonterminals():
 		if 'collapsed' not in annotation and 'rotate' not in line.comment:
 			tips = line.count_terminals()
 			tmp = list()
-			i = 0
 			for tip in line.get_terminals():
-				i += 1
-				if i == 1 or i == tips:
-					
-					tmp.append(re.sub("\'", "", tip.name))
+				tmp.append(re.sub("\'", "", tip.name))
 			annot[annotation] = list(tmp)
+
+leafs = list()
+for line in A.get_terminals():
+	leafs.append(line.name)
 
 # Transfer the annotations ------------------------------------------------------------------------
 if args.verbose:
 	print("  Transferring annotations")
 
 for annotation, tips in annot.items():
+	first = None
+	for tip in tips:
+		if tip in leafs:
+			first = tip
+			break
+	last = None
+	for tip in reversed(tips):
+		if tip in leafs:
+			last = tip
+			break
 	try:
-		clade = A.common_ancestor(tips[0], tips[1])
+		clade = A.common_ancestor(first, last)
 		clade.name = annotation
 	except:
 		pass

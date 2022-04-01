@@ -19,6 +19,9 @@ parser.add_argument("-f", "--format", dest="formaTree", required=False, default=
 parser.add_argument("-r", "--round", dest="round", required=False, default='16',
 					help="If selected, will round the output values to the desired value. By default will show up to the 16th decimal point if available.")
 
+parser.add_argument("-i", "--internal", dest="internal", required=False, action="store_false",
+					help="If selected, will NOT take into account internal branches.")
+
 args = parser.parse_args()
 
 # Reading file -------------------------------------------------------------------------------------
@@ -36,15 +39,25 @@ ntips = T.count_terminals()
 # Number of nodes
 nnodes = len(T.get_nonterminals())
 
-# Total branch length
-tbranchl = T.total_branch_length()
-
 # Branch lengths
 tips = list()
 lengths = list()
 for line in T.get_terminals():
 	tips.append(line.name)
 	lengths.append(line.branch_length)
+
+# Branch lengths of iternal branches
+if args.internal:
+	for line in T.get_nonterminals():
+		tmp = line.branch_length
+		if tmp is not None:
+			lengths.append(tmp)
+	# Total branch length
+	tbranchl = T.total_branch_length()
+else:
+	tbranchl = 0
+	for i in lengths:
+		tbranchl = tbranchl + i
 
 # Printing information -----------------------------------------------------------------------------
 print("File:\t", args.tree)
@@ -62,6 +75,9 @@ if T.rooted:
 	print("The tree is rooted")
 else:
 	print("The tree is NOT rooted")
+
+if args.internal == False:
+	print("Internal branches not considered")
 
 print("")
 print("Number of tips:        \t", ntips)
