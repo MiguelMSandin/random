@@ -33,7 +33,7 @@ args = parser.parse_args()
 
 # Output file
 if args.output is None:
-	outFile = re.sub("\\.[^\\.]+$", "_renamed.", args.tree) + re.sub(".*\\.", ".", args.tree)
+	outFile = re.sub("\\.[^\\.]+$", "_renamed", args.tree) + re.sub(".*\\.", ".", args.tree)
 else:
 	outFile = args.output
 
