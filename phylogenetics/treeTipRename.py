@@ -55,6 +55,7 @@ if args.verbose:
 notFound = list()
 for line in T.get_terminals():
 	tip = line.name
+	tip = re.sub("\'", "", tip)
 	if tip in names:
 		line.name = names[tip]
 	else:
