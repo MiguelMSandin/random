@@ -49,7 +49,7 @@ for line in T.get_nonterminals():
 	if line.name is not None:
 		line.name = None
 	elif line.comment is not None:
-		line.name = None
+		line.comment = None
 
 
 # Writing files ------------------------------------------------------------------------------------
