@@ -33,7 +33,7 @@ args = parser.parse_args()
 
 # Output file
 if args.output is None:
-	outFile = re.sub("\\.[^\\.]+$", "_renamed", args.tree) + re.sub(".*\\.", "", args.tree)
+	outFile = re.sub("\\.[^\\.]+$", "_renamed.", args.tree) + re.sub(".*\\.", "", args.tree)
 else:
 	outFile = args.output
 
@@ -61,9 +61,13 @@ for line in T.get_terminals():
 	else:
 		notFound.append(tip)
 
+for line in T.get_nonterminals():
+	if line.comment is not None:
+		line.comment = re.sub("\[|\]", "", line.comment)
+
 # Exporting renamed tree ---------------------------------------------------------------------------
 if args.verbose:
-	print("  Writing pruned tree to", outFile)
+	print("  Writing tree to", outFile)
 Phylo.write(T, outFile, args.formaTree)
 
 # Checking errors and tips not foud ----------------------------------------------------------------
