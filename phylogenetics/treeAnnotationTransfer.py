@@ -56,24 +56,24 @@ if args.verbose:
 	print("  Extracting annotations and tip names")
 
 annot={}
+i = 0
 for line in T.get_nonterminals():
+	i += 1
+	tmpd = {}
 	if line.name is not None:
-		tips = line.count_terminals()
-		tmp = list()
+		tmpl = list()
 		for tip in line.get_terminals():
-			tmp.append(tip.name)
-		annot[line.name] = list(tmp)
+			tmpl.append(re.sub("\'", "", tip.name))
+		tmpd[line.name] = tmpl
+		annot[i] = tmpd
 	elif line.comment is not None:
 		annotation = line.comment
-		annotation = re.sub('\[|\]|"', "", annotation)
-		annotation = annotation.split(",")[0]
-		annotation = re.sub(".*=", "", annotation)
-		if 'collapsed' not in annotation and 'rotate' not in line.comment:
-			tips = line.count_terminals()
-			tmp = list()
-			for tip in line.get_terminals():
-				tmp.append(re.sub("\'", "", tip.name))
-			annot[annotation] = list(tmp)
+		annotation = re.sub('\[|\]', "", annotation)
+		tmpl = list()
+		for tip in line.get_terminals():
+			tmpl.append(re.sub("\'", "", tip.name))
+		tmpd[annotation] = tmpl
+		annot[i] = tmpd
 
 leafs = list()
 for line in A.get_terminals():
@@ -83,7 +83,14 @@ for line in A.get_terminals():
 if args.verbose:
 	print("  Transferring annotations")
 
-for annotation, tips in annot.items():
+notFound = list()
+for tmp in annot.values():
+	for key in tmp.keys():
+		annotation = key
+	tips = []
+	for tip in tmp.values():
+		tips += tip
+	
 	first = None
 	for tip in tips:
 		if tip in leafs:
@@ -96,24 +103,19 @@ for annotation, tips in annot.items():
 			break
 	try:
 		clade = A.common_ancestor(first, last)
-		clade.name = annotation
+		clade.comment = annotation
 	except:
 		pass
+		notFound.append(annotation)
 
 # Counting the annotations transferred ------------------------------------------------------------
 annotated = list()
 for line in A.get_nonterminals():
-	name = line.name
+	name = line.comment
 	if name is not None:
 		annotated.append(name)
 
-# Finding not transferred annotations --------------------------------------------------------------
-notFound = list()
-if len(annotated) != len(annot):
-	for annotation in annot.keys():
-		if annotation not in annotated:
-			notFound.append(annotation)
-
+# Reporting results --------------------------------------------------------------------------------
 if len(annot) == 0:
 	if args.verbose:
 		print("  No annotations were found")
