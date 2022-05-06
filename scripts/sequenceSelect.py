@@ -13,7 +13,7 @@ requiredArgs.add_argument("-f", "--file", dest="file_in", required=True,
 						  help="Input fasta file.")
 
 parser.add_argument("-o", "--output", dest="file_out", required=False, default=None,
-					help="Output file. By default will add '_selected' to the name of the file.")
+					help="Output file. By default will add '_selected' to the name of the file. If the file already exists, it will append the sequences at the end.")
 
 parser.add_argument("-l", "--list", dest="listSeq", required=False, default=None,
 					help="List of sequences to be selected. This must be a different file with each sequence name in a different line.")
@@ -46,7 +46,7 @@ if args.verbose:
 
 seq_in = 0
 seq_out = 0
-with open(outFile, "w") as outfile:
+with open(outFile, "a") as outfile:
 	seqsid = set()
 	for i in SeqIO.parse(open(args.file_in), "fasta"):
 		seq_in += 1
