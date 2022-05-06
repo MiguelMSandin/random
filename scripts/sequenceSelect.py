@@ -80,8 +80,14 @@ if args.verbose:
 		for l in listSeq:
 			if l not in seqsid:
 				missing.add(l)
-				if len(missing) > 0:
-					print("  The following sequences from the list are not found in the input fasta file:\n", "\n ".join(missing))
+		if len(missing) > 0 and len(missing) < 50:
+			print("  The following sequences from the list are not found in the input fasta file:\n", "\n ".join(missing))
+		elif len(missing) > 49:
+			tmp = re.sub("\\.[^\\.]+$", ".", args.listSeq) + "_notFound" + re.sub(".*\\.", "", args.listSeq)
+			print("  Sequences from the list not found in the input fasta are exported to:", tmp)
+			with open(tmp, "w") as outtmp:
+				for l in missing:
+					print(l, file=outtmp)
 	print("    Sequences in: ", seq_in)
 	print("    Sequences out:", seq_out)
 	print("Done")
