@@ -170,7 +170,11 @@ if args.method == "gesd":
 		ext1 = ""
 	if args.maximum is None:
 		m = int(len(tips)/10)
-		ext2 = "(default value: 10%)"
+		if m <= 1:
+			ext2 = " - Warning! Default '-n' gives " + str(m) + " maximum expected outliers. This variable was changed!"
+			m = 2
+		else:
+			ext2 = "(default value: 10%)"
 	else:
 		m = int(args.maximum)
 		ext2 = ""
@@ -179,16 +183,20 @@ if args.method == "gesd":
 		print("    Significance:                      ", t, ext1)
 		print("    Maximum number of outliers allowed:", m, ext2)
 	if args.internal:
+		ext3=""
 		if args.thresholdi is None:
 			ti = 0.001
 		else:
 			ti = float(args.thresholdi)
 		if args.maximumi is None:
 			mi = int((len(lengthsi)+1)/100)
+			if mi <= 1:
+				ext3 = "\n      Warning! Default '-N' gives " + str(mi) + " maximum expected outliers for internal branches. This variable was changed!"
+				mi = 2
 		else:
 			mi = int(args.maximumi)
 		if args.verbose:
-			print("      Using significance: ", ti, "; and maximum: ", mi, " for internal branches with less than ", args.tipsMax, " tips", sep="")
+			print("      Using significance: ", ti, "; and maximum: ", mi, " for internal branches with less than ", args.tipsMax, " tips", ext3, sep="")
 
 
 # Calculating outliers -----------------------------------------------------------------------------
@@ -216,7 +224,7 @@ if args.method == "zscores":
 						for l in line.get_terminals():
 							tmp.append(l.name)
 							tipsi += 1
-						if len(tmp) < args.tipsMax:
+						if tipsi < args.tipsMax:
 							internals = internals + tmp
 						else:
 							branches -= 1
