@@ -40,8 +40,8 @@ parser.add_argument("-i", "--internal", dest="internal", required=False, action=
 parser.add_argument("-R", "--thresholdInternals", dest="thresholdi", required=False, default=None,
 					help="The threshold to identify outliers in internal branches. By default 'r*4' (except for 'gesd': 0.001) to remove only badly resolved or conflicting groups.")
 
-parser.add_argument("-T", "--tipsInternal", dest="tipsMax", required=False, default=4, type=int,
-					help="If an internal branch has equal or more than 'T' childs, it is not pruned. Default=4")
+parser.add_argument("-T", "--tipsInternal", dest="tipsMax", required=False, default=6, type=int,
+					help="If an internal branch has equal or more than 'T' childs, it is not pruned. Default=6")
 
 parser.add_argument("-N", "--maximumInternal", dest="maximumi", required=False, default=None,
 					help="For gESD method only, an estimate of the maximum number of internal branches outliers in the dataset. Default= 1/100 of the number of branches.")
