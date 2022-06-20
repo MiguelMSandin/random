@@ -58,41 +58,54 @@ if args.verbose and not args.internal:
 	print("  Colouring")
 
 c = 0
+C = 0
 for tip in T.get_terminals():
+	coloured = False
 	if tip.name in colours.keys():
 		colour = colours[tip.name]
 		if "#" not in colour:
 			colour = "#" + colour
 		tip.comment = str("[&!color=" + colour + "]")
-		c += 1
+		coloured = True
 	else:
 		for pattern, colour in colours.items():
 			if pattern in tip.name:
 				if "#" not in colour:
 					colour = "#" + colour
 				tip.comment = str("[&!color=" + colour + "]")
-				c += 1
+				coloured = True
+	if coloured:
+		c += 1
+	else:
+		C += 1
 
 # Colouring internal nodes -------------------------------------------------------------------------
 i = 0
+I = 0
 if args.internal:
 	if args.verbose:
 		print("  Colouring internal nodes, this might take a while...")
 	for clade in T.get_nonterminals():
+		coloured = False
 		unique = set()
 		for tip in clade.get_terminals():
 			comment = tip.comment
 			unique.add(comment)
 		if len(unique) == 1:
 			clade.comment = next(iter(unique))
+			coloured = True
+		if coloured:
 			i += 1
+		else:
+			I += 1
 
 # Writing file -------------------------------------------------------------------------------------
 if args.verbose:
 	if c > 0:
-		print("  In total", str(i+c), "branches were coloured.")
+		print("  In total", str(i+c), "branches were coloured:")
+		print("    Of which ", c, " are terminal nodes (", round(c/(c+C)*100,2), "% coloured)", sep="")
 		if args.internal:
-			print("    Of which", i, "are internal.")
+			print("    Of which ", i, " are terminal nodes (", round(i/(i+I)*100,2), "% coloured)", sep="")
 	else:
 		print("    0 branches were coloured, please check table for possible typos.")
 	print("  Writting file to:", out)
