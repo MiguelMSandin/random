@@ -57,20 +57,24 @@ if args.verbose and args.internal:
 if args.verbose and not args.internal:
 	print("  Colouring")
 
+c = 0
 for tip in T.get_terminals():
 	if tip.name in colours.keys():
 		colour = colours[tip.name]
 		if "#" not in colour:
 			colour = "#" + colour
 		tip.comment = str("[&!color=" + colour + "]")
+		c += 1
 	else:
 		for pattern, colour in colours.items():
 			if pattern in tip.name:
 				if "#" not in colour:
 					colour = "#" + colour
 				tip.comment = str("[&!color=" + colour + "]")
+				c += 1
 
 # Colouring internal nodes -------------------------------------------------------------------------
+i = 0
 if args.internal:
 	if args.verbose:
 		print("  Colouring internal nodes, this might take a while...")
@@ -81,9 +85,16 @@ if args.internal:
 			unique.add(comment)
 		if len(unique) == 1:
 			clade.comment = next(iter(unique))
+			i += 1
 
 # Writing file -------------------------------------------------------------------------------------
 if args.verbose:
+	if c > 0:
+		print("  In total", str(i+c), "branches were coloured.")
+		if args.internal:
+			print("    Of which", i, "are internal.")
+	else:
+		print("    0 branches were coloured, please check table for possible typos.")
 	print("  Writting file to:", out)
 Phylo.write(T, out, "nexus")
 subprocess.call(["sed", "-i", "-e",  's/\\\]//g', out])
