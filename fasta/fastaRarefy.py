@@ -34,6 +34,9 @@ parser.add_argument("-i", "--identifier", dest="identifier", required=False, act
 parser.add_argument("-R", "--replacement", dest="replacement", required=False, action="store_true",
                     help="If selected, the random sampling will be done without replacement.")
 
+parser.add_argument("-p", "--printSummary", dest="printSummary", required=False, action="store_false",
+                    help="If selected, will not print a summary at the end.")
+
 parser.add_argument("-v", "--verbose", dest="verbose", required=False, action="store_false",
                     help="If selected, will not print information in the console.")
 
@@ -163,14 +166,16 @@ with open(outFile, 'w') as outfile:
 		line = str(str(key) + '\t' + str(value[0]) + '\t' + str(value[1]) + '\t' + str(value[2]) + '\t' + str(value[3]) + '\t' + str(value[4]) + '\t' + str(value[5]) + '\t' + str(value[6]) + '\t' + str(value[7]) + '\t' + str(value[8]))
 		print(line, file=outfile)
 
-if args.verbose:
+if args.printSummary:
 	print("  Final summary report:")
 	print("    Fasta has a total of", len(fasta), "entries and", len(set(fasta.values())), "unique sequences")
 	if args.abundance is not None:
 		print("      (and", str(len(reads)), reading, "after replicating by abundance)")
 	sampling = max([len(fasta), len(set(fasta.values()))])
 	tmp = list()
+	print("    Estimating", end="")
 	for j in range(0, args.replicates):
+		print("\r    Estimating ", j, "/", args.replicates, sep="", end="")
 		if args.replacement:
 			random.seed()
 			tmp1 = len(set(random.sample(reads, k=sampling)))
@@ -179,10 +184,12 @@ if args.verbose:
 			tmp1 = len(set(random.choices(reads, k=sampling)))
 		tmp.append(tmp1)
 	tmp = st.mean(tmp)
-	print("    When sampling ", sampling, " ", reading, ", an average of ", tmp, " unique ", reading, " are retrieved (", round(tmp/sampling*100, 2), "%)", sep="")
+	print("\r    When sampling ", sampling, " ", reading, ", an average of ", tmp, " unique ", reading, " are retrieved (", round(tmp/sampling*100, 2), "%)", sep="")
 	if args.abundance is not None:
 		tmp = list()
+		print("    Estimating", end="")
 		for j in range(0, args.replicates):
+			print("\r    Estimating ", j, "/", args.replicates, sep="", end="")
 			random.seed()
 			if args.replacement:
 				tmp1 = len(set(random.sample(reads, k=len(reads))))
@@ -190,7 +197,7 @@ if args.verbose:
 				tmp1 = len(set(random.choices(reads, k=len(reads))))
 			tmp.append(tmp1)
 		tmp = st.mean(tmp)
-		print("    When sampling ", len(reads), " ", reading, ", an average of ", tmp, " unique ", reading, " are retrieved (", round(tmp/sampling*100, 2), "%)", sep="")
+		print("\r    When sampling ", len(reads), " ", reading, ", an average of ", tmp, " unique ", reading, " are retrieved (", round(tmp/sampling*100, 2), "%)", sep="")
 
 # __________________________________________________________________________________________________
 if args.verbose:
