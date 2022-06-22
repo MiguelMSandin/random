@@ -73,12 +73,14 @@ if args.abundance is not None:
 	if args.verbose:
 		print("  Replicating reads by abundance", end="")
 		i = 0
+		P = 0
 	for key, value in fasta.items():
 		if args.verbose:
 			i += 1
 			I = round(i/len(fasta)*100)
-			if I != i:
-				print("\r  Replicating reads by abundance ", I, "%", sep="", end="")
+			if I > P:
+				P = I
+				print("\r  Replicating reads by abundance ", P, "%", sep="", end="")
 		if args.identifier:
 			for j in range(int(abundance[key])):
 				reads.append(key)
@@ -89,12 +91,14 @@ else:
 	if args.verbose:
 		print("  Extracting reads", end="")
 		i = 0
+		P = 0
 	for key, value in fasta.items():
 		if args.verbose:
 			i += 1
 			I = round(i/len(fasta)*100)
-			if I != i:
-				print("\r  Extracting reads ", I, "%", sep="", end="")
+			if I > P:
+				P = I
+				print("\r  Replicating reads by abundance ", P, "%", sep="", end="")
 		if args.identifier:
 			reads.append(key)
 		else:
@@ -129,12 +133,14 @@ out = {}
 if args.verbose:
 	print("  Rarefying", end="")
 	i = 0
+	P = 0
 for s in steps:
 	if args.verbose:
 		i += 1
-		I = round(i/len(steps)*100)
-		if I != i:
-			print("\r  Rarefying ", I, "%", sep="", end="")
+		I = round(i/len(fasta)*100)
+		if I > P:
+			P = I
+			print("\r  Replicating reads by abundance ", P, "%", sep="", end="")
 	sample = list()
 	for j in range(0, args.replicates):
 		random.seed()
