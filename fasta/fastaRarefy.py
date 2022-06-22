@@ -98,7 +98,7 @@ else:
 			I = round(i/len(fasta)*100)
 			if I > P:
 				P = I
-				print("\r  Replicating reads by abundance ", P, "%", sep="", end="")
+				print("\r  Extracting reads ", P, "%", sep="", end="")
 		if args.identifier:
 			reads.append(key)
 		else:
@@ -140,7 +140,7 @@ for s in steps:
 		I = round(i/len(steps)*100)
 		if I > P:
 			P = I
-			print("\r  Replicating reads by abundance ", P, "%", sep="", end="")
+			print("\r  Rarefying ", P, "%", sep="", end="")
 	sample = list()
 	for j in range(0, args.replicates):
 		random.seed()
