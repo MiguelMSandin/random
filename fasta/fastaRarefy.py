@@ -165,11 +165,9 @@ with open(outFile, 'w') as outfile:
 
 if args.verbose:
 	print("  Final summary report:")
+	print("    Fasta has a total of", len(fasta), "entries and", len(set(fasta.values())), "unique sequences")
 	if args.abundance is not None:
-		ext = str("(and " + len(reads) + "after replicating by abundance)")
-	else:
-		ext = ""
-	print("    Fasta has a total of", len(fasta), "entries and", len(set(fasta.values())), "unique sequences", ext)
+		print("      (and", str(len(reads)), reading, "after replicating by abundance)")
 	sampling = max([len(fasta), len(set(fasta.values()))])
 	tmp = list()
 	for j in range(0, args.replicates):
