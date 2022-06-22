@@ -137,7 +137,7 @@ if args.verbose:
 for s in steps:
 	if args.verbose:
 		i += 1
-		I = round(i/len(fasta)*100)
+		I = round(i/len(steps)*100)
 		if I > P:
 			P = I
 			print("\r  Replicating reads by abundance ", P, "%", sep="", end="")
