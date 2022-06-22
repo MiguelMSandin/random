@@ -113,7 +113,7 @@ if args.verbose:
 		print("\n  Rarefication will be done:\n      -from", min(steps), "to", max(steps),
 		"sampling size\n      -by steps of", steps[1]-steps[0],
 		"\n      -with", args.replicates, "replicates\n      -in the total",
-		len(reads), reading, "after replicating.")
+		len(reads), reading, "after replicating by abundance")
 	else:
 		print("\n  Rarefication will be done:\n      -from", min(steps), "to", max(steps),
 		"sampling size\n      -by steps of", steps[1]-steps[0],
@@ -165,7 +165,11 @@ with open(outFile, 'w') as outfile:
 
 if args.verbose:
 	print("  Final summary report:")
-	print("    Fasta has a total of", len(fasta), "entries and", len(set(fasta.values())), "unique sequences.")
+	if args.abundance is not None:
+		ext = str("(and " + len(reads) + "after replicating by abundance)")
+	else:
+		ext = ""
+	print("    Fasta has a total of", len(fasta), "entries and", len(set(fasta.values())), "unique sequences", ext)
 	sampling = max([len(fasta), len(set(fasta.values()))])
 	tmp = list()
 	for j in range(0, args.replicates):
