@@ -103,9 +103,9 @@ if args.internal:
 if args.verbose:
 	if c > 0:
 		print("  In total", str(i+c), "branches were coloured:")
-		print("    Of which ", c, " are terminal nodes (", round(c/(c+C)*100,2), "% coloured)", sep="")
+		print("    Of which ", c, " are terminal branches (", round(c/(c+C)*100,2), "% coloured)", sep="")
 		if args.internal:
-			print("    Of which ", i, " are terminal nodes (", round(i/(i+I)*100,2), "% coloured)", sep="")
+			print("    Of which ", i, " are internal branches (", round(i/(i+I)*100,2), "% coloured)", sep="")
 	else:
 		print("    0 branches were coloured, please check table for possible typos.")
 	print("  Writting file to:", out)
