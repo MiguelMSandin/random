@@ -135,13 +135,12 @@ if args.replacement:
 		sys.exit(1)
 
 # Rarefying ________________________________________________________________________________________
-out = {}
 if args.verbose:
 	print("  Rarefying", end="")
 	i = 0
 	P = 0
 with open(outFile, 'w') as outfile:
-	outfile.write("sampleSize\tmean\tsd\tmin\tp05\tp25\tp50\tp75\tp95\tmax\tcommon")
+	outfile.write("sampleSize\tmean\tsd\tmin\tp05\tp25\tp50\tp75\tp95\tmax\tcommon\n")
 	for s in steps:
 		if args.verbose:
 			i += 1
@@ -170,7 +169,7 @@ with open(outFile, 'w') as outfile:
 			 str(sort[int(len(sample)*0.75)]) + '\t' +
 			 str(sort[int(len(sample)*0.95)]) + '\t' +
 			 str(max(sample)) + '\t' +
-			 str(len(common)))
+			 str(len(common)) + '\n')
 		outfile.write(line)
 
 if args.verbose:
