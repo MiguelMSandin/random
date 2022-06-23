@@ -2,7 +2,6 @@
 
 import argparse
 from Bio import SeqIO
-import re
 import statistics as st
 import random
 
@@ -44,6 +43,7 @@ args = parser.parse_args()
 
 # Setting parameters _______________________________________________________________________________
 if args.output is None:
+	import re
 	outFile = re.sub("\\.[^\\.]+$", "_rarefied.tsv", args.fastaFile)
 else:
 	outFile = args.output
@@ -53,6 +53,11 @@ steps = list()
 for i in range(rangeIter[0], rangeIter[1], args.steps):
 	steps.append(i)
 steps.append(rangeIter[1])
+
+if args.identifier:
+	reading = "identifiers"
+else:
+	reading = "sequences"
 
 # Reading fasta ____________________________________________________________________________________
 if args.verbose:
@@ -74,7 +79,7 @@ if args.abundance is not None:
 reads = list()
 if args.abundance is not None:
 	if args.verbose:
-		print("  Replicating reads by abundance", end="")
+		print("  Replicating ", reading, " by abundance", end="")
 		i = 0
 		P = 0
 	for key, value in fasta.items():
@@ -83,16 +88,15 @@ if args.abundance is not None:
 			I = round(i/len(fasta)*100)
 			if I > P:
 				P = I
-				print("\r  Replicating reads by abundance ", P, "%", sep="", end="")
-		if args.identifier:
-			for j in range(int(abundance[key])):
+				print("\r  Replicating ", reading, " by abundance ", P, "%", sep="", end="")
+		for j in range(int(abundance[key])):
+			if args.identifier:
 				reads.append(key)
-		else:
-			for j in range(int(abundance[key])):
+			else:
 				reads.append(value)
 else:
 	if args.verbose:
-		print("  Extracting reads", end="")
+		print("  Extracting ", reading, end="")
 		i = 0
 		P = 0
 	for key, value in fasta.items():
@@ -101,31 +105,30 @@ else:
 			I = round(i/len(fasta)*100)
 			if I > P:
 				P = I
-				print("\r  Extracting reads ", P, "%", sep="", end="")
+				print("\r  Extracting ", reading, " ", P, "%", sep="", end="")
 		if args.identifier:
 			reads.append(key)
 		else:
 			reads.append(value)
+print("")
 
+# Print information
 if args.verbose:
-	if args.identifier:
-		reading = "identifiers"
-	else:
-		reading = "sequences"
 	if args.abundance is not None:
-		print("\n  Rarefication will be done:\n      -from", min(steps), "to", max(steps),
+		print("  Rarefication will be done:\n      -from", min(steps), "to", max(steps),
 		"sampling size\n      -by steps of", steps[1]-steps[0],
 		"\n      -with", args.replicates, "replicates\n      -in the total",
 		len(reads), reading, "after replicating by abundance")
 	else:
-		print("\n  Rarefication will be done:\n      -from", min(steps), "to", max(steps),
+		print("  Rarefication will be done:\n      -from", min(steps), "to", max(steps),
 		"sampling size\n      -by steps of", steps[1]-steps[0],
 		"\n      -with", args.replicates, "replicates\n      -in the total",
 		len(reads), reading)
 
+# Test if it is possible to do not use replacement if selected
 if args.replacement:
 	if max(steps) > len(reads):
-		print("\n\nWarning! You have selected a maximum sampling of", max(steps),
+		print("\nWarning! You have selected a maximum sampling of", max(steps),
 		"yet the sample has", len(reads),
 		"reads.\nPlease consider using a smaller range or removing the replacement option.\nStopping\n")
 		import sys
@@ -137,35 +140,43 @@ if args.verbose:
 	print("  Rarefying", end="")
 	i = 0
 	P = 0
-for s in steps:
-	if args.verbose:
-		i += 1
-		I = round(i/len(steps)*100)
-		if I > P:
-			P = I
-			print("\r  Rarefying ", P, "%", sep="", end="")
-	sample = list()
-	for j in range(0, args.replicates):
-		random.seed()
-		if args.replacement:
-			tmp = len(set(random.sample(reads, k=s)))
-		else:
-			tmp = len(set(random.choices(reads, k=s)))
-		sample.append(tmp)
-	out[s] = [st.mean(sample), st.stdev(sample), min(sample),
-		   sorted(sample)[int(len(sample)*0.05)], sorted(sample)[int(len(sample)*0.25)],
-		   sorted(sample)[int(len(sample)*0.5)], sorted(sample)[int(len(sample)*0.75)],
-		   sorted(sample)[int(len(sample)*0.95)], max(sample)]
-
-# Exporting _______________________________________________________________________________________
-if args.verbose:
-	print("\n  Writing table to", outFile)
 with open(outFile, 'w') as outfile:
-	print("sampleSize\tmean\tsd\tmin\tp05\tp25\tp50\tp75\tp95\tmax", file=outfile)
-	for key, value in out.items():
-		line = str(str(key) + '\t' + str(value[0]) + '\t' + str(value[1]) + '\t' + str(value[2]) + '\t' + str(value[3]) + '\t' + str(value[4]) + '\t' + str(value[5]) + '\t' + str(value[6]) + '\t' + str(value[7]) + '\t' + str(value[8]))
-		print(line, file=outfile)
+	outfile.write("sampleSize\tmean\tsd\tmin\tp05\tp25\tp50\tp75\tp95\tmax\tcommon")
+	for s in steps:
+		if args.verbose:
+			i += 1
+			I = round(i/len(steps)*100)
+			if I > P:
+				P = I
+				print("\r  Rarefying ", P, "%", sep="", end="")
+		sample = list()
+		common = set()
+		for j in range(0, args.replicates):
+			random.seed()
+			if args.replacement:
+				tmp = len(set(random.sample(reads, k=s)))
+			else:
+				tmp = len(set(random.choices(reads, k=s)))
+			sample.append(tmp)
+			common.add(tmp)
+		sort = sorted(sample)
+		line = str(str(s) + '\t' +
+			 str(st.mean(sample)) + '\t' +
+			 str(st.stdev(sample)) + '\t' +
+			 str(min(sample)) + '\t' +
+			 str(sort[int(len(sample)*0.05)]) + '\t' +
+			 str(sort[int(len(sample)*0.25)]) + '\t' +
+			 str(sort[int(len(sample)*0.5)]) + '\t' +
+			 str(sort[int(len(sample)*0.75)]) + '\t' +
+			 str(sort[int(len(sample)*0.95)]) + '\t' +
+			 str(max(sample)) + '\t' +
+			 str(len(common)))
+		outfile.write(line)
 
+if args.verbose:
+	print("\n  Table exported to:", outFile)
+
+# Summarising _____________________________________________________________________________________
 if args.printSummary:
 	print("  Final summary report:")
 	print("    Fasta has a total of", len(fasta), "entries and", len(set(fasta.values())), "unique sequences")
