@@ -194,7 +194,7 @@ if args.printSummary:
 	total = 0
 	for tip in T.get_terminals():
 		total += T.distance(tip)
-	print("    Tree has a total of", tipsN, "tips and ", round(total, 2), " total branch length")
+	print("    Tree has a total of", tipsN, "tips and", round(total, 2), "total branch length")
 	sample = list()
 	for j in range(0, args.replicates):
 		random.seed()
