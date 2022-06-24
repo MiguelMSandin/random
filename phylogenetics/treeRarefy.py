@@ -194,7 +194,7 @@ if args.printSummary:
 	total = 0
 	for tip in T.get_terminals():
 		total += T.distance(tip)
-	print("    Tree has a total of", tipsN, "tips and ", total, " total branch length")
+	print("    Tree has a total of", tipsN, "tips and ", round(total, 2), " total branch length")
 	sample = list()
 	for j in range(0, args.replicates):
 		random.seed()
@@ -210,7 +210,7 @@ if args.printSummary:
 			lengthOut = lengthOut/s
 		sample.append(lengthOut)
 	tmp = st.mean(sample)
-	print("\r    When sampling ", tipsN, " tips, an average branch length of ", tmp, " is retrieved (", round(tmp/total*100, 2), "%)", sep="")
+	print("\r    When sampling ", tipsN, " tips, an average branch length of ", round(tmp, 2), " is retrieved (", round(tmp/total*100, 2), "%)", sep="")
 	if args.abundance is not None:
 		sample = list()
 		for j in range(0, args.replicates):
@@ -227,7 +227,7 @@ if args.printSummary:
 				lengthOut = lengthOut/s
 			sample.append(lengthOut)
 		tmp = st.mean(sample)
-		print("\r    When sampling ", len(reads), " tips, an average branch length of ", tmp, " is retrieved (", round(tmp/total*100, 2), "%)", sep="")
+		print("\r    When sampling ", len(reads), " tips, an average branch length of ", round(tmp, 2), " is retrieved (", round(tmp/total*100, 2), "%)", sep="")
 
 # __________________________________________________________________________________________________
 if args.verbose:
