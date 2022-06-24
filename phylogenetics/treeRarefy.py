@@ -56,7 +56,6 @@ steps = list()
 for i in range(rangeIter[0], rangeIter[1], args.steps):
 	steps.append(i)
 steps.append(rangeIter[1])
-steps.pop(0)
 
 # Reading fasta ____________________________________________________________________________________
 if args.verbose:
