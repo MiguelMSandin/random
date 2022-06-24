@@ -31,7 +31,7 @@ parser.add_argument("-n", "--replicates", dest="replicates", required=False, typ
                     help="The number of rarefaction replicates. Default: '100'.")
 
 parser.add_argument("-N", "--normalize", dest="normalize", required=False, action="store_true",
-                    help="If selected, the total branch length will be normalize by number of rarefied tips.")
+                    help="If selected, the total branch length will be normalized by number of rarefied tips.")
 
 parser.add_argument("-R", "--replacement", dest="replacement", required=False, action="store_true",
                     help="If selected, the random sampling will be done without replacement.")
@@ -205,7 +205,7 @@ if args.printSummary:
 			rarefied = set(random.choices(reads, k=tipsN))
 		lengths = list()
 		for tip in rarefied:
-			lengths.append(T.distance(tip))
+			lengths.append(branchLengths[tip])
 		lengthOut = sum(lengths)
 		if args.normalize:
 			lengthOut = lengthOut/s
@@ -222,14 +222,13 @@ if args.printSummary:
 				rarefied = set(random.choices(reads, k=len(reads)))
 			lengths = list()
 			for tip in rarefied:
-				lengths.append(T.distance(tip))
+				lengths.append(branchLengths[tip])
 			lengthOut = sum(lengths)
 			if args.normalize:
 				lengthOut = lengthOut/s
 			sample.append(lengthOut)
 		tmp = st.mean(sample)
 		print("\r    When sampling ", len(reads), " tips, an average branch length of ", tmp, " is retrieved (", round(tmp/total*100, 2), "%)", sep="")
-
 
 # __________________________________________________________________________________________________
 if args.verbose:
