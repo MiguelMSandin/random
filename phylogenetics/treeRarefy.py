@@ -60,9 +60,25 @@ steps.pop(0)
 
 # Reading fasta ____________________________________________________________________________________
 if args.verbose:
-	print("Reading tree file:", args.tree)
+	print("  Reading tree file:", args.tree)
 T = Phylo.read(args.tree, args.formaTree)
 tipsN = T.count_terminals()
+
+branchLengths = {}
+if args.verbose:
+	print("  Getting branch legths to root", end="")
+	i = 0
+	P = 0
+for tip in T.get_terminals():
+	if args.verbose:
+			i += 1
+			I = round(i/tipsN*100)
+			if I > P:
+				P = I
+				print("\r  Getting branch legths to root ", P, "%", sep="", end="")
+	branchLengths[tip.name] = T.distance(tip)
+if args.verbose:
+	print("")
 
 # Reading abundances _______________________________________________________________________________
 if args.abundance is not None:
@@ -102,7 +118,8 @@ else:
 				P = I
 				print("\r  Extracting tips ", P, "%", sep="", end="")
 			reads.append(tip.name)
-print("")
+if args.verbose:
+	print("")
 
 # Print information
 if args.verbose:
@@ -152,7 +169,7 @@ with open(outFile, 'w') as outfile:
 			else:
 				rarefied = set(random.choices(reads, k=s))
 			for tip in rarefied:
-				lengths.append(T.distance(tip))
+				lengths.append(branchLengths[tip])
 			lengthOut = sum(lengths)
 			if args.normalize:
 				lengthOut = lengthOut/s
