@@ -192,8 +192,9 @@ if args.verbose:
 if args.printSummary:
 	print("  Final summary report:")
 	total = 0
-	for tip in T.get_terminals():
-		total += T.distance(tip)
+	branchLengths
+	for l in branchLengths.values():
+		total += l
 	print("    Tree has a total of", tipsN, "tips and", round(total, 2), "total branch length")
 	sample = list()
 	for j in range(0, args.replicates):
