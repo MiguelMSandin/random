@@ -67,8 +67,12 @@ if args.output is None:
 		n = "N"
 	else:
 		n = ""
+	if args.abundance is not None:
+		a = "Abun"
+	else:
+		a = ""
 	import re
-	outFile = re.sub("\\.[^\\.]+$", "_rarefied", args.tree) + ext + n + ".tsv"
+	outFile = re.sub("\\.[^\\.]+$", "_rarefied", args.tree) + a + ext + n + ".tsv"
 else:
 	outFile = args.output
 
