@@ -7,19 +7,17 @@ import sys
 parser = argparse.ArgumentParser(description="Concatenate multiple fasta files. Bear in mind that the sequence names should be exactly the same in every file.")
 
 # Add the arguments to the parser
-requiredArgs = parser.add_argument_group('required arguments')
-
-requiredArgs.add_argument("-f", "--files", dest="files_in", nargs='+', required=True,
+parser.add_argument("-f", "--files", dest="files_in", nargs='+', required=True,
 					help="Fasta files to be concatenated in the given order.")
 
-requiredArgs.add_argument("-o", "--output", dest="file_out", required=True,
+parser.add_argument("-o", "--output", dest="file_out", required=True,
 					help="The output file name.")
 
 parser.add_argument("-a", "--align", dest="align", required=False, default=None, action="store_true",
-						help="If selected, will replace by gaps ('-') those sequences not present in a file to preserve the aligned structure. This understands you are providing aligned fasta files.")
+					help="If selected, will replace by gaps ('-') those sequences not present in a file to preserve the aligned structure. This understands you are providing aligned fasta files.")
 
 parser.add_argument("-d", "--drop", dest="drop", required=False, default=None, action="store_true",
-						help="If selected, will only print sequences present in all files.")
+					help="If selected, will only print sequences present in all files.")
 
 args = parser.parse_args()
 
@@ -42,20 +40,20 @@ for i in list(range(0, len(files))):
 		for key, value in tmp.items():
 			out[key] = value
 	else:
+		if args.align is not None:
+			r = len(out[list(out.keys())[1]])
 		for key, value in tmp.items():
 			if key in out.keys():
 				out[key] = (out[key] + value)
 			elif key not in out.keys() and args.align is not None:
-				#r = len(out[list(out.keys())[1]])
-				out[key] = ("-" * R + value)
+				out[key] = ("-" * r + value)
 			elif key not in out.keys():
 				out[key] = value
-		if args.align is not None:
-			for key, value in out.items():
-				if key not in tmp.keys():
+		for key, value in out.items():
+			if key not in tmp.keys():
+				if args.align is not None:
 					r = len(tmp[list(tmp.keys())[1]])
 					out[key] = (value + "-" * r)
-	R = len(out[list(out.keys())[1]])
 
 if args.drop is not None:
 	d = len(out.keys())
@@ -77,19 +75,19 @@ print("  Final file contains", len(out), "sequences.")
 if args.align is not None:
 	tmp = out[list(out.keys())[1]]
 	tmp = ''.join(tmp)
-	tmp = len(tmp)	
+	tmp = len(tmp)
 	l = set()
 	for s in out.values():
 		l.add(len(s))
 	if len(l) > 1:
-		print("	Warning!\n	You have selected the option '-a/--align' in order to keep the aligned structure.\n	But sequences are not aligned.")
+		print("    Warning!\n    You have selected the option '-a/--align' in order to keep the aligned structure.\n    But sequences are not aligned.")
 	else:
-		print("	And has", tmp, "aligned positions.")
+		print("    And has", tmp, "aligned positions.")
 if args.drop is not None:
 	print("   ", d-len(out.keys()), "sequences were in the input files and are not in the final fasta.")
-	
 
-if args.drop is None and args.align is None:		
+
+if args.drop is None and args.align is None:        
 	l = set()
 	for s in out.values():
 		l.add(len(s))
@@ -98,4 +96,6 @@ if args.drop is None and args.align is None:
 		if "-" in val:
 			g += 1
 	if g > 0 and len(l) > 1:
-		print("  Warning!\n	You haven't selected any option to deal with gaps.\n	The final file has sequences of different length and with gaps.")
+		print("  Warning!\n    You haven't selected any option to deal with gaps.\n    The final file has sequences of different length and with gaps.")
+
+
