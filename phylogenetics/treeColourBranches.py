@@ -14,7 +14,7 @@ requiredArgs.add_argument("-t", "--tree", dest="tree", required=True,
 						  help="A tree file.")
 
 requiredArgs.add_argument("-c", "--colours", dest="colours", required=True,
-					help="A tab delimited file containing two columns (1) either the exact list of tips to be coloured or a pattern to be search in the tip name and (2) the colour of the tip/pattern.")
+					help="A tab delimited file containing two columns (1) either the exact list of tips to be coloured or a pattern to be search in the tip name and (2) the colour of the tip/pattern. If selected 'eukProt', will automatically generate eukProt colours.")
 
 parser.add_argument("-o", "--output", dest="out", required=False, action="store",
 					help="The output tree file. If not selected, will add '_coloured' to the input tree file.")
@@ -46,10 +46,40 @@ if args.verbose:
 
 T = Phylo.read(args.tree, args.formaTree)
 
-colours = {}
-for line in open(args.colours):
-	tmp = line.strip().split()
-	colours[tmp[0]]=tmp[1]
+if args.colours == 'eukProt' or args.colours == 'EukProt' or args.colours == 'eukprot':
+	colours={"Amoebozoa":       "#9ecae1",
+		  "Obazoa":             "#6baed6",
+		  "Nucletmycea":        "#4292c6",
+		  "Fungi":              "#4292c6",
+		  "Holozoa":            "#2171b5",
+		  "Metazoa":            "#2171b5",
+		  "Metamonada":         "#41ab5d",
+		  "CRuMs":              "#8dd3c7",
+		  "Discoba":            "#fdae6b",
+		  "Hemimastigophora":   "#dadaeb",
+		  "Ancoracysta":        "#dadaeb",
+		  "Malawimona":         "#bdbdbd",
+		  "Ancyromona":         "#969696",
+		  "Cryptista":          "#fa9fb5",
+		  "Cryptophyta":        "#fa9fb5",
+		  "Katablepharidophyta":"#fa9fb5",
+		  "Haptista":           "#ffffb3",
+		  "Centroheliozoa":     "#ffffb3",
+		  "Haptophyta":         "#ffed6f",
+		  "Archaeplastida":     "#ccebc5",
+		  "Chloroplastida":     "#b3de69",
+		  "Chlorophyta":        "#b3de69",
+		  "Streptophyta":       "#b3de69",
+		  "Picozoa":            "#ccebc5",
+		  "Telonemia":          "#bcbddc",
+		  "Rhizaria":           "#9e9ac8",
+		  "Stramenopiles":      "#807dba",
+		  "Alveolata":          "#6a51a3"}
+else:
+	colours = {}
+	for line in open(args.colours):
+		tmp = line.strip().split()
+		colours[tmp[0]]=tmp[1]
 
 # Colouring ----------------------------------------------------------------------------------------
 if args.verbose and args.internal:
