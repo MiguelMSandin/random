@@ -3,7 +3,7 @@
 import argparse
 from Bio import Phylo
 
-parser = argparse.ArgumentParser(description="Prunes a tree from tips present in a list.")
+parser = argparse.ArgumentParser(description="Roots the tree in the last common ancestor between the given tip names.")
 
 # Add the arguments to the parser
 requiredArgs = parser.add_argument_group('required arguments')
