@@ -23,9 +23,6 @@ parser.add_argument("-f", "--format", dest="formaTree", required=False, default=
 parser.add_argument("-F", "--formatOut", dest="formatOut", required=False,
 					help="The format of the output file: accepted formats are: newick, nexus, nexml, phyloxml or cdao. Default: will take input format.")
 
-parser.add_argument("-b", "--branchLengths", dest="branch_length", required=False, action="store_true",
-					help="If selected, will remove branch lengths and print only taxon and node names (plain=True).")
-
 parser.add_argument("-v", "--verbose", dest="verbose", required=False, action="store_true",
 					help="If selected, will not print information to the console.")
 
@@ -68,12 +65,7 @@ if not args.verbose:
 	print("  Writting file to: ", out)
 
 # Writing file -------------------------------------------------------------------------------------
-if args.branch_length:
-	if not args.verbose:
-		print("    Branch-lengths removed")
-	Phylo.write(T, out, formatOut, plain=True)
-else:
-	Phylo.write(T, out, formatOut)
+Phylo.write(T, out, formatOut)
 
 if not args.verbose:
 	print("Done")
