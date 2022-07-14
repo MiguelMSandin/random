@@ -29,6 +29,9 @@ parser.add_argument("-f", "--format", dest="formaTree", required=False, default=
 parser.add_argument("-i", "--internal", dest="internal", required=False, action="store_false",
 					help="If selected, will not colour internal branches.")
 
+parser.add_argument("-n", "--none", dest="none", required=False, action="store_false",
+					help="If selected, will not ignore tips without an attribute. This is useful when colouring internal nodes, so internal branches will not be coloured if one child has no attribute.")
+
 parser.add_argument("-v", "--verbose", dest="verbose", required=False, action="store_false",
 					help="If selected, will not print information to the console.")
 
@@ -124,6 +127,11 @@ if args.internal:
 		if len(unique) == 1:
 			clade.comment = next(iter(unique))
 			coloured = True
+		if args.none:
+			if len(unique) == 2 and None in unique:
+				unique.remove(None)
+				clade.comment = next(iter(unique))
+				coloured = True
 		if coloured:
 			i += 1
 		else:
