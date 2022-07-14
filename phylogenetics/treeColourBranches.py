@@ -30,7 +30,7 @@ parser.add_argument("-i", "--internal", dest="internal", required=False, action=
 					help="If selected, will not colour internal branches.")
 
 parser.add_argument("-n", "--none", dest="none", required=False, action="store_false",
-					help="If selected, will not ignore tips without an attribute. This is useful when colouring internal nodes, so internal branches will not be coloured if one child has no attribute.")
+					help="If selected, will not ignore tips without a colour. This is useful when colouring internal nodes, so internal branches will not be coloured if one child has no colour.")
 
 parser.add_argument("-v", "--verbose", dest="verbose", required=False, action="store_false",
 					help="If selected, will not print information to the console.")
