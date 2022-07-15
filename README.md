@@ -46,6 +46,8 @@ For example how to create a constraint tree from a fasta file and a newick tree 
 **checkConstrainTaxa.sh**: Checks each file from the previous directory, and exports a sumarised output. Be aware this script is highly dependent on the structure of your fasta sequence names...  
 **buildConstrainTree.sh**: Takes the original tree and the created directory with the sequence names to create the constraint tree to be used for phylogenetic analysis, with each group composed of a polytomy of all the sequences found in the fasta file.  
   
+----  
+  
 Further details in the help of each script (```script -h```).
 
 Please feel free to report bugs or suggestions. I'm creating these scripts as I need them, so they might also be targeted to my particular needs.  
