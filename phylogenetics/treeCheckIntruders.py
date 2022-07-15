@@ -4,7 +4,7 @@ import argparse
 from Bio import Phylo
 import re
 
-parser = argparse.ArgumentParser(description="Given an attribute list of the tree tips, will search for conflicting nodes and print a list of potential intruders. Usefull for very large trees (>1000 tips). USE WITH CAUTION!!")
+parser = argparse.ArgumentParser(description="Given an attribute list of the tree tips, will search for conflicting nodes and print a list of potential intruders. Useful for very large trees (>1000 tips). USE WITH CAUTION!!")
 
 # Add the arguments to the parser
 requiredArgs = parser.add_argument_group('required arguments')
@@ -31,7 +31,7 @@ parser.add_argument("-p", "--prune", dest="prune", required=False, action="store
 					help="If selected, will prune the tree from the selected intruder tips to the selected output name replacing or adding 'Pruned.tre' extension in newick format.")
 
 parser.add_argument("-n", "--none", dest="none", required=False, action="store_false",
-					help="If selected, will not ignore tips without an attribute.")
+					help="If selected, will not ignore tips without an attribute. However if a clade is composed of intruders AND tips without an attribute, the whole clade will be considered an intruder.")
 
 parser.add_argument("-v", "--verbose", dest="verbose", required=False, action="store_false",
 					help="If selected, will not print information to the console.")
@@ -83,6 +83,7 @@ if args.attribute == 'supergroup' or args.attribute == 'supergroups':
 		  "Telonemia":          "Telonemia",
 		  "Rhizaria":           "Rhizaria",
 		  "Stramenopiles":      "Stramenopiles",
+		  "Colponemida":        "Alveolata",
 		  "Alveolata":          "Alveolata"}
 else:
 	attribute = {}
@@ -167,12 +168,37 @@ for clade in T.get_nonterminals():
 		if len(attrCountClade) > 0:
 			prev = max(attrCountClade, key=attrCountClade.get)
 
+# Check if there are monophyletic clades with only intruders and tips with no attribute
+if args.verbose:
+	print("  Identifying intruders without an attribute")
+intrudersNone = set()
+for clade in T.get_nonterminals():
+	tmpIntr = 0
+	tmpNone = 0
+	tmp = set()
+	unique = set()
+	for tip in clade.get_terminals():
+		if tip.name in intruders:
+			tmpIntr += 1
+		if tip.comment is None:
+			tmpNone += 1
+	if (tmpIntr + tmpNone) == clade.count_terminals() and tmpIntr != 0:
+		for tip in clade.get_terminals():
+			if tip.comment is None:
+				intrudersNone.add(tip.name)
+
+if len(intrudersNone) > 0:
+	for i in intrudersNone:
+		intruders.add(i)
+
 # Exporting list of intruders ----------------------------------------------------------------------
 if args.verbose:
 	tips = T.count_terminals()
 	tipsi = len(intruders)
 	print("  From the total", tips, "tips and the given attributes:")
 	print("    ", tipsi, " (", round(tipsi / tips * 100, 2), "%) tips were identified as intruders", sep="")
+	if len(intrudersNone) > 0:
+		print("    of which", len(intrudersNone), "had no attribute but are closely related to intruders")
 	print("  Writing list of intruders to", out)
 	if tipsi / tips * 100 > args.minimum:
 		print("\n    Warning!\n    The proportion of intruders is too high!\n    Please check carefully the attributes file")
