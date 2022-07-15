@@ -6,7 +6,7 @@ Download and move the scripts to you prefered folder (e.g.;```/usr/lobal/bin/```
   
 ## A brief description of most useful scripts
   
-### For fasta files manipulations ([random/fasta](https://github.com/MiguelMSandin/random/tree/main/fasta))  :  
+### For fasta files manipulations ([fasta](https://github.com/MiguelMSandin/random/tree/main/fasta))  :  
   
 **alignmentConsensus.py**: Creates a consensus of an aligned fasta file.  
 **alignmentEntropy.py**: Exports a table with the entropy and other values for every position of an aligned fasta file.  
@@ -18,7 +18,7 @@ Download and move the scripts to you prefered folder (e.g.;```/usr/lobal/bin/```
 **multi2line**: Same script as *multi2linefasta.py* but written in bash.  
 **sequenceSelect.py**: From a fasta file, selects sequences from a given list or pattern and removes them or extracts them.  
   
-### For phylogenetic tree manipulations ([random/phylogenetics](https://github.com/MiguelMSandin/random/tree/main/phylogenetics)):  
+### For phylogenetic tree manipulations ([phylogenetics](https://github.com/MiguelMSandin/random/tree/main/phylogenetics)):  
   
 **fastaReorder.py**: Orders the sequences of a fasta file by border of appearance in an phylogenetic tree.  
 **findSeqs.py**: From a phylogenetic tree and a fasta file, finds sequences that do not appear in either file.  
@@ -35,13 +35,13 @@ Download and move the scripts to you prefered folder (e.g.;```/usr/lobal/bin/```
 **treeTipRename.py**: Given a table, changes the tree tip names to the desire output.  
 
 #### Other fancy tools:  
-How to cut, trim and concatenate a fasta file composed of two genes [random/wrappers](https://github.com/MiguelMSandin/random/tree/main/wrappers):  
+How to cut, trim and concatenate a fasta file composed of two genes [wrappers](https://github.com/MiguelMSandin/random/tree/main/wrappers):  
 **trimTwoGenes.sh**  
   
-Remove reciprocal and identical hits from a table ([random/others](https://github.com/MiguelMSandin/random/blob/main/others/listRemoveReciprocals.py)):  
+Remove reciprocal and identical hits from a table ([others](https://github.com/MiguelMSandin/random/blob/main/others/listRemoveReciprocals.py)):  
 **listRemoveReciprocals.py**  
   
-For example how to create a constraint tree from a fasta file and a newick tree file containing the name of the groups ([random/phylogenetics](https://github.com/MiguelMSandin/random/tree/main/phylogenetics)):  
+For example how to create a constraint tree from a fasta file and a newick tree file containing the name of the groups ([phylogenetics](https://github.com/MiguelMSandin/random/tree/main/phylogenetics)):  
 **checkConstrainTree.py**: From a fasta file and a newick tree file, checks if every tree tip finds its sequences in the fasta file, and exports to a directory the list of sequence names found in the fasta file for every tree tip.  
 **checkConstrainTaxa.sh**: Checks each file from the previous directory, and exports a sumarised output. Be aware this script is highly dependent on the structure of your fasta sequence names...  
 **buildConstrainTree.sh**: Takes the original tree and the created directory with the sequence names to create the constraint tree to be used for phylogenetic analysis, with each group composed of a polytomy of all the sequences found in the fasta file.  
