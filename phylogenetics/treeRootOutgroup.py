@@ -26,6 +26,9 @@ parser.add_argument("-p", "--pattern", dest="pattern", required=False, nargs='+'
 parser.add_argument("-i", "--ignore", dest="ignore", required=False, action="store_true",
 					help="If selected, will ignore the given tip names not present in the tree and only used those found.")
 
+parser.add_argument("-s", "--sort", dest="sort", required=False, action="store_false",
+					help="If selected, will not sort the tree branches according to the number of tips.")
+
 parser.add_argument("-v", "--verbose", dest="verbose", required=False, action="store_false",
 					help="If selected, will not print information to the console.")
 
@@ -73,7 +76,6 @@ if args.ignore:
 	if args.verbose:
 		print("  In total", count, "tips were not found in the tree and therefore ignored")
 
-
 # Rooting ------------------------------------------------------------------------------------------
 if args.verbose:
 	print("  Rooting tree", end="")
@@ -81,6 +83,12 @@ ancestor = T.get_common_ancestor(tips)
 if args.verbose:
 	print("\r  Rooting tree with a total of", len(ancestor), "tips")
 T.set_outgroup(ancestor)
+
+# Sorting ------------------------------------------------------------------------------------------
+if args.sort:
+	if args.verbose:
+		print("  Sorting")
+	T.ladderize()
 
 # Writing file -------------------------------------------------------------------------------------
 if args.verbose:
