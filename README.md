@@ -20,27 +20,22 @@ Download and move the scripts to you prefered folder (e.g.;```/usr/lobal/bin/```
   
 ### For phylogenetic tree manipulations  
   
-**fastaReorder.py**:
-**findSeqs.py**:
-**newick2nexus.py**:
-**treeAnnotationRemove.py**:
-**treeAnnotationTransfer.py**:
-**treeCheckIntruders.py**:
-**treeColourBranches.py**:
-**treeCountTips.py**:
-**treeLTT.py**:
-**treeNodeNamesTransfer.py**:
-**treePruneList.py**:
-**treePruneOutliers.py**:
-**treeRarefy.py**:
-**treeRemoveBranchLengths.py**:
-**treeRootOutgroup.py**:
-**treeRoot.py**:
-**treeStats.py**:
-**treeTipExtract.py**:
-**treeTipRename.py**:
+**fastaReorder.py**: Orders the sequences of a fasta file by border of appearance in an phylogenetic tree.  
+**findSeqs.py**: From a phylogenetic tree and a fasta file, finds sequences that do not appear in either file.  
+**treeCheckIntruders.py**: From a phylogenetic tree and an attribute file, find sequences resolved within other attribute. Useful to identify badly placed sequences, long branch attraction artifacts and so on.  
+**treeColourBranches.py**:  
+**treeCountTips.py**:  
+**treePruneList.py**:  
+**treePruneOutliers.py**:  
+**treeRemoveBranchLengths.py**:  
+**treeRoot.py**:  
+**treeRootOutgroup.py**:  
+**treeStats.py**:  
+**treeTipExtract.py**:  
+**treeTipRename.py**:  
 
-#### In combination:
+#### More fancy tools:  
+For example how to create a constraint tree from a fasta file and a summarized newick tree file:  
 **checkConstrainTree.py**:
 **checkConstrainTaxa.sh**:
 **buildConstrainTree.sh**: 
