@@ -35,7 +35,7 @@ Download and move the scripts to you prefered folder (e.g.;```/usr/lobal/bin/```
 **[treeTipRename.py](https://github.com/MiguelMSandin/random/blob/main/phylogenetics/treeTipRename.py)**: Given a table, changes the tree tip names to the desire output.  
 
 #### Other fancy tools:  
-How to cut, trim and concatenate a fasta file composed of two genes [/wrappers](https://github.com/MiguelMSandin/random/tree/main/wrappers):  
+How to cut, trim and concatenate a fasta file composed of two genes ([/wrappers](https://github.com/MiguelMSandin/random/tree/main/wrappers)):  
 **[trimTwoGenes.sh](https://github.com/MiguelMSandin/random/blob/main/wrappers/trimTwoGenes.sh)**  
   
 Remove reciprocal and identical hits from a pairwise comparison table ([/others](https://github.com/MiguelMSandin/random/blob/main/others/listRemoveReciprocals.py)):  
