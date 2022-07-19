@@ -44,6 +44,14 @@ if args.verbose:
 	print("  Reading files")
 T = Phylo.read(args.tree, args.formaTree)
 
+dists = set()
+for t in T.get_terminals():
+	d = T.distance(t)
+	d = round(d, 4)
+	dists.add(d)
+if len(dists) != 0:
+	print("  Warning! The tree is not ultrametric...")
+
 # Extracting node ages -----------------------------------------------------------------------------
 if args.verbose:
 	print("  Extracting node ages")
@@ -169,5 +177,6 @@ with open(out, "w") as outfile:
 			n += 1
 			ln = math.log(n, e)
 			print(str(key) + "\t0\t" + str(n) + "\t" + str(ln), file=outfile)
+
 if args.verbose:
 	print("Done")
