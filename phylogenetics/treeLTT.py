@@ -2,7 +2,6 @@
 
 import argparse
 from Bio import Phylo
-import statistics
 import math
 import re
 
@@ -27,7 +26,7 @@ parser.add_argument("-d", "--hpd", dest="hpd", required=False, action="store_tru
 					help="If selected, will also append to the table the Highest Posterior Density probability for every time point.")
 
 parser.add_argument("-u", "--ultrametric", dest="ultrametric", required=False, action="store_false",
-					help="If selected, will not take the average of all distances from clade to tip but return an error if these are different.")
+					help="If selected, will not take the maximum of all distances from clade to tip but return an error if these are different.")
 
 parser.add_argument("-v", "--verbose", dest="verbose", required=False, action="store_false",
 					help="If selected, will not print information to the console.")
@@ -62,11 +61,7 @@ for clade in T.get_nonterminals():
 		import sys
 		print("  Error: Different distances from node to tips. Please check your tree is ultrametric.")
 		sys.exit(1)
-	elif args.ultrametric:
-		height = statistics.mean(height)
-	else:
-		height = next(iter(height))
-	height = round(height, 6)
+	height = max(height)
 	if args.hpd:
 		tmp = clade.comment
 		tmp = re.sub(".*HPD=", "", tmp)
@@ -101,8 +96,7 @@ if args.subtrees:
 						dist = subclade.distance(subclade, tip)
 						dist = round(dist, 6)
 						height.add(dist)
-					height = statistics.mean(height)
-					height = round(height, 6)
+					height = max(height)
 					if args.hpd:
 						tmp = subclade.comment
 						tmp = re.sub(".*HPD=", "", tmp)
