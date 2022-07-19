@@ -126,6 +126,9 @@ with open(out, "w") as outfile:
 			n += 1
 			ln = math.log(n, e)
 			print(str(h) + "\t" + str(n) + "\t" + str(ln) + "\t" + str(heights[h][0]) + "\t" + str(heights[h][1]), file=outfile)
+		n += 1
+		ln = math.log(n, e)
+		print("0\t" + str(n) + "\t" + str(ln) + "\t0\t0", file=outfile)
 	if not args.subtrees and not args.hpd:
 		print("time\tlineages\tlnLineages", file=outfile)
 		n = 0
@@ -133,6 +136,9 @@ with open(out, "w") as outfile:
 			n += 1
 			ln = math.log(n, e)
 			print(str(h) + "\t" + str(n) + "\t" + str(ln), file=outfile)
+		n += 1
+		ln = math.log(n, e)
+		print("0\t" + str(n) + "\t" + str(ln), file=outfile)
 	if args.subtrees and args.hpd:
 		print("tree\ttime\tlineages\tlnLineages\thpd05\thpd95", file=outfile)
 		n = 0
@@ -140,6 +146,9 @@ with open(out, "w") as outfile:
 			n += 1
 			ln = math.log(n, e)
 			print("main\t" + str(h) + "\t" + str(n) + "\t" + str(ln) + "\t" + str(heights[h][0]) + "\t" + str(heights[h][1]), file=outfile)
+		n += 1
+		ln = math.log(n, e)
+		print("main\t0\t" + str(n) + "\t" + str(ln) + "\t0\t0", file=outfile)
 		for key, dicts in subtrees.items():
 			n = 0
 			for h in sorted(list(dicts.keys()), reverse=True):
@@ -147,6 +156,9 @@ with open(out, "w") as outfile:
 				ln = math.log(n, e)
 				value = subtrees[key][h]
 				print(str(key) + "\t" + str(h) + "\t" + str(n) + "\t" + str(ln) + "\t" + str(value[0]) + "\t" + str(value[1]), file=outfile)
+			n += 1
+			ln = math.log(n, e)
+			print(str(key) + "\t0\t" + str(n) + "\t" + str(ln) + "\t0\t0", file=outfile)
 	if args.subtrees and not args.hpd:
 		print("tree\ttime\tlineages\tlnLineages", file=outfile)
 		n = 0
@@ -160,6 +172,8 @@ with open(out, "w") as outfile:
 				n += 1
 				ln = math.log(n, e)
 				print(str(key) + "\t" + str(h) + "\t" + str(n) + "\t" + str(ln), file=outfile)
-
+			n += 1
+			ln = math.log(n, e)
+			print(str(key) + "\t0\t" + str(n) + "\t" + str(ln), file=outfile)
 if args.verbose:
 	print("Done")
