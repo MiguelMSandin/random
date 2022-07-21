@@ -3,7 +3,7 @@
 import argparse
 from Bio import Phylo
 
-parser = argparse.ArgumentParser(description="Given a tree or a list of tree names in newick format, exports tips present in all tree or those not present in all trees.")
+parser = argparse.ArgumentParser(description="Given a list of tree names in newick format, exports tips present in all tree or those not present in all trees.")
 
 # Add the arguments to the parser
 requiredArgs = parser.add_argument_group('required arguments')
@@ -27,8 +27,7 @@ args = parser.parse_args()
 if args.verbose:
 	print("  Reading trees")
 tips = {}
-#for tree in args.tree:
-for tree in ["step2_RAcat_iqtreef_GTRg_rep1.tre", "step2_RAcat_iqtreef_GTRg_rep1_pruned-gesd_rooted_intrudersPruned.tre"]:
+for tree in args.tree:
 	T = Phylo.read(tree, "newick")
 	for t in T.get_terminals():
 		name = t.name
