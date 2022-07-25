@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
-from Bio import SeqIO, Phylo
+from Bio import Phylo
 
 parser = argparse.ArgumentParser(description="Prunes a tree from tips present in a list.")
 
@@ -23,7 +23,7 @@ parser.add_argument("-f", "--format", dest="formaTree", required=False, default=
 parser.add_argument("-F", "--formatOut", dest="formatOut", required=False,
 					help="The format of the output file: accepted formats are: newick, nexus, nexml, phyloxml or cdao. Default: will take input format.")
 
-parser.add_argument("-v", "--verbose", dest="verbose", required=False, action="store_true",
+parser.add_argument("-v", "--verbose", dest="verbose", required=False, action="store_false",
 					help="If selected, will not print information to the console.")
 
 args = parser.parse_args()
@@ -41,27 +41,35 @@ else:
 	formatOut = args.formatOut
 	
 # Reading files ------------------------------------------------------------------------------------
-if not args.verbose:
+if args.verbose:
 	print("  Reading files")
 
 T = Phylo.read(args.tree, args.formaTree)
 tips_in = T.count_terminals()
 
 tips = [line.strip() for line in open(args.list)]
-tips_list = len(tips)
+tipsc = len(tips)
 
 # Prunning -----------------------------------------------------------------------------------------
-if not args.verbose:
-	print("  Prunning")
+if args.verbose:
+	print("  Prunning", end="")
+i = 0
+pl = 0
 for tip in tips:
+	if args.verbose:
+		i += 1
+		p = round(i/tipsc*100)
+		if p > pl:
+			pl = p
+			print("\r  Pruning ", p, "%",sep="", end="")
 	T.prune(tip)
 
 tips_out = T.count_terminals()
 
-if not args.verbose:
-	print("    Tips in: ", tips_in)
+if args.verbose:
+	print("\n    Tips in: ", tips_in)
 	print("    Tips out:", tips_out)
-	print("    In total '", tips_list, "' tips were removed", sep="")
+	print("    In total ", tipsc, " tips were removed", sep="")
 	print("  Writting file to: ", out)
 
 # Writing file -------------------------------------------------------------------------------------
