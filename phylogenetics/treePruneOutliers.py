@@ -285,7 +285,7 @@ for tip in toPrune:
 		p = round(i/len(toPrune)*100)
 		if p > pl:
 			pl = p
-			print("\r  Pruning ", p, "%",sep="", end="")
+			print("\r    Pruning ", p, "%",sep="", end="")
 	T.prune(tip)
 if args.verbose:
 	print("")
