@@ -4,7 +4,6 @@ import argparse
 from Bio import SeqIO, Phylo
 import statistics
 import numpy as np
-import sys
 import re
 
 parser = argparse.ArgumentParser(description="Prunes a tree of tips which their branch length are identified as outliers by either the Z-scores, the interquartile range or the generalized extreme studentized deviate method.",
@@ -278,8 +277,18 @@ if args.internal:
 else:
 	if args.verbose:
 		print("  Prunning a total of", len(toPrune), "tips...")
+i = 0
+pl = 0
 for tip in toPrune:
+	if args.verbose:
+		i += 1
+		p = round(i/len(toPrune)*100)
+		if p > pl:
+			pl = p
+			print("\r  Pruning ", p, "%",sep="", end="")
 	T.prune(tip)
+if args.verbose:
+	print("")
 
 # Writing files ------------------------------------------------------------------------------------
 if outFile == "false":
