@@ -30,6 +30,9 @@ parser.add_argument("-f", "--format", dest="formaTree", required=False, default=
 parser.add_argument("-c", "--colour", dest="colour", required=False, action="store_true",
 					help="If selected, will NOT export a coloured tree with the tips identified as intruders in orange and the correct ones in blue to the selected output name replacing or adding '_intruders.tre' extension in nexus format")
 
+parser.add_argument("--collapse", dest="collapse", required=False, action="store_true",
+					help="If selected, will collapse the nodes identified as correct. Only useful if the option -c/--colour is set.")
+
 parser.add_argument("-p", "--prune", dest="prune", required=False, action="store_true",
 					help="If selected, will prune the tree from the selected intruder tips to the selected output name replacing or adding 'Pruned.tre' extension in newick format.")
 
@@ -255,23 +258,26 @@ if args.colour:
 		for tip in clade.get_terminals():
 			unique.add(tip.comment)
 		if len(unique) == 1:
-			comment = next(iter(unique))
-			if comment == "[&!color=#648FFF]":
-				if lca:
-					maxDist = 0
-					for tip in clade.get_terminals():
-						dist = clade.distance(tip)
-						if dist > maxDist:
-							maxDist = dist
-					clade.comment = str('[&!color=#648FFF,!collapse={"collapsed",' + str(maxDist) + "}]")
-					lca = False
-				elif branches < branchesPast:
-					clade.comment = str('[&!color=#648FFF,!collapse={"collapsed",' + str(maxDist) + "}]")
-				else:
-					clade.comment = str("[&!color=#648FFF]")
-			if comment == "[&!color=#FFB000]":
-				clade.comment = str("[&!color=#FFB000]")
-				lca = True
+			if args.collapse:
+				comment = next(iter(unique))
+				if comment == "[&!color=#648FFF]":
+					if lca:
+						maxDist = 0
+						for tip in clade.get_terminals():
+							dist = clade.distance(tip)
+							if dist > maxDist:
+								maxDist = dist
+						clade.comment = str('[&!color=#648FFF,!collapse={"collapsed",' + str(maxDist) + "}]")
+						lca = False
+					elif branches < branchesPast:
+						clade.comment = str('[&!color=#648FFF,!collapse={"collapsed",' + str(maxDist) + "}]")
+					else:
+						clade.comment = str("[&!color=#648FFF]")
+				if comment == "[&!color=#FFB000]":
+					clade.comment = str("[&!color=#FFB000]")
+					lca = True
+			else:
+				clade.comment = next(iter(unique))
 		else:
 			lca = True
 		branchesPast = branches
