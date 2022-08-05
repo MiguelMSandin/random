@@ -4,7 +4,7 @@ import argparse
 from Bio import Phylo
 import re
 
-parser = argparse.ArgumentParser(description="Given an attribute list of the tree tips, will search for conflicting nodes and print a list of potential intruders. Useful for very large trees (>1000 tips). USE WITH CAUTION!!")
+parser = argparse.ArgumentParser(description="Given an attribute list of the tree tips, will search for conflicting nodes and print a list of potential intruders. Useful for very large trees (>10000 tips). USE WITH CAUTION!!")
 
 # Add the arguments to the parser
 requiredArgs = parser.add_argument_group('required arguments')
@@ -18,14 +18,17 @@ requiredArgs.add_argument("-a", "--attribute", dest="attribute", required=True,
 parser.add_argument("-o", "--output", dest="out", required=False, action="store",
 					help="The output file containing the tip names of potential intruders. If not selected, will add '_intruders.list' to the input tree file.")
 
+parser.add_argument("-e", "--exclude", dest="exclude", required=False, action="store", default=None,
+					help="A list of tip names that are not intruders. Each tip name in one line. Normally this is given in a second search, after manually inspecting the coloured tree for potential miss-identifications.")
+
 parser.add_argument("-m", "--min", dest="minimum", required=False, type=int, default=10,
 					help="The minimum threshold to be considered an intruder (in percentage: 0-100). If a monophyletic group contains less than 'm' percent of the total tips for a given group, it could be considered an intruder. Default = 10")
 
 parser.add_argument("-f", "--format", dest="formaTree", required=False, default='newick',
 					help="The tree file format: accepted formats are: newick (default), nexus, nexml, phyloxml or cdao.")
 
-parser.add_argument("-i", "--intruders", dest="intruders", required=False, action="store_true",
-					help="If selected, will colour in orange the tips identified as intruders and blue the correct ones to the selected output name replacing or adding '_intruders.tre' extension in nexus format")
+parser.add_argument("-c", "--colour", dest="colour", required=False, action="store_true",
+					help="If selected, will NOT export a coloured tree with the tips identified as intruders in orange and the correct ones in blue to the selected output name replacing or adding '_intruders.tre' extension in nexus format")
 
 parser.add_argument("-p", "--prune", dest="prune", required=False, action="store_true",
 					help="If selected, will prune the tree from the selected intruder tips to the selected output name replacing or adding 'Pruned.tre' extension in newick format.")
@@ -44,7 +47,7 @@ if args.out is None:
 else:
 	out = args.out
 
-if args.intruders:
+if args.colour:
 	treeMarked = re.sub("\\.[^\\.]+$", "_intruders.tre", out)
 if args.prune:
 	pruned = re.sub("\\.[^\\.]+$", "Pruned.tre", out)
@@ -62,6 +65,8 @@ if args.attribute == 'supergroup' or args.attribute == 'supergroups':
 		  "Holozoa":            "Holozoa",
 		  "Opisthokonta":       "Holozoa",
 		  "Metazoa":            "Holozoa",
+		  "Breviatea":          "Breviatea",
+		  "Apusomonadida":      "Apusomonadida",
 		  "Metamonada":         "Metamonada",
 		  "CRuMs":              "CRuMs",
 		  "Discoba":            "Discoba",
@@ -90,6 +95,11 @@ else:
 	for line in open(args.attribute):
 		tmp = line.strip().split()
 		attribute[tmp[0]]=tmp[1]
+
+if args.exclude is not None:
+	exclude = set()
+	for line in open(args.exclude):
+		exclude.add(line)
 
 # Assigning ----------------------------------------------------------------------------------------
 if args.verbose:
@@ -160,11 +170,12 @@ for clade in T.get_nonterminals():
 				elif comment in attrCountClade.keys():
 					attrCountClade[comment] += 1
 		for attr, count in attrCountClade.items():
-			test = count / attrCount[attr] * 100
-			if test < args.minimum:
-				for tip in clade.get_terminals():
-					if tip.comment == attr and tip.comment != prev:
-						intruders.add(tip.name)
+			if attr != prev:
+				test = count / attrCount[attr] * 100
+				if test < args.minimum:
+					for tip in clade.get_terminals():
+						if tip.comment == attr:
+							intruders.add(tip.name)
 		if len(attrCountClade) > 0:
 			prev = max(attrCountClade, key=attrCountClade.get)
 
@@ -191,6 +202,16 @@ if len(intrudersNone) > 0:
 	for i in intrudersNone:
 		intruders.add(i)
 
+# Removing miss-identified intruders given in the list ---------------------------------------------
+if args.exclude is not None:
+	e = 0
+	for i in intruders:
+		if i in exclude:
+			e += 1
+			intruders.remove(i)
+	if args.verbose:
+		print("  In total", e, "tips were removed from the potential intruders")
+
 # Exporting list of intruders ----------------------------------------------------------------------
 if args.verbose:
 	tips = T.count_terminals()
@@ -209,9 +230,9 @@ with open(out, "w") as outlist:
 		print(tip, file=outlist)
 
 # Colouring intruders ------------------------------------------------------------------------------
-if args.intruders:
+if args.colour:
 	if args.verbose:
-		print("  Colouring and exporting input tree with highlighted intruders to", pruned)
+		print("  Colouring input tree with highlighted intruders")
 	import subprocess
 	treeMarked = re.sub("\\.[^\\.]+$", ".tre", out)
 	if args.verbose:
@@ -223,16 +244,39 @@ if args.intruders:
 		else:
 			clade.comment = str("[&!color=#648FFF]")
 	if args.verbose:
-		print("    Colouring internal nodes")
+		print("    Colouring internal nodes, this might take a while...")
+	lca = True
+	branchesPast = 1
+	depths = T.depths(unit_branch_lengths=True)
 	for clade in T.get_nonterminals():
 		clade.comment = None
+		branches = depths[clade]
 		unique = set()
 		for tip in clade.get_terminals():
 			unique.add(tip.comment)
 		if len(unique) == 1:
-			clade.comment = next(iter(unique))
+			comment = next(iter(unique))
+			if comment == "[&!color=#648FFF]":
+				if lca:
+					maxDist = 0
+					for tip in clade.get_terminals():
+						dist = clade.distance(tip)
+						if dist > maxDist:
+							maxDist = dist
+					clade.comment = str('[&!color=#648FFF,!collapse={"collapsed",' + str(maxDist) + "}]")
+					lca = False
+				elif branches < branchesPast:
+					clade.comment = str('[&!color=#648FFF,!collapse={"collapsed",' + str(maxDist) + "}]")
+				else:
+					clade.comment = str("[&!color=#648FFF]")
+			if comment == "[&!color=#FFB000]":
+				clade.comment = str("[&!color=#FFB000]")
+				lca = True
+		else:
+			lca = True
+		branchesPast = branches
 	if args.verbose:
-		print("    Exporting")
+		print("    Writing coloured tree to", treeMarked)
 	Phylo.write(T, treeMarked, "nexus")
 	subprocess.call(["sed", "-i", "-e",  's/\\\]//g', treeMarked])
 	subprocess.call(["sed", "-i", "-e",  's/\\[\\\//g', treeMarked])
@@ -241,10 +285,19 @@ if args.intruders:
 if args.prune:
 	if args.verbose:
 		print("  Pruning")
+		i = 0
+		pl = 0
 	for tip in intruders:
+		if args.verbose:
+			i += 1
+			p = round(i/len(intruders)*100)
+			if p > pl:
+				pl = p
+				print("\r  Pruning ", p, "%",sep="", end="")
 		T.prune(tip)
 	if args.verbose:
-		print("    Writing pruned tree to", pruned)
+		print("\n    Writing pruned tree to", pruned)
+		print("\n      Please, use this tree with caution!!")
 	for clade in T.get_terminals():
 		clade.comment = None
 	for clade in T.get_nonterminals():
