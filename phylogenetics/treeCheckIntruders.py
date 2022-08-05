@@ -263,7 +263,7 @@ if args.colour:
 				if comment == "[&!color=#648FFF]":
 					maxDist = list()
 					for tip in clade.get_terminals():
-						maxDist.append(T.distance(tip))
+						maxDist.append(clade.distance(tip))
 					maxDist = max(maxDist)
 					if lca:
 						clade.comment = str('[&!color=#648FFF,!collapse={"collapsed",' + str(maxDist) + "}]")
