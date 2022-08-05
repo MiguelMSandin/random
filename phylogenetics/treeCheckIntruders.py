@@ -261,15 +261,14 @@ if args.colour:
 			if args.collapse:
 				comment = next(iter(unique))
 				if comment == "[&!color=#648FFF]":
-					maxDist = list()
-					for tip in clade.get_terminals():
-						maxDist.append(clade.distance(tip))
-					maxDist = max(maxDist)
-					if lca:
+					if lca or branches < branchesPast:
+						maxDist = 0
+						for tip in clade.get_terminals():
+							dist = clade.distance(tip)
+							if dist > maxDist:
+								maxDist = dist
 						clade.comment = str('[&!color=#648FFF,!collapse={"collapsed",' + str(maxDist) + "}]")
 						lca = False
-					elif branches < branchesPast:
-						clade.comment = str('[&!color=#648FFF,!collapse={"collapsed",' + str(maxDist) + "}]")
 					else:
 						clade.comment = str("[&!color=#648FFF]")
 				if comment == "[&!color=#FFB000]":
