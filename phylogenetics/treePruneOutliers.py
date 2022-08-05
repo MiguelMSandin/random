@@ -270,7 +270,7 @@ if args.method == "gesd":
 # Pruning ------------------------------------------------------------------------------------------
 if args.internal:
 	if args.verbose:
-		print("  Prunning a total of", len(toPrune+internals), "tips...")
+		print("  Prunning a total of", len(set(toPrune+internals)), "tips...")
 		print("    Of which", len(toPrune), "are terminal and", len(internals), "are from", branches, "long internal branches")
 		
 	toPrune = list(set(toPrune+internals))
