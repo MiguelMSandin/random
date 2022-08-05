@@ -50,6 +50,12 @@ tips_in = T.count_terminals()
 tips = [line.strip() for line in open(args.list)]
 tipsc = len(tips)
 
+# Checking for duplicates in the list --------------------------------------------------------------
+if tipsc != len(set(tips)):
+	print("  Warning!", tipsc - len(set(tips)), "tip names were duplicated and therefore ignored")
+	tips = set(tips)
+	tipsc = len(tips)
+
 # Prunning -----------------------------------------------------------------------------------------
 if args.verbose:
 	print("  Prunning", end="")
