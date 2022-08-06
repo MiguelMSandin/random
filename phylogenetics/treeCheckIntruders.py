@@ -152,10 +152,19 @@ for clade in T.get_nonterminals():
 
 # Identifying intruders ----------------------------------------------------------------------------
 if args.verbose:
-	print("  Identifying intruders")
+	print("  Identifying intruders", end="")
+	nnodes = len(T.get_nonterminals())
+	i = 0
+	pl = 0
 intruders = set()
 prev = None
 for clade in T.get_nonterminals():
+	if args.verbose:
+		i += 1
+		p = round(i/nnodes*100)
+		if p > pl:
+			pl = p
+			print("\r  Identifying intruders ", p, "%",sep="", end="")
 	if clade.comment is None:
 		attrCountClade = {}
 		for tip in clade.get_terminals():
@@ -184,9 +193,17 @@ for clade in T.get_nonterminals():
 
 # Check if there are monophyletic clades with only intruders and tips with no attribute
 if args.verbose:
-	print("  Identifying intruders without an attribute")
+	print("\n  Identifying intruders without an attribute", end="")
+	i = 0
+	pl = 0
 intrudersNone = set()
 for clade in T.get_nonterminals():
+	if args.verbose:
+		i += 1
+		p = round(i/nnodes*100)
+		if p > pl:
+			pl = p
+			print("\r  Identifying intruders without an attribute ", p, "%",sep="", end="")
 	tmpIntr = 0
 	tmpNone = 0
 	tmp = set()
@@ -200,6 +217,7 @@ for clade in T.get_nonterminals():
 		for tip in clade.get_terminals():
 			if tip.comment is None:
 				intrudersNone.add(tip.name)
+print("")
 
 if len(intrudersNone) > 0:
 	for i in intrudersNone:
@@ -247,11 +265,20 @@ if args.colour:
 		else:
 			clade.comment = str("[&!color=#648FFF]")
 	if args.verbose:
-		print("    Colouring internal nodes, this might take a while...")
+		print("    Colouring internal nodes, this might take a while...", end="")
+		i = 0
+		pl = 0
 	lca = True
 	branchesPast = 1
+	branchNew = False
 	depths = T.depths(unit_branch_lengths=True)
 	for clade in T.get_nonterminals():
+		if args.verbose:
+			i += 1
+			p = round(i/nnodes*100)
+			if p > pl:
+				pl = p
+				print("\r    Colouring internal nodes, this might take a while... ", p, "%",sep="", end="")
 		clade.comment = None
 		branches = depths[clade]
 		unique = set()
@@ -261,7 +288,7 @@ if args.colour:
 			if args.collapse:
 				comment = next(iter(unique))
 				if comment == "[&!color=#648FFF]":
-					if lca or branches < branchesPast:
+					if lca:
 						maxDist = 0
 						for tip in clade.get_terminals():
 							dist = clade.distance(tip)
@@ -269,6 +296,15 @@ if args.colour:
 								maxDist = dist
 						clade.comment = str('[&!color=#648FFF,!collapse={"collapsed",' + str(maxDist) + "}]")
 						lca = False
+						branchNew = True
+					elif branches < branchesPast and branchNew:
+						maxDist = 0
+						for tip in clade.get_terminals():
+							dist = clade.distance(tip)
+							if dist > maxDist:
+								maxDist = dist
+						clade.comment = str('[&!color=#648FFF,!collapse={"collapsed",' + str(maxDist) + "}]")
+						branchNew = False
 					else:
 						clade.comment = str("[&!color=#648FFF]")
 				if comment == "[&!color=#FFB000]":
@@ -280,7 +316,7 @@ if args.colour:
 			lca = True
 		branchesPast = branches
 	if args.verbose:
-		print("    Writing coloured tree to", treeMarked)
+		print("\n    Writing coloured tree to", treeMarked)
 	Phylo.write(T, treeMarked, "nexus")
 	subprocess.call(["sed", "-i", "-e",  's/\\\]//g', treeMarked])
 	subprocess.call(["sed", "-i", "-e",  's/\\[\\\//g', treeMarked])
@@ -310,3 +346,4 @@ if args.prune:
 
 if args.verbose:
 	print("Done")
+
