@@ -30,7 +30,7 @@ parser.add_argument("-i", "--internal", dest="internal", required=False, action=
 					help="If selected, will not colour internal branches.")
 
 parser.add_argument("-n", "--none", dest="none", required=False, action="store_false",
-					help="If selected, will not ignore tips without a colour. This is useful when colouring internal nodes, so internal branches will not be coloured if one child has no colour.")
+					help="If selected, will not ignore tips without an attribute. This is useful when colouring internal nodes, so internal branches will not be coloured if one child has no attribute.")
 
 parser.add_argument("-v", "--verbose", dest="verbose", required=False, action="store_false",
 					help="If selected, will not print information to the console.")
@@ -51,10 +51,15 @@ T = Phylo.read(args.tree, args.formaTree)
 
 if args.colours == 'eukProt' or args.colours == 'EukProt' or args.colours == 'eukprot':
 	colours={"Amoebozoa":       "#9ecae1",
+		  "Breviatea":          "#6baed6",
+		  "Apusomonadida":      "#6baed6",
 		  "Obazoa":             "#6baed6",
 		  "Nucletmycea":        "#4292c6",
+		  "Rotosphaerida":      "#4292c6",
 		  "Fungi":              "#4292c6",
 		  "Holozoa":            "#2171b5",
+		  "Ichthyosporea":      "#2171b5",
+		  "Choanoflagellata":   "#2171b5",
 		  "Metazoa":            "#2171b5",
 		  "Metamonada":         "#41ab5d",
 		  "CRuMs":              "#8dd3c7",
@@ -68,15 +73,13 @@ if args.colours == 'eukProt' or args.colours == 'EukProt' or args.colours == 'eu
 		  "Katablepharidophyta":"#fa9fb5",
 		  "Haptista":           "#ffffb3",
 		  "Centroheliozoa":     "#ffffb3",
-		  "Haptophyta":         "#ffed6f",
+		  "Haptophyta":         "#ffffb3",
 		  "Archaeplastida":     "#ccebc5",
-		  "Chloroplastida":     "#b3de69",
-		  "Chlorophyta":        "#b3de69",
-		  "Streptophyta":       "#b3de69",
 		  "Picozoa":            "#ccebc5",
 		  "Telonemia":          "#bcbddc",
 		  "Rhizaria":           "#9e9ac8",
 		  "Stramenopiles":      "#807dba",
+		  "Colponemida":        "#6a51a3",
 		  "Alveolata":          "#6a51a3"}
 else:
 	colours = {}
