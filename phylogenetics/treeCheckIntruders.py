@@ -59,7 +59,6 @@ T = Phylo.read(args.tree, args.formaTree)
 
 if args.attribute == 'supergroup' or args.attribute == 'supergroups':
 	attribute={"Amoebozoa":     "Amoebozoa",
-		  "Obazoa":             "Obazoa",
 		  "Nucletmycea":        "Nucletmycea",
 		  "Rotosphaerida":      "Nucletmycea",
 		  "Fungi":              "Nucletmycea",

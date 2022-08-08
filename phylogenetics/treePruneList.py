@@ -81,5 +81,5 @@ if args.verbose:
 # Writing file -------------------------------------------------------------------------------------
 Phylo.write(T, out, formatOut)
 
-if not args.verbose:
+if args.verbose:
 	print("Done")
