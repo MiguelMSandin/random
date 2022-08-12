@@ -70,14 +70,12 @@ with open(outFile, "a") as outfile:
 					seq_out += 1
 
 if args.verbose:
-	print("")
 	if args.listSeq is not None:
 		missing = set()
 		for l in listSeq:
 			if l not in seqsid:
 				missing.add(l)
 		if len(missing) > 0:
-			print("  The following sequences from the list are not found in the input fasta file:\n")
-			print("\n ".join(missing))
+			print("  The following sequences from the list are not found in the input fasta file:\n", "\n ".join(missing))
 	print("  Sequences in: ", seq_in)
 	print("  Sequences out:", seq_out)
