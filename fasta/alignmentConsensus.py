@@ -9,9 +9,7 @@ import pandas as pd
 parser = argparse.ArgumentParser(description="Builds the consensus sequence of an alignment.")
 
 # Add the arguments to the parser
-requiredArgs = parser.add_argument_group('required arguments')
-
-requiredArgs.add_argument("-f", "--file", dest="inFile", required=True,
+parser.add_argument("-f", "--file", dest="inFile", required=True,
                     help="An aligned fasta file.")
 
 parser.add_argument("-o", "--output", dest="outFile", required=False, default=None,
@@ -35,8 +33,8 @@ parser.add_argument("-m", "--most", dest="most", required=False, default=None, a
 parser.add_argument("-r", "--removeGaps", dest="removeGaps", required=False, default=None, action="store_true",
                     help="If selected, gaps in the consensus sequence will be remove.")
 
-parser.add_argument("-v", "--verbose", dest="verbose", required=False, default=None, action="store_true",
-                    help="If selected, will print information in the console.")
+parser.add_argument("-v", "--verbose", dest="verbose", required=False, default=None, action="store_false",
+                    help="If selected, will NOT print information in the console.")
 
 args = parser.parse_args()
 
@@ -56,7 +54,7 @@ if args.verbose:
 	if args.removeGaps is not None:
 		print("    Gaps will be removed in output sequence")
 
-iupac = {"A":"A", "C":"C", "G":"G", "T":"T", "AG":"R", "GA":"R", "CT":"Y", "TC":"Y", "GC":"S", "CG":"S", "AT":"W", "TA":"W", "GT":"K", "TG":"K", "AC":"M", "CA":"M", "CGT":"B", "CTG":"B", "TCG":"B", "GCT":"B", "TGC":"B", "GTC":"B", "AGT":"D", "ATG":"D", "GAT":"D", "TAG":"D", "GTA":"D", "TGA":"D", "ACT":"H", "ATC":"H", "CAT":"H", "TAC":"H", "CTA":"H", "TCA":"H", "ACG":"V", "AGC":"V", "CAG":"V", "GAC":"V", "CGA":"V", "GCA":"V", "ACTG":"N", "ACGT":"N", "ATCG":"N", "AGCT":"N", "ATGC":"N", "AGTC":"N", "CATG":"N", "CAGT":"N", "TACG":"N", "GACT":"N", "TAGC":"N", "GATC":"N", "CTAG":"N", "CGAT":"N", "TCAG":"N", "GCAT":"N", "TGAC":"N", "GTAC":"N", "CTGA":"N", "CGTA":"N", "TCGA":"N", "GCTA":"N", "TGCA":"N", "GTCA":"N"}
+iupac = {"A":"A", "C":"C", "G":"G", "T":"T", "AG":"R", "GA":"R", "CT":"Y", "TC":"Y", "GC":"S", "CG":"S", "AT":"W", "TA":"W", "GT":"K", "TG":"K", "AC":"M", "CA":"M", "CGT":"B", "CTG":"B", "TCG":"B", "GCT":"B", "TGC":"B", "GTC":"B", "AGT":"D", "ATG":"D", "GAT":"D", "TAG":"D", "GTA":"D", "TGA":"D", "ACT":"H", "ATC":"H", "CAT":"H", "TAC":"H", "CTA":"H", "TCA":"H", "ACG":"V", "AGC":"V", "CAG":"V", "GAC":"V", "CGA":"V", "GCA":"V"}
 
 # __________________________________________________________________________________________________
 if args.verbose:
@@ -130,10 +128,7 @@ for position, value in nucleotides.items():
 	
 	# dealing now with the consensus
 	if args.most is not None:
-		baseMost = bases['bases'][bases['percentage']==max(bases['percentage'])]
-		if len(baseMost) != 1:
-			baseMost=iupac[''.join(baseMost)]
-		consensus['most'] = (consensus['most'] + list(baseMost))
+		consensus['most'] = (consensus['most'] + list(bases['bases'][bases['percentage']==max(bases['percentage'])]))
 	if len(bases['bases']) > 1:
 		bases = bases[bases['percentage'] > args.baseThreshold/100]
 		bases['percentage'] = (bases['occurrence']) / sum(bases['occurrence'])
@@ -199,11 +194,12 @@ else:
 
 if args.verbose:
 	print("  Consensus positions:   ", len(sequence)-sequence.count("-"))
-	amb = len(sequence)-len(re.sub("[^ACTG-]", "", sequence))
-	if amb > 0:
-		print("  Of which are ambiguous:", amb)
+	if args.most is None:
+		print("  Of which are ambiguous:", len(sequence)-len(re.sub("[^ACTG-]", "", sequence)))
 	if args.removeGaps is None:
 		print("  Of which are gaps:     ", sequence.count("-"))
 	print("")
-	print("Done")
 
+# __________________________________________________________________________________________________
+if args.verbose:
+	print("Done")
