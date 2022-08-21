@@ -25,9 +25,13 @@ args = parser.parse_args()
 
 # Reading trees ____________________________________________________________________________________
 if args.verbose:
-	print("  Reading trees")
+	print("  Reading trees", end="")
 tips = {}
+i = 0
 for tree in args.tree:
+	i += 1
+	if args.verbose:
+		print("\r  Reading trees ", i, "/", len(args.tree), sep="", end="")
 	T = Phylo.read(tree, "newick")
 	for t in T.get_terminals():
 		name = t.name
@@ -38,7 +42,7 @@ for tree in args.tree:
 
 # Checking tips ____________________________________________________________________________________
 if args.verbose:
-	print("  Checking tips")
+	print("\n  Checking tips")
 trees = len(args.tree)
 out = set()
 for key, value in tips.items():
