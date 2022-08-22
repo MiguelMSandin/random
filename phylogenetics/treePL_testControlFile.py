@@ -37,7 +37,7 @@ args = parser.parse_args()
 
 # Reading files ------------------------------------------------------------------------------------
 if args.verbose:
-	print("  Reading control file")
+	print("  Reading control file:", args.controlFile)
 taxa = {}
 taxaList = list()
 agesMin = {}
@@ -48,7 +48,7 @@ for line in open(args.controlFile):
 			tree = re.sub(".* ", "", line)
 			tree = re.sub("\n", "", tree)
 			if args.verbose:
-				print("    Tree file detected:", tree)
+				print("    Tree file detected")
 	if line.startswith("mrca"):
 		line = line.strip(" ").split()
 		name = str(line[2])
@@ -74,11 +74,13 @@ for key in taxa.keys():
 	else:
 		print("  ", key, "has no calibrations given")
 
-if args.verbose:
-	print("  Reading tree file")
 if args.tree is None:
+	if args.verbose:
+		print("  Reading tree file:", tree)
 	T = Phylo.read(tree, args.formaTree)
 else:
+	if args.verbose:
+		print("  Reading tree file:", args.tree)
 	T = Phylo.read(args.tree, args.formaTree)
 
 if args.out is None:
@@ -89,8 +91,7 @@ if args.out is None:
 else:
 	out = args.export
 
-# Checking nodes -----------------------------------------------------------------------------------
-# Check if all taxa in the control file are found in the tree
+# Check if all taxa in the control file are found in the tree --------------------------------------
 print("  Checking taxa")
 terminals = list()
 notInTree = list()
@@ -125,7 +126,7 @@ if args.export:
 		if tip.name in taxaList:
 			tip.comment = str("[&!color=#FFB000]") # Orange
 
-# check if child nodes are not older than parent nodes
+# check if child nodes are not older than parent nodes ---------------------------------------------
 if args.verbose:
 	print("  Checking dates")
 for clade in T.get_nonterminals():
@@ -197,3 +198,4 @@ if args.export:
 
 if args.verbose:
 	print("Done")
+
