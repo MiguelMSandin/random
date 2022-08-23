@@ -23,6 +23,9 @@ parser.add_argument("-f", "--format", dest="formaTree", required=False, default=
 parser.add_argument("-F", "--formatOut", dest="formatOut", required=False,
 					help="The format of the output file: accepted formats are: newick, nexus, nexml, phyloxml or cdao. Default: will take input format.")
 
+parser.add_argument("-i", "--invert", dest="invert", required=False, action="store_true",
+					help="If selected, will prune the tree from tips not present in the given list.")
+
 parser.add_argument("-v", "--verbose", dest="verbose", required=False, action="store_false",
 					help="If selected, will not print information to the console.")
 
@@ -48,23 +51,37 @@ T = Phylo.read(args.tree, args.formaTree)
 tips_in = T.count_terminals()
 
 tips = [line.strip() for line in open(args.list)]
-tipsc = len(tips)
+
+# Inverting the list if selected -------------------------------------------------------------------
+if args.invert:
+	if args.verbose:
+		print("  Inverting selection of tips")
+	toPrune = set()
+	for tip in T.get_terminals():
+		if tip.name not in tips:
+			toPrune.add(tip.name)
+else:
+	toPrune = tips
+toPrunec = len(toPrune)
 
 # Checking for duplicates in the list --------------------------------------------------------------
-if tipsc != len(set(tips)):
-	print("  Warning!", tipsc - len(set(tips)), "tip names were duplicated and therefore ignored")
-	tips = set(tips)
-	tipsc = len(tips)
+if toPrunec != len(set(toPrune)):
+	print("  Warning!", toPrunec - len(set(toPrune)), "tip names were duplicated and therefore ignored")
+	toPrune = set(toPrune)
+	toPrunec = len(toPrune)
+
+if args.verbose:
+	print("  In total ", toPrunec, " tips have been selected to be pruned", sep="")
 
 # Prunning -----------------------------------------------------------------------------------------
 if args.verbose:
 	print("  Prunning", end="")
 i = 0
 pl = 0
-for tip in tips:
+for tip in toPrune:
 	if args.verbose:
 		i += 1
-		p = round(i/tipsc*100)
+		p = round(i/toPrunec*100)
 		if p > pl:
 			pl = p
 			print("\r  Pruning ", p, "%",sep="", end="")
@@ -75,7 +92,6 @@ tips_out = T.count_terminals()
 if args.verbose:
 	print("\n    Tips in: ", tips_in)
 	print("    Tips out:", tips_out)
-	print("    In total ", tipsc, " tips were removed", sep="")
 	print("  Writting file to: ", out)
 
 # Writing file -------------------------------------------------------------------------------------
