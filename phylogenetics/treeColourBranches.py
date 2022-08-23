@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import argparse
-from Bio import SeqIO, Phylo
+from Bio import Phylo
 import re
 import subprocess
 
@@ -22,12 +22,11 @@ parser.add_argument("-o", "--output", dest="out", required=False, action="store"
 parser.add_argument("-f", "--format", dest="formaTree", required=False, default='newick',
 					help="The tree file format: accepted formats are: newick (default), nexus, nexml, phyloxml or cdao.")
 
-#parser.add_argument("-a", "--action", dest="action", required=False, default='branches',
-					#choices=['b', 'branches', 't', 'tips', 'a', 'all'],
-					#help="Either colouring only the branches (default: branches), the tip names (tips), or both (all). The initials also work (b, t and a respectively). NOT YET IMPLEMENTED.")
-
 parser.add_argument("-i", "--internal", dest="internal", required=False, action="store_false",
 					help="If selected, will not colour internal branches.")
+
+parser.add_argument("-k", "--collapse", dest="collapse", required=False, action="store_true",
+					help="If selected, will collapse the first node of every monophyletic colour with the average branch length.")
 
 parser.add_argument("-n", "--none", dest="none", required=False, action="store_false",
 					help="If selected, will not ignore tips without an attribute. This is useful when colouring internal nodes, so internal branches will not be coloured if one child has no attribute.")
@@ -117,12 +116,21 @@ for tip in T.get_terminals():
 		C += 1
 
 # Colouring internal nodes -------------------------------------------------------------------------
-i = 0
-I = 0
 if args.internal:
+	i = 0
+	I = 0
 	if args.verbose:
-		print("  Colouring internal nodes, this might take a while...")
+		print("  Colouring internal nodes, this might take a while...", end="")
+		pi = 0
+		pl = 0
+		nnodes=len(T.get_nonterminals())
 	for clade in T.get_nonterminals():
+		if args.verbose:
+			pi += 1
+			p = round(pi/nnodes*100)
+			if p > pl:
+				pl = p
+				print("\r  Colouring internal nodes, this might take a while... ", p, "%",sep="", end="")
 		coloured = False
 		unique = set()
 		for tip in clade.get_terminals():
@@ -140,6 +148,33 @@ if args.internal:
 			i += 1
 		else:
 			I += 1
+	if args.verbose:
+		print("")
+
+# Collapsing internal nodes ------------------------------------------------------------------------
+if args.collapse:
+	if args.verbose:
+		print("  Collapsing nodes")
+		if not args.internal:
+			print("    Internal branches have not been coloured, this might affect the collapse")
+	branchLength = list()
+	for tip in T.get_terminals():
+		branchLength.append(tip.branch_length)
+	import statistics
+	branchLength = str(round(statistics.mean(branchLength), 2))
+	collapsed = str(',!collapse={"collapsed",' + branchLength + "}]")
+	collapsedCount = 0
+	lastComment = None
+	for clade in T.get_nonterminals():
+		comment = clade.comment
+		if comment is not None and comment != lastComment:
+			uniques = set()
+			for subclade in T.get_path(clade):
+				uniques.add(subclade.comment)
+			if len(uniques) == 1 and next(iter(uniques)) == None or len(uniques) == 1 and next(iter(uniques)) == comment or len(uniques) == 2 and None in uniques:
+				clade.comment = re.sub("\]", collapsed, clade.comment)
+				lastComment = comment
+				collapsedCount += 1
 
 # Writing file -------------------------------------------------------------------------------------
 if args.verbose:
@@ -148,6 +183,8 @@ if args.verbose:
 		print("    Of which ", c, " are terminal branches (", round(c/(c+C)*100,2), "% coloured)", sep="")
 		if args.internal:
 			print("    Of which ", i, " are internal branches (", round(i/(i+I)*100,2), "% coloured)", sep="")
+		if args.collapse:
+			print("  In total", str(collapsedCount), "branches were collapsed")
 	else:
 		print("    0 branches were coloured, please check table for possible typos.")
 	print("  Writting file to:", out)
