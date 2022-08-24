@@ -175,7 +175,7 @@ if args.collapse:
 				clade.comment = re.sub("\]", collapsed, clade.comment)
 				lastComment = comment
 				collapsedCount += 1
-	if.args verbose:
+	if args.verbose:
 		print("  In total", str(collapsedCount), "branches were collapsed")
 
 # Writing file -------------------------------------------------------------------------------------
