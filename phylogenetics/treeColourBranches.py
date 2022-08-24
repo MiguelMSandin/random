@@ -176,7 +176,7 @@ if args.collapse:
 				lastComment = comment
 				collapsedCount += 1
 	if args.verbose:
-		print("  In total", str(collapsedCount), "branches were collapsed")
+		print("    In total", str(collapsedCount), "branches were collapsed")
 
 # Writing file -------------------------------------------------------------------------------------
 if args.verbose:
