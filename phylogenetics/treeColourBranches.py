@@ -175,6 +175,8 @@ if args.collapse:
 				clade.comment = re.sub("\]", collapsed, clade.comment)
 				lastComment = comment
 				collapsedCount += 1
+	if.args verbose:
+		print("  In total", str(collapsedCount), "branches were collapsed")
 
 # Writing file -------------------------------------------------------------------------------------
 if args.verbose:
@@ -183,8 +185,6 @@ if args.verbose:
 		print("    Of which ", c, " are terminal branches (", round(c/(c+C)*100,2), "% coloured)", sep="")
 		if args.internal:
 			print("    Of which ", i, " are internal branches (", round(i/(i+I)*100,2), "% coloured)", sep="")
-		if args.collapse:
-			print("  In total", str(collapsedCount), "branches were collapsed")
 	else:
 		print("    0 branches were coloured, please check table for possible typos.")
 	print("  Writting file to:", out)
