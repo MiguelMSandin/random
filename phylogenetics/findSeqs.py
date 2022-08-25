@@ -61,40 +61,31 @@ if checkF == True:
 			seqsF2T.add(seq)
 
 if allGoodT2F and allGoodF2T:
-	print("")
-	print("All tree tips are found in the fasta file and viceversa.")
-	print("")
+	print("\nAll tree tips are found in the fasta file and viceversa.")
 if allGoodT2F:
-	print("")
-	print("All tree tips are found in the fasta file.")
-	print("")
+	print("\nAll tree tips are found in the fasta file.")
 if allGoodT2F == False:
-	print("")
-	print("The following tree tips are not found in the fasta file:")
+	print("\nThe following tree tips are not found in the fasta file:")
 	if len(seqsT2F) < 10:
-		print("  ", *seqsT2F)
+		for tip in seqsT2F:
+			print("  ", tip)
 	else:
 		tmp = re.sub("\\.[^\\.]+$", "_tipsNotInFasta.list", args.tree)
 		print("  More than 10 tips. Detailed file exported to:", tmp)
 		with open(tmp, "w") as tmpo:
 			for tip in seqsT2F:
 				print(tip, file=tmpo)
-			
-	print("")
 if allGoodF2T:
-	print("")
-	print("All sequences are found in the tree file.")
-	print("")
+	print("\nAll sequences are found in the tree file.")
 if allGoodF2T == False:
-	print("")
-	print("The following sequences are not found in the tree file:")
+	print("\nThe following sequences are not found in the tree file:")
 	if len(seqsF2T) < 10:
-		print("  ", *seqsF2T)
+		for seq in seqsF2T:
+			print("  ", seq)
 	else:
 		tmp = re.sub("\\.[^\\.]+$", "_sequencesNotInTree.list", args.tree)
 		print("  More than 10 sequences. Detailed file exported to:", tmp)
 		with open(tmp, "w") as tmpo:
 			for seq in seqsF2T:
 				print(seq, file=tmpo)
-	print("")
-
+print("Done")
