@@ -48,7 +48,7 @@ for line in open(args.controlFile):
 			tree = re.sub(".* ", "", line)
 			tree = re.sub("\n", "", tree)
 			if args.verbose:
-				print("    Tree file detected")
+				print("    Tree file detected:", tree)
 	if line.startswith("mrca"):
 		line = line.strip(" ").split()
 		name = str(line[2])
@@ -76,7 +76,7 @@ for key in taxa.keys():
 
 if args.tree is None:
 	if args.verbose:
-		print("  Reading tree file:", tree)
+		print("  Reading tree file")
 	T = Phylo.read(tree, args.formaTree)
 else:
 	if args.verbose:
@@ -197,5 +197,5 @@ if args.export:
 	subprocess.call(["sed", "-i", "-e",  's/\\[\\\//g', out])
 
 if args.verbose:
+	print("  In total", len(ages), "constraints are used")
 	print("Done")
-
