@@ -61,11 +61,11 @@ if checkF == True:
 			seqsF2T.add(seq)
 
 if allGoodT2F and allGoodF2T:
-	print("\nAll tree tips are found in the fasta file and viceversa.")
+	print("All tree tips are found in the fasta file and viceversa.")
 if allGoodT2F:
-	print("\nAll tree tips are found in the fasta file.")
+	print("All tree tips are found in the fasta file.")
 if allGoodT2F == False:
-	print("\nThe following tree tips are not found in the fasta file:")
+	print("The following tree tips are not found in the fasta file:")
 	if len(seqsT2F) < 10:
 		for tip in seqsT2F:
 			print("  ", tip)
@@ -76,9 +76,9 @@ if allGoodT2F == False:
 			for tip in seqsT2F:
 				print(tip, file=tmpo)
 if allGoodF2T:
-	print("\nAll sequences are found in the tree file.")
+	print("All sequences are found in the tree file.")
 if allGoodF2T == False:
-	print("\nThe following sequences are not found in the tree file:")
+	print("The following sequences are not found in the tree file:")
 	if len(seqsF2T) < 10:
 		for seq in seqsF2T:
 			print("  ", seq)
