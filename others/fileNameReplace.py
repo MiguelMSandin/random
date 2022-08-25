@@ -53,5 +53,5 @@ with open(outFile, "w") as outfile:
 		print(out, file=outfile)
 
 if args.verbose:
-	print("  New text file written to:" outFile)
+	print("  New text file written to:", outFile)
 	print("Done")
