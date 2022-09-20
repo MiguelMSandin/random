@@ -33,7 +33,7 @@ i = 0
 with open(args.fileOut, "w") as outfile:
 	for filei in args.files:
 		i += 1
-		lines = sum(1 for line in open(filei)) - 2
+		lines = sum(1 for line in open(filei)) - 1
 		if args.verbose:
 			print("  Processing file ", filei, " (", i, "/", len(args.files), ")", sep="")
 			if args.states is not None:
