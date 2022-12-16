@@ -1,0 +1,5 @@
+#! /bin/bash
+
+SEQ=$1
+
+echo $SEQ | tr ACGTacgtWwSsMmRrKkYyVvDdBbHh TGCATGCAWWSSKKYYMMRRBBHHVVDD | rev
