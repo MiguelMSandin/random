@@ -3,6 +3,7 @@
 import argparse
 import networkx as nx
 import statistics as st
+import re
 
 parser = argparse.ArgumentParser(description="Analyzes basic properties of a network (number of nodes, number of edges, connectivity, clustering coefficient and number of connected components), its connected components independently, if any, and its nodes (degree, betweeness, closeness and eccentricity).")
 
@@ -64,7 +65,7 @@ with open(outNetwork, "w") as outfile:
 
 if count > 1:
     print("  There are '", count, "' connected components (CC). Analyzing each one of them individually as an indpedendent network:", sep="")
-    outNetworkCCs = args.file_out + "_network_CCs"
+    outNetworkCCs = out + "_network_CCs"
     #CCs = nx.connected_component_subgraphs(G)  # When using a 'networkx' version below 2.1
     CCs = (G.subgraph(CCs) for CCs in nx.connected_components(G))
     c = 0
@@ -102,4 +103,4 @@ with open(outNodes, "w") as outfile:
         eccentricity = nx.eccentricity(CC)
         for node in CC.nodes():
             print((str(c) + "\t" + str(node) + "\t" + str(degree[node]) + "\t" + str(betweeness[node]) + "\t" + str(closeness[node]) + "\t" + str(eccentricity[node])), file=outfile)
-    print("\n\nDone")
+    print("\nDone")
