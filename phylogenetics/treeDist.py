@@ -18,6 +18,9 @@ parser.add_argument("-o", "--output", dest="out", required=False, action="store"
 parser.add_argument("-n", "--names", dest="names", required=False, default=None,
 					help="The list of tree names. Should be the same length as the given tree file.")
 
+parser.add_argument("-a", "--all", dest="all", required=False, action="store_true",
+					help="If selected, will compare all against all, without avoiding reciprocals (A-B and B-A) and self hits.")
+
 parser.add_argument("-v", "--verbose", dest="verbose", required=False, action="store_false",
 					help="If selected, will not print information to the console.")
 
@@ -50,8 +53,12 @@ if args.names is not None:
 pairs = set()
 for i in range(0, len(tree_collection)):
 	for j in range(0, len(tree_collection)):
-		if i != j and str(str(i) + "-" + str(j)) not in pairs and str(str(j) + "-" + str(i)) not in pairs:
-			pairs.add(str(str(i) + "-" + str(j)))
+		if args.all:
+			if str(str(i) + "-" + str(j)) not in pairs:
+				pairs.add(str(str(i) + "-" + str(j)))
+		else:
+			if i != j and str(str(i) + "-" + str(j)) not in pairs and str(str(j) + "-" + str(i)) not in pairs:
+				pairs.add(str(str(i) + "-" + str(j)))
 
 # Coparing all pair-wise pairs ---------------------------------------------------------------------
 if args.verbose:
