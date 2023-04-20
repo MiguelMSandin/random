@@ -3,7 +3,7 @@
 import argparse
 import sys
 
-parser = argparse.ArgumentParser(description="Removes reciprocal (A-B = B-A) and identical (A-A) hits from a tab separated list. The first and second columns are taken as identifiers. The rest of the columns are irrelevant.")
+parser = argparse.ArgumentParser(description="Combines several MCMC files from mcmcTree into a single file.")
 
 requiredArgs = parser.add_argument_group('required arguments')
 
@@ -33,7 +33,7 @@ i = 0
 with open(args.fileOut, "w") as outfile:
 	for filei in args.files:
 		i += 1
-		lines = sum(1 for line in open(filei)) - 1
+		lines = sum(1 for line in open(filei))
 		if args.verbose:
 			print("  Processing file ", filei, " (", i, "/", len(args.files), ")", sep="")
 			if args.states is not None:
@@ -42,7 +42,6 @@ with open(args.fileOut, "w") as outfile:
 			else:
 				burn = int(lines * args.burnin / 100)
 				print("    Burnin: ", args.burnin, "% or ", burn, " states", sep="")
-			print("    States out:", lines - burn)
 		j = 0
 		for line in open(filei):
 			j += 1
@@ -64,7 +63,7 @@ with open(args.fileOut, "w") as outfile:
 						lineOut = '\t'.join(tmp)
 						print(lineOut, file=outfile)
 				else:
-					if len(tmp) != len(headers):
+					if len(tmp) == len(headers):
 						warning += 1
 					state += 1
 					tmp[0] = str(state)
