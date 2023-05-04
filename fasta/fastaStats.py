@@ -19,6 +19,9 @@ parser.add_argument("-s", "--short", dest="short", required=False, action="store
 
 args = parser.parse_args()
 
+if(args.short):
+	print("File\tSequences\tBases\t(Positions\tGaps)")
+
 for file in args.fileIn:
 	seqs = 0
 	lengths = []
@@ -56,18 +59,15 @@ for file in args.fileIn:
 
 	totalbp = As + Cs + Gs + Ts + Ns
 
-	print("File:\t", file)
 	if(args.short):
 		if(len(set(lengthsRaw)) > 1):
-			print("  Seqs:\t", seqs, "\tBases:", totalbp)
+			print(str(file), ":\t", seqs, "\t", totalbp, sep="")
 		else:
 			totalPositions = int(*set(lengthsRaw)) * seqs
 			gaps = totalPositions - totalbp
-			print("  Seqs:\t", seqs, 
-		 "\tBases:\t", totalbp, 
-		 "\tPositions:\t", *set(lengthsRaw), 
-		 "\tGaps:\t", round(gaps / totalPositions * 100, 2), "%")
+			print(str(file), ":\t", seqs, "\t", totalbp, "\t", *set(lengthsRaw), "\t", round(gaps / totalPositions * 100, 2), "%", sep="")
 	else:
+		print("File:\t", file)
 		if(len(set(lengthsRaw)) > 1):
 			print("  Not aligned")
 		else:
