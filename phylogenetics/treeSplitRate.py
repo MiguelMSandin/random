@@ -2,6 +2,7 @@
 
 import argparse
 from Bio import Phylo
+import re
 
 parser = argparse.ArgumentParser(description="From a time calibrated tree, it will export a tab delimited table with the split rate at every given time interval.")
 
