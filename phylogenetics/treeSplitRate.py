@@ -2,7 +2,6 @@
 
 import argparse
 from Bio import Phylo
-import re
 
 parser = argparse.ArgumentParser(description="From a time calibrated tree, it will export a tab delimited table with the split rate at every given time interval.")
 
@@ -15,11 +14,11 @@ requiredArgs.add_argument("-t", "--tree", dest="tree", required=True,
 parser.add_argument("-o", "--out", dest="out", required=False, default=None,
 						  help="The output file name. By default, will remove the extension of the input tree file and add '_splitRateINT.tsv', where INT is the chosen time interval.")
 
-parser.add_argument("-s", "--steps", dest="steps", required=False, type=int, default=100,
-					help="The number of steps to estimate the split rate. Default=100 steps.")
+parser.add_argument("-s", "--steps", dest="steps", required=False, type=int, default=50,
+					help="The number of steps to estimate the split rate. Default=50 steps.")
 
 parser.add_argument("-i", "--interval", dest="interval", required=False, type=int, default=None,
-					help="The time interval to estimate the split rate. If used, will ignore the inpit given in '-s/--steps'.")
+					help="The time interval within the split rate will be estimated. If used, will ignore the inpit given in '-s/--steps'.")
 
 parser.add_argument("-f", "--format", dest="formaTree", required=False, default='newick',
 					help="The tree file format: accepted formats are: newick (default) and nexus.")
@@ -58,7 +57,7 @@ if args.interval is None:
 	print("  Estimate split rate for", args.steps, "steps every", inter, "units of time")
 else:
 	inter = int(args.interval)
-	print("  Estimate split rate every", inter, "units of time")
+	print("  Estimate split rate every", inter, "units of time for a total of", round(rootAge/inter), "steps")
 
 if args.out is None:
 	out = re.sub("\\.[^\\.]+$", "_splitRate", args.tree)
@@ -82,10 +81,11 @@ with open(out, "w") as outfile:
 					if lineage > l:
 						l = lineage
 			if l == 0:
-				rate = 0
-			else:
-				rate = s/l
-			print(str(i), "\t", str(l), "\t", str(s), "\t", str(rate), file=outfile)
+				for h2, l2 in lineages.items():
+					if h2 > j:
+						if l2 > l:
+							l = l2
+			print(str(i), "\t", str(l), "\t", str(s), "\t", str(s/l), file=outfile)
 
 if args.verbose:
 	print("Done")
