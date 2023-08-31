@@ -17,6 +17,9 @@ requiredArgs.add_argument("-f", "--file", dest="fileIn", nargs='+', required=Tru
 parser.add_argument("-s", "--short", dest="short", required=False, action="store_true",
 					help="If selected, will only print number of sequences, total number of bases (and if aligned) aligned positions and proportion of gaps.")
 
+parser.add_argument("-d", "--detailed", dest="detailed", required=False, action="store_true",
+					help="If selected, besides printing the overall statistics, will print similar statistics for every sequence. This option is incopatible with the '-s/--short' option.")
+
 args = parser.parse_args()
 
 if(args.short):
@@ -53,12 +56,12 @@ for file in args.fileIn:
 		if n > 0:
 			tmp = re.sub("A|C|G|T|-", "", str(seq.upper()))
 			ambiguities.append(list(tmp))
-
+	
 	ambiguities = [item for l in ambiguities for item in l]
 	ambiguities = set(ambiguities)
-
+	
 	totalbp = As + Cs + Gs + Ts + Ns
-
+	
 	if(args.short):
 		if(len(set(lengthsRaw)) > 1):
 			print(str(file), ":\t", seqs, "\t", totalbp, sep="")
@@ -99,3 +102,24 @@ for file in args.fileIn:
 			print("  Gaps in alignment:\t", gaps, "\t", round(gaps / totalPositions * 100, 2), "%")
 			print("  Total bases:      \t", totalbp, "\t", round( totalbp / totalPositions * 100, 2), "%")
 		print("")
+		if args.detailed:
+			if(len(set(lengthsRaw)) > 1):
+				print("sequence\tlength\tA\tC\tG\tT\tambiguities")
+			else:
+				print("sequence\tlength\tA\tC\tG\tT\tambiguities\tgaps\tproportionGaps")
+			for i in SeqIO.parse(open(file), "fasta"):
+				name = i.id
+				seq = i.seq
+				l = len(re.sub("-", "", str(seq)))
+				a = seq.upper().count("A")
+				c = seq.upper().count("C")
+				g = seq.upper().count("G")
+				t = seq.upper().count("T")
+				gap = seq.upper().count("-")
+				n = len(seq) - (a + c + g + t + gap) # Count number of ambiguities
+				gapp = round(gap / len(seq) * 100, 2)
+				if(len(set(lengthsRaw)) > 1):
+					print(str(name) + '\t' + str() + '\t' + str() + '\t' + str() + '\t' + str() + '\t' + str())
+				else:
+					print(str(name) + '\t' + str(l) + '\t' + str(a) + '\t' + str(c) + '\t' + str(g) + '\t' + str(t) + '\t' + str(n) + '\t' + str(gap) + '\t' + str(gapp))
+
