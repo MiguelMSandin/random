@@ -19,6 +19,7 @@ args = parser.parse_args()
 
 i = 0
 generation = 0
+generationh = -1
 step = 0
 with open(args.fileOut, "w") as outfile:
 	for filei in args.files:
@@ -51,7 +52,9 @@ with open(args.fileOut, "w") as outfile:
 					if generationi - generation > step:
 						step = generationi - generation
 					generation = generationi
-				if generationi < generation:
+				if generationi < generation and generationh == generationi:
+					generation = generation
+				if generationi < generation and generationh != generationi:
 					generation = generation + step
 				lineout = list()
 				lineout.append(str(generation))
@@ -59,6 +62,7 @@ with open(args.fileOut, "w") as outfile:
 				lineout.extend(lineSplit)
 				lineout = ','.join(lineout)
 				print(lineout, file=outfile, flush=True)
+				generationh = generationi
 		if args.verbose:
 			print("")
 
