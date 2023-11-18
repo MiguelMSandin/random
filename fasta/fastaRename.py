@@ -49,6 +49,7 @@ with open(outFile, "w") as outfile:
 				print(">" + newname, end="\n", file=outfile)
 			else:
 				notFound.append(oldname)
+				print(">" + oldname, end="\n", file=outfile)
 		else:
 			print(line, end="", file=outfile)
 
