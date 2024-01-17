@@ -27,6 +27,9 @@ parser.add_argument("-e", "--evalue", dest="evalue", required=False, default=Non
 parser.add_argument("-k", "--clean", dest="cleaning", required=False, action="store_true", default=None,
 					help="If selected, the input file is cleaned from reciprocal hits (A-B = B-A) before creating the network file.")
 
+parser.add_argument("-a", "--addHeaders", dest="addHeaders", required=False, action="store_true",
+					help="If selected, will add the following headers to the net: 'source target id'.")
+
 args = parser.parse_args()
 
 if args.file_out is None:
@@ -68,6 +71,7 @@ if args.cleaning is not None:
 	with open(cleanFile, "w") as outfile:
 		for hit in list(clean.keys()):
 			print(hit + "\t" + clean[hit], file=outfile)
+
 	print("	  Removed hits: ", removed)
 	print("	  Self matching:", selfHit)
 	print("  Cleaned file exported to: '", re.sub("\..*$", "_clean.similarities", args.file_in), "'", sep="")
@@ -95,6 +99,8 @@ for i in args.identity:
 	print("  Creating a network file with '", i, "%' similarity threshold", c, e, sep="")
 	tmp = out + "_" + i + "i" + C + E + ".net"
 	with open(tmp, "w") as outfile:
+		if args.addHeaders:
+			print("source\ttarget\tid", file=outfile)
 		for line in open(input_file):
 			data = line[:-1].split("\t")
 			seq1 = data[0]
