@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 
 import argparse
+import re
 
-parser = argparse.ArgumentParser(description="Removes reciprocal hits (A-B = B-A).")
+parser = argparse.ArgumentParser(description="Removes reciprocal hits (A-B = B-A) and self (A=A) hits from a tsv table where the first two columns are the identifiers.")
 
 # Add the arguments to the parser
 requiredArgs = parser.add_argument_group('required arguments')
@@ -13,6 +14,15 @@ requiredArgs.add_argument("-f", "--file", dest="file_in", required=True,
 parser.add_argument("-o", "--output", dest="file_out", required=False, default=None,
                     help="Output file. Returns the filtered file to the specified location. By default will add '_clean.net' to the input file, after removing the extension.")
 
+parser.add_argument("-r", "--reciprocal", dest="reciprocal", required=False, action="store_true",
+					help="If selected, will not remove reciprocal hits.")
+
+parser.add_argument("-s", "--self", dest="selfHits", required=False, action="store_true",
+					help="If selected, will not remove self hits.")
+
+parser.add_argument("-v", "--verbose", dest="verbose", required=False, action="store_false",
+					help="If selected, will not print information to the console.")
+
 args = parser.parse_args()
 
 if args.file_out is None:
@@ -20,37 +30,58 @@ if args.file_out is None:
 else:
 	out = args.out
 
-print("Cleaning")
+if args.reciprocal:
+	endr = "(not removed)"
+	if args.verbose:
+		print("Ignoring reciprocal hits")
+else:
+	endr = ""
 
-clean = {}
-hits = set()
+if args.selfHits:
+	ends = "(not removed)"
+	if args.verbose:
+		print("Ignoring self hits")
+else:
+	ends = ""
+
+if args.verbose:
+	print("Cleaning")
+
+clean = set()
 lines = 0
-removed = 0
+reciprocal = 0
 selfHit = 0
 accepted = 0
 with open(out, "w") as outfile:
 	for line in open(args.file_in):
+		toPrint = True
 		lines += 1
-		line = line.strip().split()
-		seq1 = line[0]
-		seq2 = line[1]
+		linei = line.strip().split()
+		seq1 = linei[0]
+		seq2 = linei[1]
+		hit = str(seq1) + "-" + str(seq2)
+		hitr =str(seq2) + "-" + str(seq1)
 		if seq1 == seq2:
 			selfHit += 1
-		hit = str(seq1) + "\t" + str(seq2)
-		hitr =str(seq2) + "\t" + str(seq1)
-		if hit in clean or hitr in clean:
-			removed += 1
+			toPrint = False
+			if args.selfHits:
+				toPrint = True
+				accepted += 1
+		elif hit in clean or hitr in clean:
+			reciprocal += 1
+			toPrint = False
+			if args.reciprocal:
+				toPrint = True
+				accepted += 1
 		else:
 			accepted += 1
-			hits.add(hit)
-			hits.add(hitr)
-			values = str(line[2]) + "\t" + str(line[3]) + "\t" + str(line[4]) + "\t" + str(line[5]) + "\t" + str(line[6]) + "\t" + str(line[7]) + "\t" + str(line[8]) + "\t" + str(line[9]) + "\t" + str(line[10])
-			clean[hit] = values
-			print(hit + "\t" + clean[hit], file=outfile)
+			clean.add(str(hit))
+		if toPrint:
+			print(line, file=outfile, end="")
 
-print("  Hits in:      ", lines)
-print("  Hits removed: ", removed)
-print("  Self hits:    ", selfHit)
-print("  Hits out:     ", accepted)
-print("Done")
-
+if args.verbose:
+	print("  Hits in:         ", lines)
+	print("  Reciprocal hits: ", reciprocal, endr)
+	print("  Self hits:       ", selfHit, ends)
+	print("  Hits out:        ", accepted)
+	print("Done")
