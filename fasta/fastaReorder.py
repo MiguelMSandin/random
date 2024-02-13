@@ -55,7 +55,7 @@ if args.tree is not None:
 	for line in T.get_terminals():
 		tmp = line.name
 		tmp = tmp.strip("'")
-		ordering.append(line.name)
+		ordering.append(tmp)
 if args.list is not None:
 	for line in open(args.list):
 		tmp = line.strip("\n")
@@ -66,7 +66,9 @@ if args.verbose:
 	print("  Reading fasta file")
 fasta = {}
 for line in SeqIO.parse(open(args.file_in), "fasta"):
-	fasta[line.id] = str(line.seq)
+	tmp = line.id
+	tmp = tmp.strip("'")
+	fasta[tmp] = str(line.seq)
 
 # Reordering and exporting
 if args.verbose:
