@@ -4,6 +4,7 @@
 suppressPackageStartupMessages(library(optparse))
 suppressPackageStartupMessages(library(ape))
 suppressMessages(library(treeio))
+suppressMessages(library(tidytree))
 suppressMessages(library(data.table))
 
 # Set parser _______________________________________________________________________________________
@@ -109,24 +110,9 @@ if(args$tree != "NONE"){
     }
     if(args$verbose){cat("  Plotting\n")}
     library(ggplot2)
-    geo <- data.frame(time= c(-2500, -2300, -2050, -1800, 
-                              -1600 , -1400, -1200, 
-                              -1000, -720, -635, 
-                              -541, -485.4, -443.8, -419, -358.9, -298.9, 
-                              -251.9, -201.4, -145, 
-                              -66, -23.03, -2.58),
-                      period=c("Siderian", "Rhyacian", "Orosirian", "Statherian", 
-                               "Calymnian","Ectasian","Stenian",
-                               "Tonian","Cryogenian","Ediacran",
-                               "Cambrian","Ordovician","Silurian","Devonian","Carboniferous","Permian",
-                               "Triassic","Jurassic","Cretaceous",
-                               "Paleogene","Neogene","Quaternary"),
-                      era=c("Paleoproterozoic","Paleoproterozoic","Paleoproterozoic","Paleoproterozoic",
-                            "Mesoproterozoic","Mesoproterozoic","Mesoproterozoic",
-                            "Neoproterozoic","Neoproterozoic","Neoproterozoic",
-                            "Paleozoic","Paleozoic","Paleozoic","Paleozoic","Paleozoic","Paleozoic",
-                            "Mesozoic","Mesozoic","Mesozoic",
-                            "Cenozoic","Cenozoic","Cenozoic"))
+    geo <- data.frame(time= c(-2500, -2300, -2050, -1800, -1600 , -1400, -1200, -1000, -720, -635, -541, -485.4, -443.8, -419, -358.9, -298.9, -251.9, -201.4, -145, -66, -23.03, -2.58),
+                      period=c("Siderian", "Rhyacian", "Orosirian", "Statherian", "Calymnian","Ectasian","Stenian", "Tonian","Cryogenian","Ediacran", "Cambrian","Ordovician","Silurian","Devonian","Carboniferous","Permian", "Triassic","Jurassic","Cretaceous", "Paleogene","Neogene","Quaternary"),
+                      era=c("Paleoproterozoic","Paleoproterozoic","Paleoproterozoic","Paleoproterozoic", "Mesoproterozoic","Mesoproterozoic","Mesoproterozoic", "Neoproterozoic","Neoproterozoic","Neoproterozoic", "Paleozoic","Paleozoic","Paleozoic","Paleozoic","Paleozoic","Paleozoic", "Mesozoic","Mesozoic","Mesozoic", "Cenozoic","Cenozoic","Cenozoic"))
     geo$mid <- apply(data.frame(geo$time, c(geo$time[-1], 0)), 1, mean)
     
     # Get summary per annotated groups _____________________________________________________________
@@ -148,11 +134,7 @@ if(args$tree != "NONE"){
     # Beautifying the dataset for the plot _____________________________________________________________
     sort(unique(lttData$tree))
     if(args$levels=="eukaryotes"){
-        lttData$tree <- factor(lttData$tree, levels=c("Main_tree", 
-                                                      "Amoebozoa", "Apusomonadida", "Breviatea", "Nucletmycea", "Holozoa", 
-                                                      "Ancyromonadida", "CRuMs", "Metamonada", "Discoba", 
-                                                      "Haptista", "Cryptista", "Hemimastigophora", "Archaeplastida", 
-                                                      "Telonemia", "Rhizaria", "Stramenopila", "Alveolata"))
+        lttData$tree <- factor(lttData$tree, levels=c("Main_tree", "Amoebozoa", "Apusomonadida", "Breviatea", "Nucletmycea", "Holozoa", "Ancyromonadida", "CRuMs", "Metamonada", "Discoba", "Haptista", "Cryptista", "Hemimastigophora", "Archaeplastida", "Telonemia", "Rhizaria", "Stramenopila", "Alveolata"))
     }else if(args$levels != "NONE"){
         lttData$tree <- factor(lttData$tree, levels=args$levels)
     }
@@ -177,11 +159,7 @@ if(args$tree != "NONE"){
         lttData$colour[which(lttData$colour=="Rhizaria")]="darkorchid2"
         lttData$colour[which(lttData$colour=="Stramenopila")]="darkorchid3"
         lttData$colour[which(lttData$colour=="Alveolata")]="darkorchid4"
-        lttData$colour <- factor(lttData$colour, levels=c("black",
-                                                          "royalblue1", "lightskyblue1", "lightskyblue2", "steelblue2", "steelblue4",
-                                                          "grey20", "aquamarine1", "forestgreen", "orange2",
-                                                          "yellow1", "hotpink1", "grey80", "darkseagreen3",
-                                                          "plum4", "darkorchid2", "darkorchid3", "darkorchid4"))
+        lttData$colour <- factor(lttData$colour, levels=c("black", "royalblue1", "lightskyblue1", "lightskyblue2", "steelblue2", "steelblue4", "grey20", "aquamarine1", "forestgreen", "orange2", "yellow1", "hotpink1", "grey80", "darkseagreen3", "plum4", "darkorchid2", "darkorchid3", "darkorchid4"))
     }else if(args$colours != "NONE"){
         lttData$colour <- as.character(lttData$tree)
         for(i in 1:length(unique(lttData$tree))){
@@ -210,7 +188,7 @@ if(args$tree != "NONE"){
     
     lttplot <- ggplot(data, aes(x=time, y=logN))+
         geom_vline(xintercept = geos$time, color="lightgrey") +
-        geom_segment(aes(x=hpd_min, xend=hpd_max, y=logN, yend=logN), color="grey90", size=2, lineend="round")+
+        geom_segment(aes(x=hpd_min, xend=hpd_max, y=logN, yend=logN), color="grey90", linewidth=2, lineend="round")+
         geom_line(aes(color=tree)) +
         # geom_point(aes(color=tree)) +
         geom_text(data=geos, aes(x=mid, y=max(data$logN)+1, label=era), size=2.5)+
@@ -235,7 +213,7 @@ if(args$tree != "NONE"){
         
         lttplot <- ggplot(data, aes(x=time, y=logN))+
             geom_vline(xintercept = geos$time, color="lightgrey") +
-            geom_segment(aes(x=hpd_min, xend=hpd_max, y=logN, yend=logN), color="grey90", size=2, lineend="round")+
+            geom_segment(aes(x=hpd_min, xend=hpd_max, y=logN, yend=logN), color="grey90", linewidth=2, lineend="round")+
             geom_line(aes(color=tree)) +
             # geom_point(aes(color=tree)) +
             geom_text(data=geos, aes(x=mid, y=max(data$logN)+1, label=era), size=2.5)+
