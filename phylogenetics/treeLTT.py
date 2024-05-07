@@ -11,7 +11,7 @@ parser = argparse.ArgumentParser(description="From a time calibrated tree, it wi
 requiredArgs = parser.add_argument_group('required arguments')
 
 requiredArgs.add_argument("-t", "--tree", dest="tree", required=True,
-						  help="A tree file in newick format.")
+						  help="A tree file.")
 
 parser.add_argument("-o", "--out", dest="out", required=False, default=None,
 						  help="The output file name. By default, will remove the extension of the input tree file and add '_LTT.tsv'.")
