@@ -4,6 +4,7 @@ import argparse
 import networkx as nx
 import statistics as st
 import pandas as pd
+import re
 
 parser = argparse.ArgumentParser(description="Analyzes the assortativity of a network by groups.")
 
@@ -16,10 +17,15 @@ requiredArgs.add_argument("-f", "--file", dest="file_in", required=True,
 requiredArgs.add_argument("-a", "--attributes", dest="file_attr", required=True,
 					help="Attributes file. A file with the nodes in the first column and the rest of the groups in the following columns matching the given node, separated by '\\t'. Note: Remember to add the column names, so it takes that name to sort out the output.")
 
-requiredArgs.add_argument("-o", "--output", dest="file_out", required=True,
-					help="Output file. Returns a file with the output. If there are more than 1 connected components (CC), another file will be exported to 'file_out_CCs' with the assortativity calculated independently for every CC.")
+parser.add_argument("-o", "--output", dest="file_out", required=False, default=None,
+					help="Output file. Returns a file with the output. If there are more than 1 connected components (CC), another file will be exported to 'file_out_CCs' with the assortativity calculated independently for every CC. By default, will add '_assortativity'")
 
 args = parser.parse_args()
+
+if args.file_out is None:
+        out = re.sub("\\.[^\\.]+$", "_assortativity", args.file_in)
+else:
+        out = args.out
 
 print("\n  Reading network")
 G=nx.read_edgelist(args.file_in, delimiter="\t", data=(("id",float),))
@@ -32,7 +38,7 @@ print("\n  Reading attributes file")
 attributes = pd.read_csv(args.file_attr, sep="\t")
 
 # Opening files
-with open(args.file_out, "w") as outfile:
+with open(out, "w") as outfile:
 	print("group \t assortativity_groups \t attributes", file=outfile)
 # Check if there are more than one connected commponents (CCs)
 CCs = (G.subgraph(CCs) for CCs in nx.connected_components(G)) # When using a 'networkx' version above 2.4
@@ -41,7 +47,7 @@ count = 0
 for CC in CCs:
 	count = count + 1
 if count > 1:
-	outNetworkCCs = args.file_out + "_CCs"
+	outNetworkCCs = out + "_CCs"
 	with open(outNetworkCCs, "w") as outfile:	
 		print("group \t connected_component \t assortativity_groups \t attributes", file=outfile)
 
@@ -78,7 +84,7 @@ for i in list(range(1, len(attributes.columns))):
 	groups = sorted(groups)
 	groups = "|".join(groups)
 	
-	with open(args.file_out, "a") as outfile:
+	with open(out, "a") as outfile:
 		print((str(list(tmp.columns)[1]) + "\t" + str(assortAttr) + "\t" + str(groups)), file=outfile)
 	print(" exported.")
 	
