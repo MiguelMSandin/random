@@ -127,7 +127,7 @@ else:
 			if args.information:
 				net.add_edge(nodes[0], nodes[1])
 
-if args.information & args.assortativity != 0:
+if args.information & (args.assortativity != 0):
 	import re
 	tmp = re.sub("\\.[^\\.]+$", "_info.tsv", args.file_out)
 	if args.verbose:
