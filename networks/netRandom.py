@@ -142,7 +142,7 @@ if args.information:
 	print("  After randomization there are:")
 	for k,v in statesp.items():
 		tmp = len(v)
-		print("    -", tmp, " nodes of the attribute ", k, sep="")
+		print("    -", tmp, " nodes of the attribute ", k, " (", round(tmp/node_number, 2), "%)", sep="")
 	nx.set_node_attributes(net, attr, "groups")
 	final_assortativity = nx.attribute_assortativity_coefficient(net, "groups")
 	print("    Final assortativity:", final_assortativity)
