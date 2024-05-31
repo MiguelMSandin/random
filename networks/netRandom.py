@@ -41,7 +41,7 @@ parser.add_argument("-o", "--output", dest="file_out", required=False, default="
 					help="The output file.")
 
 parser.add_argument("-i", "--information", dest="information", required=False, action="store_true",
-                    help="If selected, will export a table with the nodes and its attribute to 'output`_info.tsv, after removing the extension, if any, and will also print to the console basic information of the randomization process and the final assortativity.")
+                    help="If selected, will export a table with the nodes and its attribute to 'output`_info.tsv, after removing the extension, if any, and will also print to the console basic information of the randomization process and the final assortativity. Only used if assortativity different than 0.")
 
 parser.add_argument("-v", "--verbose", dest="verbose", required=False, action="store_false",
                     help="If selected, will not print information in the console.")
@@ -127,7 +127,7 @@ else:
 			if args.information:
 				net.add_edge(nodes[0], nodes[1])
 
-if args.information:
+if args.information & args.assortativity != 0:
 	import re
 	tmp = re.sub("\\.[^\\.]+$", "_info.tsv", args.file_out)
 	if args.verbose:
