@@ -153,6 +153,7 @@ if args.information & ((args.assortativity != 0) | (args.force == True)):
 		print("  Exporting attribute table to", tmp)
 	attr = {}
 	with open(tmp, "w") as outfile:
+		print("node\tattribute", file=outfile)
 		for k in statesp.keys():
 			tmp = statesp[k]
 			for v in tmp:
