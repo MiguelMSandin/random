@@ -40,8 +40,8 @@ parser.add_argument("-p", "--proportions", dest="proportions", required=False,
 					help='The proportion of the states. Only used if assortativity different than 0. If only one proportion is given, it will assume that proportion to all states. By default=1')
 
 parser.add_argument("-c", "--headers", dest="headers", required=False,
-					default=None,
-					help="The column names. By default will not print column names.")
+					nargs="+", default=None,
+					help="The column names. By default will not print column names. If more than two names provided, only the first two names will be considered.")
 
 parser.add_argument("-o", "--output", dest="file_out", required=False,
 					default="random.net",
@@ -62,7 +62,7 @@ parser.add_argument("-v", "--verbose", dest="verbose", required=False,
 args = parser.parse_args()
 
 # Start generating the random net
-if args.assortativity == 0 & args.force == True:
+if (args.assortativity == 0) & (args.force == False):
 	if args.verbose:
 		print("  Exporting a net of", args.node_number, "nodes and", args.edge_number, "edges to", args.file_out)
 	nodes = []
@@ -70,6 +70,8 @@ if args.assortativity == 0 & args.force == True:
 		tmp = str("n" + str(i+1))
 		nodes.append(tmp)
 	with open(args.file_out, "w") as outfile:
+		if args.headers is not None:
+			print(args.headers[0] + "\t" + args.headers[1], file=outfile)
 		for i in range(args.edge_number):
 			tmp = random.sample(nodes, 2)
 			print(tmp[0] + "\t" + tmp[1], file=outfile)
@@ -119,6 +121,8 @@ else:
 		import networkx as nx
 		net = nx.Graph()
 	with open(args.file_out, "w") as outfile:
+		if args.headers is not None:
+			print(args.headers[0] + "\t" + args.headers[1], file=outfile)
 		for i in range(edge_number):
 			# Generate a random attribute
 			attribute = random.choices(states, weights=proportions, k=1)
