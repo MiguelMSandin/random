@@ -13,43 +13,56 @@ $ netRandom.py
 A random network with 200 nodes and 10000 edges exported to random_network.tsv:
 $ netRandom.py -n 200 -e 10000 -o random_network.tsv
 
-A random network with 20 nodes and 100 edges, a 0.5 targetted assortativity, 3 states named 'A', 'B' and 'C' and with 0.5, 0.25 and 0.25 occurrence proportions respectively for each state:
-$ netRandom.py -a 0.5 -s A B C -p 0.5 0.25 0.25
+A random network with 100 nodes, 2000 edges, a 0.5 targetted assortativity, 3 states named 'A' and 'B', with equal occurrence proportions for each state, and print final information of the network at the end:
+$ netRandom.py -n 100 -e 2000 -a 0.5 -s A B -p 1 -i
 ''')
 
 # Add the arguments to the parser
 
-parser.add_argument("-n", "--nodes", dest="node_number", required=False, default=20,
+parser.add_argument("-n", "--nodes", dest="node_number", required=False, 
+					default=20,
 					help="The number of nodes. By default=20")
 
-parser.add_argument("-e", "--edges", dest="edge_number", required=False, default=100,
+parser.add_argument("-e", "--edges", dest="edge_number", required=False, 
+					default=100,
 					help="The number of edges. By default=100")
 
-parser.add_argument("-a", "--assortativity", dest="assortativity", required=False, type=float, default=0,
+parser.add_argument("-a", "--assortativity", dest="assortativity", required=False,
+					type=float, default=0,
 					help="The targeted assortativity: A measure of the preference for nodes with a given attribute in a network to attach to other nodes with identical attributes. Default=0, only values [-1 ,0] are considered.")
 
-parser.add_argument("-s", "--states", dest="states", required=False, nargs="+", default=["A", "B"],
+parser.add_argument("-s", "--states", dest="states", required=False,
+					nargs="+", default=["A", "B"],
 					help='The state names. Only used if assortativity different than 0. The attribute will be used for the node names followed by increasing integers. By default=["A", "B"].')
 
-parser.add_argument("-p", "--proportions", dest="proportions", required=False, nargs="+", type=float, default=[1],
+parser.add_argument("-p", "--proportions", dest="proportions", required=False,
+					nargs="+", type=float, default=[1],
 					help='The proportion of the states. Only used if assortativity different than 0. If only one proportion is given, it will assume that proportion to all states. By default=1')
 
-parser.add_argument("-c", "--headers", dest="headers", required=False, default=None,
+parser.add_argument("-c", "--headers", dest="headers", required=False,
+					default=None,
 					help="The column names. By default will not print column names.")
 
-parser.add_argument("-o", "--output", dest="file_out", required=False, default="random.net",
+parser.add_argument("-o", "--output", dest="file_out", required=False,
+					default="random.net",
 					help="The output file.")
 
-parser.add_argument("-i", "--information", dest="information", required=False, action="store_true",
+parser.add_argument("-i", "--information", dest="information", required=False,
+					action="store_true",
                     help="If selected, will export a table with the nodes and its attribute to 'output`_info.tsv, after removing the extension, if any, and will also print to the console basic information of the randomization process and the final assortativity. Only used if assortativity different than 0.")
 
-parser.add_argument("-v", "--verbose", dest="verbose", required=False, action="store_false",
+parser.add_argument("-f", "--force", dest="force", required=False,
+					action="store_true",
+                    help="If selected, will force parsing an assortativity of 0 to different characters anyways.")
+
+parser.add_argument("-v", "--verbose", dest="verbose", required=False,
+					action="store_false",
                     help="If selected, will not print information in the console.")
 
 args = parser.parse_args()
 
 # Start generating the random net
-if args.assortativity == 0:
+if args.assortativity == 0 & args.force == True:
 	if args.verbose:
 		print("  Exporting a net of", args.node_number, "nodes and", args.edge_number, "edges to", args.file_out)
 	nodes = []
@@ -62,6 +75,8 @@ if args.assortativity == 0:
 			print(tmp[0] + "\t" + tmp[1], file=outfile)
 else:
 	# Check parsed parameters
+	if args.force:
+		print("  Forcing a randomization of attributes over a fully random network")
 	if args.assortativity > 1:
 		assortativity = 1
 		print("  Warning! Assortativity can only be [-1, 1]. I have changed the value to '1'")
@@ -127,7 +142,7 @@ else:
 			if args.information:
 				net.add_edge(nodes[0], nodes[1])
 
-if args.information & (args.assortativity != 0):
+if args.information & (args.assortativity != 0 | args.force == True):
 	import re
 	tmp = re.sub("\\.[^\\.]+$", "_info.tsv", args.file_out)
 	if args.verbose:
