@@ -137,10 +137,10 @@ else:
 			attribute2 = random.choices(states, weights=probs, k=1)
 			attribute2 = attribute2[0]
 			if attribute == attribute2:
-				nodes = random.choices(statesp[attribute], k=2)
+				nodes = random.sample(statesp[attribute], 2)
 			else:
-				nodes = random.choices(statesp[attribute], k=1)
-				tmp = random.choices(statesp[attribute2], k=1)
+				nodes = random.sample(statesp[attribute], 1)
+				tmp = random.sample(statesp[attribute2], 1)
 				nodes.append(tmp[0])
 			print(nodes[0] + "\t" + nodes[1], file=outfile)
 			if args.information:
