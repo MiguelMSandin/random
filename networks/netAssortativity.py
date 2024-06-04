@@ -22,8 +22,11 @@ parser.add_argument("-o", "--output", dest="file_out", required=False, default=N
 parser.add_argument("-c", "--headers", dest="headers", required=False, action="store_false",
 					help="If selected, will skip the first row of the network interpreted as headers.")
 
-parser.add_argument("-n", "--names", dest="names", required=False, action="store_false",
+parser.add_argument("-n", "--names", dest="names", required=False, action="store_true",
 					help="If selected, will print to the given output name the column names. If output name not selected, this command will be ignored.")
+
+parser.add_argument("-d", "--overwrite", dest="delete", required=False, action="store_true",
+					help="If selected, will overwrite the output file if exists.")
 
 parser.add_argument("-s", "--simple", dest="simple", required=False, action="store_true",
 					help="If selected, will just print the assortativity value to the console")
@@ -39,8 +42,19 @@ if (args.file_out is None) and (args.simple == False):
 	print("file_net\tfile_attribute\tCC\tnodes\tedges\tassortativity\tattribute\tstates")
 elif args.file_out is not None:
 	out = args.file_out
-	with open(out, "a") as outfile:
-		print("file_net\tfile_attribute\tCC\tnodes\tedges\tassortativity\tattribute\tstates", file=outfile)
+	if args.delete:
+		import os.path
+		if os.path.exists(out):
+			os.remove(out)
+	if args.names:
+		with open(out, "a") as outfile:
+			print("file_net\tfile_attribute\tCC\tnodes\tedges\tassortativity\tattribute\tstates", file=outfile)
+
+# Define a function to check if a given net is a clique
+def is_clique(G):
+    n = len(list(G.nodes()))
+    e = len(list(G.edges()))
+    return e == n*(n-1)/2
 
 files = {}
 for i in range(len(args.file_in)):
@@ -61,9 +75,6 @@ for net, atr in files.items():
 					
 	# Reading attributes
 	attributesTable = pd.read_csv(atr, sep="\t")
-	# Count number of nodes and edges
-	nodes=list(G.nodes())
-	edges=list(G.edges())
 	
 	# Now loop through the attributes file to work on the different attributes
 	for i in list(range(1, len(attributesTable.columns))):
@@ -75,7 +86,11 @@ for net, atr in files.items():
 			if str(val) == "nan":
 				val = "NA"
 			attr[key] = val
-
+		
+		# Count number of nodes and edges
+		nodes=list(G.nodes())
+		edges=list(G.edges())
+		
 		# Now matching order of every node with the attribute
 		group = {}
 		attributes = []
@@ -88,15 +103,17 @@ for net, atr in files.items():
 				if (tmp is None) & ("NA" not in attributes):
 					attributes.append("NA")
 		attributes = sorted(attributes)
-		attributes = "|".join(attributes)
-		
-		# Adding the attributes to the network
-		nx.set_node_attributes(G, group, "groups")
 		
 		# Calculate assortativity
-		assort = nx.attribute_assortativity_coefficient(G, "groups")
+		if (len(attributes) == 1) or (is_clique(G)) or (len(nodes) == 2):
+			assort = "nan"
+		else:
+			# Adding the attributes to the network
+			nx.set_node_attributes(G, group, "groups")
+			assort = nx.attribute_assortativity_coefficient(G, "groups")
 		
 		# And print information
+		attributes = "|".join(attributes)
 		attribute = str(list(column.columns)[1])
 		if (args.file_out is None) and (args.simple == False):
 			print("\r", str(net) + "\t" + str(atr) + "\tGraph\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(round(assort, 12)) + "\t" + str(attribute) + "\t" + str(attributes), sep="")
@@ -105,41 +122,43 @@ for net, atr in files.items():
 		else:
 			with open(out, "a") as outfile:
 				print(str(net) + "\t" + str(atr) + "\tGraph\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(assort) + "\t" + str(attribute) + "\t" + str(attributes), file=outfile)
-	
-	# Check if there are more than one connected commponents (CCs)
-	if args.simple == False:
-		CCs = (G.subgraph(CCs) for CCs in nx.connected_components(G))
-		count = 0
-		for CC in CCs:
-			count += 1
-		# if there is more than one, repeat previous steps for each CC
-		if count > 1:
-			j = 0
+		
+		# Check if there are more than one connected commponents (CCs)
+		if args.simple == False:
 			CCs = (G.subgraph(CCs) for CCs in nx.connected_components(G))
+			count = 0
 			for CC in CCs:
-				j += 1
-				nodes=list(CC.nodes())
-				edges=list(CC.edges())
-				# Now matching order of every node with the attribute
-				group = {}
-				attributes = []
-				for node in nodes:
-					tmp = attr.get(node)
-					group[node] = tmp
-					if tmp not in attributes:
-						if tmp is not None:
-							attributes.append(tmp)
-						if (tmp is None) & ("NA" not in attributes):
-							attributes.append("NA")
-				attributes = sorted(attributes)
-				attributes = "|".join(attributes)
-				# Adding the attributes to the network
-				nx.set_node_attributes(CC, group, "groups")
-				# Calculate assortativity
-				assort = nx.attribute_assortativity_coefficient(CC, "groups")
-				# And print the information
-				if args.file_out is None:
-					print("\r", str(net) + "\t" + str(atr) + "\t" + str(j) + "\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(assort) + "\t" + str(attribute) + "\t" + str(attributes), sep="")
-				else:
-					with open(out, "a") as outfile:
-						print(str(net) + "\t" + str(atr) + "\t" + str(j) + "\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(assort) + "\t" + str(attribute) + "\t" + str(attributes), file=outfile)
+				count += 1
+			# if there is more than one, repeat previous steps for each CC
+			if count > 1:
+				j = 0
+				CCs = (G.subgraph(CCs) for CCs in nx.connected_components(G))
+				for CC in CCs:
+					j += 1
+					nodes=list(CC.nodes())
+					edges=list(CC.edges())
+					# Now matching order of every node with the attribute
+					group = {}
+					attributes = []
+					for node in nodes:
+						tmp = attr.get(node)
+						group[node] = tmp
+						if tmp not in attributes:
+							if tmp is not None:
+								attributes.append(tmp)
+							if (tmp is None) & ("NA" not in attributes):
+								attributes.append("NA")
+					attributes = sorted(attributes)
+					# Calculate assortativity
+					if (len(attributes) == 1) or (is_clique(CC)) or (len(nodes) == 2):
+						assort = "nan"
+					else:
+						nx.set_node_attributes(CC, group, "groups")
+						assort = nx.attribute_assortativity_coefficient(CC, "groups")
+					# And print the information
+					attributes = "|".join(attributes)
+					if args.file_out is None:
+						print(str(net) + "\t" + str(atr) + "\t" + str(j) + "\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(assort) + "\t" + str(attribute) + "\t" + str(attributes), sep="")
+					else:
+						with open(out, "a") as outfile:
+							print(str(net) + "\t" + str(atr) + "\t" + str(j) + "\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(assort) + "\t" + str(attribute) + "\t" + str(attributes), file=outfile)
