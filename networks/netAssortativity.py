@@ -2,7 +2,6 @@
 
 import argparse
 import networkx as nx
-import statistics as st
 import pandas as pd
 import re
 
@@ -60,15 +59,15 @@ for net, atr in files.items():
 			next(neti, '')
 			G = nx.read_edgelist(neti, delimiter='\t', data=(("id",float),))
 					
-		# Reading attributes
-		attributes = pd.read_csv(atr, sep="\t")
-		# Count number of nodes and edges
-		nodes=list(G.nodes())
-		edges=list(G.edges())
+	# Reading attributes
+	attributesTable = pd.read_csv(atr, sep="\t")
+	# Count number of nodes and edges
+	nodes=list(G.nodes())
+	edges=list(G.edges())
 	
 	# Now loop through the attributes file to work on the different attributes
-	for i in list(range(1, len(attributes.columns))):
-		column = pd.concat([attributes.iloc[:,0], attributes.iloc[:,i]], axis=1)
+	for i in list(range(1, len(attributesTable.columns))):
+		column = pd.concat([attributesTable.iloc[:,0], attributesTable.iloc[:,i]], axis=1)
 		attr = {}
 		for line in column.index:
 			key = column.iloc[:,0][line]
