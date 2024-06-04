@@ -19,6 +19,9 @@ requiredArgs.add_argument("-a", "--attributes", dest="file_attr", nargs="+", req
 parser.add_argument("-o", "--output", dest="file_out", required=False, default=None,
 					help="Output file. Returns a tab delimited file with the following output: the name of the file, the connected component, the number of nodes, the number of edges, the assortativity, and the unique name of states for the give connected component. By default, will print the information to the console. If the provided file exists, it will append the information to it.")
 
+parser.add_argument("-i", "--ignore", dest="ignore", required=False, default=None, type=float,
+					help="If selected, will ignore connected components with less nodes than the given value. If (0-1] will take the percentage of the whole graph.")
+
 parser.add_argument("-c", "--headers", dest="headers", required=False, action="store_false",
 					help="If selected, will skip the first row of the network interpreted as headers.")
 
@@ -37,18 +40,6 @@ if len(args.file_in) != len(args.file_attr):
 	print("  Error: The number of networks (", len(args.file_in), ") is different than the number of atrtibute files (", len(args.file_attr), ") provided\nExiting", sep="")
 	import sys
 	sys.exit(1)
-	
-if (args.file_out is None) and (args.simple == False):
-	print("file_net\tfile_attribute\tCC\tnodes\tedges\tassortativity\tattribute\tstates")
-elif args.file_out is not None:
-	out = args.file_out
-	if args.delete:
-		import os.path
-		if os.path.exists(out):
-			os.remove(out)
-	if args.names:
-		with open(out, "a") as outfile:
-			print("file_net\tfile_attribute\tCC\tnodes\tedges\tassortativity\tattribute\tstates", file=outfile)
 
 # Define a function to check if a given net is a clique
 def is_clique(G):
@@ -61,6 +52,27 @@ for i in range(len(args.file_in)):
 	net = args.file_in[i]
 	atr = args.file_attr[i]
 	files[net] = atr
+
+if args.ignore is not None:
+	if args.ignore < 0:
+		print("  Warning! CCs smaller than 0 can't exist. Parameter 'ignore' set to 0, which won't have any effect")
+		ignore = 0
+	else:
+		ignore = args.ignore
+else:
+	ignore = 0
+
+if (args.file_out is None) and (args.simple == False):
+	print("file_net\tfile_attribute\tCC\tnodes\tedges\tassortativity\tattribute\tstates")
+elif args.file_out is not None:
+	out = args.file_out
+	if args.delete:
+		import os.path
+		if os.path.exists(out):
+			os.remove(out)
+	if args.names:
+		with open(out, "a") as outfile:
+			print("file_net\tfile_attribute\tCC\tnodes\tedges\tassortativity\tattribute\tstates", file=outfile)
 
 for net, atr in files.items():
 	if (args.file_out is None) and (args.simple == False):
@@ -136,29 +148,34 @@ for net, atr in files.items():
 				for CC in CCs:
 					j += 1
 					nodes=list(CC.nodes())
+					n = len(nodes)
 					edges=list(CC.edges())
-					# Now matching order of every node with the attribute
-					group = {}
-					attributes = []
-					for node in nodes:
-						tmp = attr.get(node)
-						group[node] = tmp
-						if tmp not in attributes:
-							if tmp is not None:
-								attributes.append(tmp)
-							if (tmp is None) & ("NA" not in attributes):
-								attributes.append("NA")
-					attributes = sorted(attributes)
-					# Calculate assortativity
-					if (len(attributes) == 1) or (is_clique(CC)):
-						assort = "nan"
-					else:
-						nx.set_node_attributes(CC, group, "groups")
-						assort = nx.attribute_assortativity_coefficient(CC, "groups")
-					# And print the information
-					attributes = "|".join(attributes)
-					if args.file_out is None:
-						print(str(net) + "\t" + str(atr) + "\t" + str(j) + "\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(assort) + "\t" + str(attribute) + "\t" + str(attributes), sep="")
-					else:
-						with open(out, "a") as outfile:
-							print(str(net) + "\t" + str(atr) + "\t" + str(j) + "\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(assort) + "\t" + str(attribute) + "\t" + str(attributes), file=outfile)
+					e = len(edges)
+					if (ignore > 0) & (ignore <= 1):
+						ignore = n * ignore
+					if n >= ignore:
+						# Now matching order of every node with the attribute
+						group = {}
+						attributes = []
+						for node in nodes:
+							tmp = attr.get(node)
+							group[node] = tmp
+							if tmp not in attributes:
+								if tmp is not None:
+									attributes.append(tmp)
+								if (tmp is None) & ("NA" not in attributes):
+									attributes.append("NA")
+						attributes = sorted(attributes)
+						# Calculate assortativity
+						if (len(attributes) == 1) or (is_clique(CC)):
+							assort = "nan"
+						else:
+							nx.set_node_attributes(CC, group, "groups")
+							assort = nx.attribute_assortativity_coefficient(CC, "groups")
+						# And print the information
+						attributes = "|".join(attributes)
+						if args.file_out is None:
+							print(str(net) + "\t" + str(atr) + "\t" + str(j) + "\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(assort) + "\t" + str(attribute) + "\t" + str(attributes), sep="")
+						else:
+							with open(out, "a") as outfile:
+								print(str(net) + "\t" + str(atr) + "\t" + str(j) + "\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(assort) + "\t" + str(attribute) + "\t" + str(attributes), file=outfile)
