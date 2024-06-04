@@ -105,7 +105,7 @@ for net, atr in files.items():
 		attributes = sorted(attributes)
 		
 		# Calculate assortativity
-		if (len(attributes) == 1) or (is_clique(G)) or (len(nodes) == 2):
+		if (len(attributes) == 1) or (is_clique(G)):
 			assort = "nan"
 		else:
 			# Adding the attributes to the network
@@ -150,7 +150,7 @@ for net, atr in files.items():
 								attributes.append("NA")
 					attributes = sorted(attributes)
 					# Calculate assortativity
-					if (len(attributes) == 1) or (is_clique(CC)) or (len(nodes) == 2):
+					if (len(attributes) == 1) or (is_clique(CC)):
 						assort = "nan"
 					else:
 						nx.set_node_attributes(CC, group, "groups")
