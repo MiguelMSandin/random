@@ -98,7 +98,7 @@ for net, atr in files.items():
 		with open(net, 'rb') as neti:
 			next(neti, '')
 			G = nx.read_edgelist(neti, delimiter='\t', data=(("id",float),))
-					
+		
 	# Reading attributes
 	attributesTable = pd.read_csv(atr, sep="\t")
 	
@@ -137,37 +137,44 @@ for net, atr in files.items():
 			# Adding the attributes to the network
 			nx.set_node_attributes(G, group, "groups")
 			assort = nx.attribute_assortativity_coefficient(G, "groups")
+			assort = round(assort, 12)
 		
 		if (args.random is not None) and (args.simple == False):
-			assortr = []
-			for i in range(args.random):
-				group = {}
-				for node in nodes:
-					tmp = random.sample(attributes, k=1)[0]
-					group[node] = tmp
-				nx.set_node_attributes(G, group, "groups")
-				assorti = nx.attribute_assortativity_coefficient(G, "groups")
-				assortr.append(assorti)
-			stats.ttest_1samp(assortr, assort)
-			ttest = stats.ttest_1samp(assortr, assort)
-			ranMean = statistics.mean(assortr)
+			if (len(attributes) == 1) or (is_clique(G)):
+				ttest = "nan"
+				ranMean = "nan"
+			else:
+				assortr = []
+				for i in range(args.random):
+					group = {}
+					for node in nodes:
+						tmp = random.sample(attributes, k=1)[0]
+						group[node] = tmp
+					nx.set_node_attributes(G, group, "groups")
+					assorti = nx.attribute_assortativity_coefficient(G, "groups")
+					assortr.append(assorti)
+				stats.ttest_1samp(assortr, assort)
+				ttest = stats.ttest_1samp(assortr, assort)[1]
+				ttest = round(ttest, 12)
+				ranMean = statistics.mean(assortr)
+				ranMean = round(ranMean, 12)
 			
 		# And print information
 		attributes = "|".join(attributes)
 		attribute = str(list(column.columns)[1])
 		if (args.file_out is None) and (args.simple == False):
 			if args.random is not None:
-				print("\r", str(net) + "\t" + str(atr) + "\tGraph\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(round(assort, 12)) + "\t" + str(round(ranMean, 12)) + "\t" + str(round(ttest[1], 12)) + "\t" + str(attribute) + "\t" + str(attributes), sep="")
+				print("\r", str(net) + "\t" + str(atr) + "\tGraph\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(assort) + "\t" + str(ranMean) + "\t" + str(ttest) + "\t" + str(attribute) + "\t" + str(attributes), sep="")
 			else:
-				print("\r", str(net) + "\t" + str(atr) + "\tGraph\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(round(assort, 12)) + "\t" + str(attribute) + "\t" + str(attributes), sep="")
+				print("\r", str(net) + "\t" + str(atr) + "\tGraph\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(assort) + "\t" + str(attribute) + "\t" + str(attributes), sep="")
 		elif args.simple:
 			print(str(assort))
 		else:
 			with open(out, "a") as outfile:
 				if args.random is not None:
-					print(str(net) + "\t" + str(atr) + "\tGraph\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(round(assort, 12)) + "\t" + str(round(ranMean, 12)) + "\t" + str(round(ttest[1], 12)) + "\t" + str(attribute) + "\t" + str(attributes), file=outfile)
+					print(str(net) + "\t" + str(atr) + "\tGraph\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(assort) + "\t" + str(ranMean) + "\t" + str(ttest) + "\t" + str(attribute) + "\t" + str(attributes), file=outfile)
 				else:
-					print(str(net) + "\t" + str(atr) + "\tGraph\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(round(assort, 12)) + "\t" + str(attribute) + "\t" + str(attributes), file=outfile)
+					print(str(net) + "\t" + str(atr) + "\tGraph\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(assort) + "\t" + str(attribute) + "\t" + str(attributes), file=outfile)
 		
 		# Check if there are more than one connected commponents (CCs)
 		if args.simple == False:
@@ -206,29 +213,36 @@ for net, atr in files.items():
 						else:
 							nx.set_node_attributes(CC, group, "groups")
 							assort = nx.attribute_assortativity_coefficient(CC, "groups")
+							assort = round(assort, 12)
 						if args.random is not None:
-							assortr = []
-							for i in range(args.random):
-								group = {}
-								for node in nodes:
-									tmp = random.sample(attributes, k=1)[0]
-									group[node] = tmp
-								nx.set_node_attributes(G, group, "groups")
-								assorti = nx.attribute_assortativity_coefficient(G, "groups")
-								assortr.append(assorti)
-							stats.ttest_1samp(assortr, assort)
-							ttest = stats.ttest_1samp(assortr, assort)
-							ranMean = statistics.mean(assortr)
+							if (len(attributes) == 1) or (is_clique(CC)):
+								ranMean = "nan"
+								ttest = "nan"
+							else:
+								assortr = []
+								for i in range(100):
+									group = {}
+									for node in nodes:
+										tmp = random.sample(attributes, k=1)[0]
+										group[node] = tmp
+									nx.set_node_attributes(CC, group, "groups")
+									assorti = nx.attribute_assortativity_coefficient(CC, "groups")
+									assortr.append(assorti)
+								stats.ttest_1samp(assortr, assort)
+								ttest = stats.ttest_1samp(assortr, assort)[1]
+								ttest = round(ttest, 12)
+								ranMean = statistics.mean(assortr)
+								ranMean = round(ranMean, 12)
 						# And print the information
 						attributes = "|".join(attributes)
 						if args.file_out is None:
 							if args.random is not None:
-								print("\r", str(net) + "\t" + str(atr) + "\tGraph\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(round(assort, 12)) + "\t" + str(round(ranMean, 12)) + "\t" + str(round(ttest[1], 12)) + "\t" + str(attribute) + "\t" + str(attributes), sep="")
+								print("\r", str(net) + "\t" + str(atr) + "\t" + str(j) + "\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(assort) + "\t" + str(ranMean) + "\t" + str(ttest) + "\t" + str(attribute) + "\t" + str(attributes), sep="")
 							else:
-								print("\r", str(net) + "\t" + str(atr) + "\tGraph\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(round(assort, 12)) + "\t" + str(attribute) + "\t" + str(attributes), sep="")
+								print("\r", str(net) + "\t" + str(atr) + "\t" + str(j) + "\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(assort) + "\t" + str(attribute) + "\t" + str(attributes), sep="")
 						else:
 							with open(out, "a") as outfile:
 								if args.random is not None:
-									print(str(net) + "\t" + str(atr) + "\tGraph\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(round(assort, 12)) + "\t" + str(round(ranMean, 12)) + "\t" + str(round(ttest[1], 12)) + "\t" + str(attribute) + "\t" + str(attributes), file=outfile)
+									print(str(net) + "\t" + str(atr) + "\t" + str(j) + "\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(assort) + "\t" + str(ranMean) + "\t" + str(ttest) + "\t" + str(attribute) + "\t" + str(attributes), file=outfile)
 								else:
-									print(str(net) + "\t" + str(atr) + "\tGraph\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(round(assort, 12)) + "\t" + str(attribute) + "\t" + str(attributes), file=outfile)
+									print(str(net) + "\t" + str(atr) + "\t" + str(j) + "\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(assort) + "\t" + str(attribute) + "\t" + str(attributes), file=outfile)
