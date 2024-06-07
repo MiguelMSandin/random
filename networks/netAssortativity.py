@@ -35,7 +35,7 @@ parser.add_argument("-s", "--simple", dest="simple", required=False, action="sto
 					help="If selected, will just print the assortativity value to the console")
 
 parser.add_argument("-r", "--randomize", dest="random", required=False, default=None, type=int,
-					help="If selected, will randomize the categories of the given attribute N times to test for deviation of random assortativities and estimate the probabilities of debiating from random assortativity with a one-sample T-test.")
+					help="If selected, will randomize the categories of the given attribute N times to test for deviation of random and compare the observed assortativity with the random population with a one-sample T-test. Note that the proportion of the different categories of each attribute and the network will remain identical over the randomization, only the node will change attributes.")
 
 args = parser.parse_args()
 
@@ -145,11 +145,19 @@ for net, atr in files.items():
 				ranMean = "nan"
 			else:
 				assortr = []
-				for i in range(args.random):
-					group = {}
+				for r in range(args.random):
+					attrv = []
+					for val in attr.values():
+						attrv.append(val)
+					random.shuffle(attrv)
+					nc = 0
 					for node in nodes:
-						tmp = random.sample(attributes, k=1)[0]
-						group[node] = tmp
+						if node not in attr.keys():
+							group[node] = "nan"
+						else:
+							nc += 1
+							tmp = attrv[nc]
+							group[node] = tmp
 					nx.set_node_attributes(G, group, "groups")
 					assorti = nx.attribute_assortativity_coefficient(G, "groups")
 					assortr.append(assorti)
@@ -220,11 +228,19 @@ for net, atr in files.items():
 								ttest = "nan"
 							else:
 								assortr = []
-								for i in range(100):
-									group = {}
+								for r in range(args.random):
+									attrv = []
+									for val in attr.values():
+										attrv.append(val)
+									random.shuffle(attrv)
+									nc = 0
 									for node in nodes:
-										tmp = random.sample(attributes, k=1)[0]
-										group[node] = tmp
+										if node not in attr.keys():
+											group[node] = "nan"
+										else:
+											nc += 1
+											tmp = attrv[nc]
+											group[node] = tmp
 									nx.set_node_attributes(CC, group, "groups")
 									assorti = nx.attribute_assortativity_coefficient(CC, "groups")
 									assortr.append(assorti)
