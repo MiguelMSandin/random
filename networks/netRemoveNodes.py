@@ -75,5 +75,5 @@ for filei in args.file_in:
 		if args.verbose:
 			print("    Edges in:  ", edgesin)
 			print("    Edges out: ", edgesout)
-			print("    Clean network exported to:", outFile)
+			print("  Clean network exported to:", outFile)
 	i += 1
