@@ -55,7 +55,7 @@ for filei in args.file_in:
 	edgesin = 0
 	edgesout = 0
 	with open(outFile, "w") as outfile:
-		for line in open("tmp.net"):
+		for line in open(filei):
 			export = True
 			edgesin += 1
 			linei = line.strip().split()
