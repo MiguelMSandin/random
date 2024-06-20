@@ -155,8 +155,8 @@ for net, atr in files.items():
 						if node not in attr.keys():
 							group[node] = "nan"
 						else:
-							nc += 1
 							tmp = attrv[nc]
+							nc += 1
 							group[node] = tmp
 					nx.set_node_attributes(G, group, "groups")
 					assorti = nx.attribute_assortativity_coefficient(G, "groups")
