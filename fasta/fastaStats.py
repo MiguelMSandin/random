@@ -119,7 +119,7 @@ for file in args.fileIn:
 				n = len(seq) - (a + c + g + t + gap) # Count number of ambiguities
 				gapp = round(gap / len(seq) * 100, 2)
 				if(len(set(lengthsRaw)) > 1):
-					print(str(name) + '\t' + str() + '\t' + str() + '\t' + str() + '\t' + str() + '\t' + str())
+					print(str(name) + '\t' + str(l) + '\t' + str(a) + '\t' + str(c) + '\t' + str(g) + '\t' + str(t) + '\t' + str(n))
 				else:
 					print(str(name) + '\t' + str(l) + '\t' + str(a) + '\t' + str(c) + '\t' + str(g) + '\t' + str(t) + '\t' + str(n) + '\t' + str(gap) + '\t' + str(gapp))
 
