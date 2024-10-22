@@ -25,7 +25,7 @@ parser.add_argument("-e", "--evalue", dest="evalue", required=False, default=Non
 					help="Applies a maximal evalue threshold to establish a connection between nodes, in addition to the identity and cover, if selected, thresholds.")
 
 parser.add_argument("-k", "--clean", dest="cleaning", required=False, action="store_true", default=None,
-					help="If selected, the input file is cleaned from reciprocal hits (A-B = B-A) before creating the network file.")
+					help="If selected, the input file is cleaned from reciprocal (A-B = B-A) and/or equal (A-A) hits before creating the network file.")
 
 parser.add_argument("-a", "--addHeaders", dest="addHeaders", required=False, action="store_true",
 					help="If selected, will add the following headers to the net: 'source target id'.")
@@ -35,12 +35,12 @@ args = parser.parse_args()
 if args.file_out is None:
 	out = re.sub("\\.[^\\.]+$", "", args.file_in)
 else:
-	out = args.out
+	out = args.file_out
 
 # Clean the file if needed
 if args.cleaning is not None:
 	print("  Cleaning the file:")
-	print("	Setting hit names")
+	print("  Setting hit names")
 	clean = {}
 	removed = 0
 	accepted = 0
@@ -49,36 +49,30 @@ if args.cleaning is not None:
 		line = line.strip().split()
 		seq1 = line[0]
 		seq2 = line[1]
-		
 		if seq1 == seq2:
 			selfHit = selfHit + 1
-	
 		hit = str(seq1) + "\t" + str(seq2)
 		hitr =str(seq2) + "\t" + str(seq1)
-		
 		if hit in clean:
 			removed = removed + 1
 		elif hitr in clean:
 			removed = removed + 1
 		else:
 			values = str(line[2]) + "\t" + str(line[3]) + "\t" + str(line[4]) + "\t" + str(line[5]) + "\t" + str(line[6]) + "\t" + str(line[7]) + "\t" + str(line[8]) + "\t" + str(line[9]) + "\t" + str(line[10])
-			
 			clean[hit] = values
 			accepted = accepted + 1
-
-	print("	Writing cleaned file with '", accepted, "' hits", sep="")
-	cleanFile = re.sub("\..*$", "_clean.similarities", args.file_in)
+	print("  Writing cleaned file with '", accepted, "' hits", sep="")
+	cleanFile = re.sub(r"\..*$", "_clean.similarities", args.file_in)
 	with open(cleanFile, "w") as outfile:
 		for hit in list(clean.keys()):
 			print(hit + "\t" + clean[hit], file=outfile)
-
-	print("	  Removed hits: ", removed)
-	print("	  Self matching:", selfHit)
-	print("  Cleaned file exported to: '", re.sub("\..*$", "_clean.similarities", args.file_in), "'", sep="")
+	print("  Removed hits: ", removed)
+	print("  Self matching:", selfHit)
+	print("  Cleaned file exported to: '", re.sub(r"\..*$", "_clean.similarities", args.file_in), "'", sep="")
 
 # Setting name of input file
 if args.cleaning:
-	input_file = re.sub("\..*$", "_clean.similarities", args.file_in)
+	input_file = re.sub(r"\..*$", "_clean.similarities", args.file_in)
 else:
 	input_file = args.file_in
 
@@ -86,18 +80,18 @@ else:
 for i in args.identity:
 	if args.cover is not None:
 		c=", '" + str(args.cover) + "' minimum cover"
-		C="_" + str(args.cover) + "c"
+		C="_" + "c" + str(args.cover)
 	else:
 		c=""
 		C=""
 	if args.evalue is not None:
 		e=", '" + str(args.evalue) + "' maximum evalue"
-		E="_" + str(args.args) + "e"
+		E="_" + "e" + str(args.args)
 	else:
 		e=""
 		E=""
 	print("  Creating a network file with '", i, "%' similarity threshold", c, e, sep="")
-	tmp = out + "_" + i + "i" + C + E + ".net"
+	tmp = out + "_" + "i" + i + C + E + ".net"
 	with open(tmp, "w") as outfile:
 		if args.addHeaders:
 			print("source\ttarget\tid", file=outfile)
@@ -130,6 +124,6 @@ for i in args.identity:
 			if statement1 and (statement2 or statement2==None) and (statement3 or statement3==None):
 				lineOut = str(seq1) + "\t" + str(seq2) + "\t" + str(seqid)  
 				print(lineOut, file=outfile)
-	print("	Network file exported to: '", tmp, "'", sep="")
+	print("  Network file exported to: '", tmp, "'", sep="")
 
 print("Done")
