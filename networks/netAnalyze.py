@@ -21,7 +21,7 @@ args = parser.parse_args()
 if args.file_out is None:
 	out = re.sub("\\.[^\\.]+$", "", args.file_in)
 else:
-	out = args.out
+	out = args.file_out
 
 outNetwork = out + "_network.net"
 outNodes = out + "_nodes.net"
