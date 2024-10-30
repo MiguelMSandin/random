@@ -20,7 +20,7 @@ parser.add_argument("-b", "--binaryStates", dest="binary_states", required=False
 parser.add_argument("-o", "--output", dest="file_out", required=False, default=None,
 					help="Output file. A file with the shortest path of every node labelled as 'from' to a node labelled as 'to'. By default, will add '_shortest.tsv' to the input file (after deleting the extension)")
 
-parser.add_argument("-r", "--header", dest="header", required=False, action="store_false",
+parser.add_argument("-r", "--header", dest="header", required=False, action="store_true",
 					help="If selected, will remove the headers (first row) of the attribute file.")
 
 parser.add_argument("-v", "--verbose", dest="verbose", required=False, action="store_false",
@@ -54,13 +54,16 @@ with open(args.file_attr) as attributes:
 			attr[key] = val
 			if args.binary_states is None:
 				states.add(val)
+		if args.header and i == 1:
+			if args.verbose:
+				print("    Ignoring headers in attribute file")
 
 # Setting the names of the states to look from 'from' to 'to'
 if args.binary_states is None:
 	if len(states) < 2:
-		print(" Warning!! There are less than two states in the attributes file. This will yield an error...")
+		print("Warning!! There are less than two states in the attributes file. This will results in errors...")
 	if len(states) > 2:
-		print(" Warning!! There are more than two states in the attributes file. Some states will be ignored...")
+		print("Warning!! There are more than two states in the attributes file. This will results in errors...")
 	states_from = list(states)[0]
 	states_to = list(states)[1]
 else:
