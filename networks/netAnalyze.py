@@ -64,7 +64,7 @@ with open(outNetwork, "w") as outfile:
     print(": done\n")
 
 if count > 1:
-    print("  There are '", count, "' connected components (CC). Analyzing each one of them individually as an indpedendent network:", sep="")
+    print("  There are '", count, "' connected components (CC). Analyzing each one of them individually as an independent network:", sep="")
     outNetworkCCs = out + "_network_CCs"
     #CCs = nx.connected_component_subgraphs(G)  # When using a 'networkx' version below 2.1
     CCs = (G.subgraph(CCs) for CCs in nx.connected_components(G))
