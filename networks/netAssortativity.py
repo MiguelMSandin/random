@@ -40,7 +40,7 @@ parser.add_argument("-r", "--randomize", dest="random", required=False, default=
 args = parser.parse_args()
 
 if len(args.file_in) != len(args.file_attr):
-	print("  Error: The number of networks (", len(args.file_in), ") is different than the number of atrtibute files (", len(args.file_attr), ") provided\nExiting", sep="")
+	print("  Error: The number of networks (", len(args.file_in), ") is different than the number of atrtibute files (", len(args.file_attr), ") provided\nExiting", sep="", flush=True)
 	import sys
 	sys.exit(1)
 
@@ -58,7 +58,7 @@ for i in range(len(args.file_in)):
 
 if args.ignore is not None:
 	if args.ignore < 0:
-		print("  Warning! CCs smaller than 0 can't exist. Parameter 'ignore' set to 0, which won't have any effect")
+		print("  Warning! CCs smaller than 0 can't exist. Parameter 'ignore' set to 0, which won't have any effect", flush=True)
 		ignore = 0
 	else:
 		ignore = args.ignore
@@ -72,9 +72,9 @@ if args.random is not None:
 
 if (args.file_out is None) and (args.simple == False):
 	if args.random is not None:
-		print("file_net\tfile_attribute\tCC\tnodes\tedges\tassortativity\trandom\tsignificance\tattribute\tstates")
+		print("file_net\tfile_attribute\tCC\tnodes\tedges\tassortativity\trandom\tsignificance\tattribute\tstates", flush=True)
 	else:
-		print("file_net\tfile_attribute\tCC\tnodes\tedges\tassortativity\tattribute\tstates")
+		print("file_net\tfile_attribute\tCC\tnodes\tedges\tassortativity\tattribute\tstates", flush=True)
 elif args.file_out is not None:
 	out = args.file_out
 	if args.delete:
@@ -84,13 +84,13 @@ elif args.file_out is not None:
 	if args.names:
 		with open(out, "a") as outfile:
 			if args.random is not None:
-				print("file_net\tfile_attribute\tCC\tnodes\tedges\tassortativity\trandom\tsignificance\tattribute\tstates", file=outfile)
+				print("file_net\tfile_attribute\tCC\tnodes\tedges\tassortativity\trandom\tsignificance\tattribute\tstates", file=outfile, flush=True)
 			else:
-				print("file_net\tfile_attribute\tCC\tnodes\tedges\tassortativity\tattribute\tstates", file=outfile)
+				print("file_net\tfile_attribute\tCC\tnodes\tedges\tassortativity\tattribute\tstates", file=outfile, flush=True)
 
 for net, atr in files.items():
 	if (args.file_out is None) and (args.simple == False):
-		print(str(net), end="")
+		print(str(net), end="", flush=True)
 	# Reading network
 	if args.headers:
 		G=nx.read_edgelist(net, delimiter="\t", data=(("id",float),))
@@ -172,17 +172,17 @@ for net, atr in files.items():
 		attribute = str(list(column.columns)[1])
 		if (args.file_out is None) and (args.simple == False):
 			if args.random is not None:
-				print("\r", str(net) + "\t" + str(atr) + "\tGraph\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(assort) + "\t" + str(ranMean) + "\t" + str(ttest) + "\t" + str(attribute) + "\t" + str(attributes), sep="")
+				print("\r", str(net) + "\t" + str(atr) + "\tGraph\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(assort) + "\t" + str(ranMean) + "\t" + str(ttest) + "\t" + str(attribute) + "\t" + str(attributes), sep="", flush=True)
 			else:
-				print("\r", str(net) + "\t" + str(atr) + "\tGraph\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(assort) + "\t" + str(attribute) + "\t" + str(attributes), sep="")
+				print("\r", str(net) + "\t" + str(atr) + "\tGraph\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(assort) + "\t" + str(attribute) + "\t" + str(attributes), sep="", flush=True)
 		elif args.simple:
 			print(str(assort))
 		else:
 			with open(out, "a") as outfile:
 				if args.random is not None:
-					print(str(net) + "\t" + str(atr) + "\tGraph\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(assort) + "\t" + str(ranMean) + "\t" + str(ttest) + "\t" + str(attribute) + "\t" + str(attributes), file=outfile)
+					print(str(net) + "\t" + str(atr) + "\tGraph\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(assort) + "\t" + str(ranMean) + "\t" + str(ttest) + "\t" + str(attribute) + "\t" + str(attributes), file=outfile, flush=True)
 				else:
-					print(str(net) + "\t" + str(atr) + "\tGraph\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(assort) + "\t" + str(attribute) + "\t" + str(attributes), file=outfile)
+					print(str(net) + "\t" + str(atr) + "\tGraph\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(assort) + "\t" + str(attribute) + "\t" + str(attributes), file=outfile, flush=True)
 		
 		# Check if there are more than one connected commponents (CCs)
 		if args.simple == False:
@@ -253,12 +253,12 @@ for net, atr in files.items():
 						attributes = "|".join(attributes)
 						if args.file_out is None:
 							if args.random is not None:
-								print("\r", str(net) + "\t" + str(atr) + "\t" + str(j) + "\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(assort) + "\t" + str(ranMean) + "\t" + str(ttest) + "\t" + str(attribute) + "\t" + str(attributes), sep="")
+								print("\r", str(net) + "\t" + str(atr) + "\t" + str(j) + "\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(assort) + "\t" + str(ranMean) + "\t" + str(ttest) + "\t" + str(attribute) + "\t" + str(attributes), sep="", flush=True)
 							else:
-								print("\r", str(net) + "\t" + str(atr) + "\t" + str(j) + "\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(assort) + "\t" + str(attribute) + "\t" + str(attributes), sep="")
+								print("\r", str(net) + "\t" + str(atr) + "\t" + str(j) + "\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(assort) + "\t" + str(attribute) + "\t" + str(attributes), sep="", flush=True)
 						else:
 							with open(out, "a") as outfile:
 								if args.random is not None:
-									print(str(net) + "\t" + str(atr) + "\t" + str(j) + "\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(assort) + "\t" + str(ranMean) + "\t" + str(ttest) + "\t" + str(attribute) + "\t" + str(attributes), file=outfile)
+									print(str(net) + "\t" + str(atr) + "\t" + str(j) + "\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(assort) + "\t" + str(ranMean) + "\t" + str(ttest) + "\t" + str(attribute) + "\t" + str(attributes), file=outfile, flush=True)
 								else:
-									print(str(net) + "\t" + str(atr) + "\t" + str(j) + "\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(assort) + "\t" + str(attribute) + "\t" + str(attributes), file=outfile)
+									print(str(net) + "\t" + str(atr) + "\t" + str(j) + "\t" + str(len(nodes)) + "\t" + str(len(edges)) + "\t" + str(assort) + "\t" + str(attribute) + "\t" + str(attributes), file=outfile, flush=True)
