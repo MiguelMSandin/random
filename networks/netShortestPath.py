@@ -35,11 +35,11 @@ else:
 	out = args.file_out
 
 if args.verbose:
-	print("  Reading network file")
+	print("  Reading network file", flush=True)
 G=nx.read_edgelist(args.file_in, delimiter="\t", data=(("id",float),))
 
 if args.verbose:
-	print("  Reading attributes file")
+	print("  Reading attributes file", flush=True)
 with open(args.file_attr) as attributes:
 	attr = {}
 	i = 0
@@ -56,14 +56,14 @@ with open(args.file_attr) as attributes:
 				states.add(val)
 		if args.header and i == 1:
 			if args.verbose:
-				print("    Ignoring headers in attribute file")
+				print("    Ignoring headers in attribute file", flush=True)
 
 # Setting the names of the states to look from 'from' to 'to'
 if args.binary_states is None:
 	if len(states) < 2:
-		print("Warning!! There are less than two states in the attributes file. This will results in errors...")
+		print("Warning!! There are less than two states in the attributes file. This will results in errors...", flush=True)
 	if len(states) > 2:
-		print("Warning!! There are more than two states in the attributes file. This will results in errors...")
+		print("Warning!! There are more than two states in the attributes file. This will results in errors...", flush=True)
 	states_from = list(states)[0]
 	states_to = list(states)[1]
 else:
@@ -72,7 +72,7 @@ else:
 	states_to = states[1]
 
 if args.verbose:
-	print("  Setting attributes and states")
+	print("  Setting attributes and states", flush=True)
 # Now matching order of every node with the attribute
 group = {}
 for node in G.nodes():
@@ -84,14 +84,14 @@ lto = len([n for n in G.nodes() if G.nodes[n]["groups"] == states_to])
 if args.verbose:
 	print("  Nodes in network: \t", len(G.nodes()),
 	   "\n    Nodes with state 'from' (attribute name '", states_from, "'): \t", lfrom, 
-	   "\n    Nodes with state 'to'   (attribute name '", states_to, "'): \t", lto, sep="")
+	   "\n    Nodes with state 'to'   (attribute name '", states_to, "'): \t", lto, sep="", flush=True)
 
 if args.verbose:
-	print("  Calculating")
+	print("  Calculating", flush=True)
 #CCs = nx.connected_component_subgraphs(G)  # When using a 'networkx' version below 2.1
 CCs = (G.subgraph(CCs) for CCs in nx.connected_components(G))
 with open(out, "w") as outfile:
-	print("cc\tnode_from\tshortest\tnode_to", file=outfile)
+	print("cc\tnode_from\tshortest\tnode_to", file=outfile, flush=True)
 	c = 0
 	i = 0
 	for CC in CCs:
@@ -101,7 +101,7 @@ with open(out, "w") as outfile:
 		for n in nfrom:
 			i = i + 1
 			if args.verbose:
-				print("\r    Working on node ", i, "/", lfrom, sep="", end="")
+				print("\r    Working on node ", i, "/", lfrom, sep="", end="", flush=True)
 			if states_to in nx.get_node_attributes(CC, "groups").values():
 				#shortest = sorted([nx.shortest_path(CC, n, ntoi) for ntoi in nto], key=len)[0]
 				shortest = sorted([nx.shortest_path(CC, n, ntoi) for ntoi in nto], key=lambda x: len(x))[0]
@@ -110,7 +110,7 @@ with open(out, "w") as outfile:
 			else:
 				shortest = "Inf"
 				end = "Node_to_not_in_CC"
-			print((str(c) + "\t" + str(n) + "\t" + str(shortest) + "\t" + str(end)), file=outfile)
+			print((str(c) + "\t" + str(n) + "\t" + str(shortest) + "\t" + str(end)), file=outfile, flush=True)
 
 if args.verbose:
-	print("\nDone")
+	print("\nDone", flush=True)
