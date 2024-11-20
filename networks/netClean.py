@@ -109,13 +109,12 @@ for CC in CCs:
 				l += 1
 				toRemove.add(node)
 
-print("\n", flush=True)
 if args.size is not None:
-	print("    Cleaned ", s, " nodes belonging to CCs with less than ", args.size, " nodes", sep="", flush=True)
+	print("\n    Cleaned ", s, " nodes belonging to CCs with less than ", args.size, " nodes", sep="", flush=True)
 if args.attribute is not None:
-	print("    Cleaned ", t, " nodes belonging to CCs with only one attribute group", sep="", flush=True)
+	print("\n    Cleaned ", t, " nodes belonging to CCs with only one attribute group", sep="", flush=True)
 if args.listNodes is not None:
-	print("    Cleaned ", l, " nodes from ", len(listNodes), " listed to be removed", sep="", flush=True)
+	print("\n    Cleaned ", l, " nodes from ", len(listNodes), " listed to be removed", sep="", flush=True)
 
 print("  Removing nodes", flush=True)
 G.remove_nodes_from(toRemove)
