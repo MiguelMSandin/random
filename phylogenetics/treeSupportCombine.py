@@ -9,7 +9,7 @@ parser = argparse.ArgumentParser(description="Will combine the node support from
 requiredArgs = parser.add_argument_group('required arguments')
 
 requiredArgs.add_argument("-t", "--trees", dest="trees", required=True, nargs="+",
-						  help="A tree file in newick format.")
+						  help="Tree files in newick format.")
 
 # parser.add_argument("-f", "--format", dest="formaTree", required=False, default='newick',
 # 					help="The tree file format: accepted formats are: newick (default), nexus, nexml, phyloxml or cdao.")
