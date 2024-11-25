@@ -55,13 +55,14 @@ for key, value in tips.items():
 
 # Exporting ________________________________________________________________________________________
 if args.file_out is None:
-	if args.verbose:
-		if args.export == "r" or args.export == "rares":
-			print("  The following tips do NOT appear in all trees:")
-		if args.export == "c" or args.export == "common":
-			print("  The following tips are common to all trees:")
-	for tip in out:
-		print(tip)
+	if len(out) != 0:
+		if args.verbose:
+			if args.export == "r" or args.export == "rares":
+				print("  The following tips do NOT appear in all trees:")
+			if args.export == "c" or args.export == "common":
+				print("  The following tips are common to all trees:")
+		for tip in out:
+			print(tip)
 else:
 	if args.verbose:
 		if args.export == "r" or args.export == "rares":
@@ -73,9 +74,12 @@ else:
 			print(tip, file=outfile)
 
 if args.verbose:
-	if args.export == "r" or args.export == "rares":
-		print("  In total ", len(out), " tips do NOT appear in all trees", sep="")
-	if args.export == "c" or args.export == "common":
-		print("  In total ", len(out), " tips are common in all trees", sep="")
-	print("    These represent ", round(len(out)/len(tips)*100, 2), "% of all unique tips", sep="")
+	if len(out) == 0:
+		print("  All tips are present in all trees", sep="")
+	else:
+		if args.export == "r" or args.export == "rares":
+			print("  In total ", len(out), " tips do NOT appear in all trees", sep="")
+		if args.export == "c" or args.export == "common":
+			print("  In total ", len(out), " tips are common in all trees", sep="")
+		print("    These represent ", round(len(out)/len(tips)*100, 2), "% of all unique tips", sep="")
 	print("Done")
