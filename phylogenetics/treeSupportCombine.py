@@ -42,7 +42,7 @@ delim = str(args.delimiter)
 absent = str(args.absent)
 
 if len(args.trees) == 1:
-	print(  "Warning, only one tree has been given.")
+	print(  "Warning, only one tree has been given.", flush=True)
 
 # Reading files and checking internal nodes --------------------------------------------------------
 i = 0
@@ -50,7 +50,7 @@ for tree in args.trees:
 	i += 1
 	if i == 1:
 		if args.verbose:
-			print("  Reading tree", tree)
+			print("  Reading tree", tree, flush=True)
 		# T = Phylo.read(tree, args.formaTree)
 		T = Phylo.read(tree, "newick")
 		nodesSupport = {}
@@ -65,7 +65,7 @@ for tree in args.trees:
 			nodesTips["node" + str(c)] = str(names)
 	else:
 		if args.verbose:
-			print("\r  Reading tree ", i, "/", len(args.trees), " and referencing clades", sep="", end="")
+			print("\r  Reading tree ", i, "/", len(args.trees), " and referencing clades", sep="", end="", flush=True)
 		# Ti = Phylo.read(tree, args.formaTree)
 		Ti = Phylo.read(tree, "newick")
 		nodesSupporti = {}
@@ -90,7 +90,7 @@ for tree in args.trees:
 
 # Annotating output file ---------------------------------------------------------------------------
 if args.verbose:
-	print("\n  Annotating tree")
+	print("\n  Annotating tree", flush=True)
 c = 0
 for clade in T.get_nonterminals():
 	c += 1
@@ -98,8 +98,8 @@ for clade in T.get_nonterminals():
 
 # Writing file -------------------------------------------------------------------------------------
 if args.verbose:
-	print("  Exporting tree to", output)
+	print("  Exporting tree to", output, flush=True)
 Phylo.write(T, output, "nexus")
 
 if args.verbose:
-	print("Done")
+	print("Done", flush=True)
