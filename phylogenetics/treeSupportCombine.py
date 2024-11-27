@@ -50,7 +50,7 @@ for tree in args.trees:
 	i += 1
 	if i == 1:
 		if args.verbose:
-			print("  Reading tree", tree, flush=True)
+			print("  Reading tree ", tree, " (", i, "/", len(args.trees), ")", sep="", flush=True)
 		# T = Phylo.read(tree, args.formaTree)
 		T = Phylo.read(tree, "newick")
 		nodesSupport = {}
@@ -65,9 +65,11 @@ for tree in args.trees:
 			nodesTips["node" + str(c)] = str(names)
 	else:
 		if args.verbose:
-			print("\r  Reading tree ", i, "/", len(args.trees), " and referencing clades", sep="", end="", flush=True)
+			print("  Reading tree ", tree, " (", i, "/", len(args.trees), ")", sep="", end="", flush=True)
 		# Ti = Phylo.read(tree, args.formaTree)
 		Ti = Phylo.read(tree, "newick")
+		if args.verbose:
+			nnodes = len(T.get_nonterminals())
 		nodesSupporti = {}
 		nodesTipsi = {}
 		c = 0
@@ -78,7 +80,12 @@ for tree in args.trees:
 			for tip in clade.get_terminals():
 				names.append(tip.name)
 			nodesTipsi["node" + str(c)] = str(names)
+		if args.verbose:
+			c = 0
 		for node, tips in nodesTips.items():
+			if args.verbose:
+				c += 1
+				print("\r  Reading tree ", tree, " (", i, "/", len(args.trees), ") and referencing ", round(c/nnodes*100), "%", sep="", end="", flush=True)
 			found = None
 			for nodei, tipsi in nodesTipsi.items():
 				if sorted(tips) == sorted(tipsi):
@@ -87,10 +94,12 @@ for tree in args.trees:
 				nodesSupport[node] = str(nodesSupport[node]) + str(delim) + str(nodesSupporti[found])
 			else:
 				nodesSupport[node] = str(nodesSupport[node]) + str(delim) + str(absent)
+		if args.verbose:
+			print("")
 
 # Annotating output file ---------------------------------------------------------------------------
 if args.verbose:
-	print("\n  Annotating tree", flush=True)
+	print("  Annotating tree", flush=True)
 c = 0
 for clade in T.get_nonterminals():
 	c += 1
