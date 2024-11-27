@@ -29,7 +29,7 @@ parser.add_argument("-n", "--tips", dest="tips", required=False, default=1, type
 parser.add_argument("-o", "--output", dest="output", required=False, action="store", default=None,
 					help="If selected, will export a list of nodes and their clades to the given output.")
 
-parser.add_argument("-export", "--export", dest="export", required=False, action="store", default=None,
+parser.add_argument("-e", "--export", dest="export", required=False, action="store", default=None,
 					help="If selected, will export tree with the selected nodes labelled to the given output.")
 
 parser.add_argument("-v", "--verbose", dest="verbose", required=False, action="store_false",
