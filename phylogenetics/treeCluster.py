@@ -14,7 +14,7 @@ requiredArgs.add_argument("-t", "--tree", dest="tree", required=True,
 parser.add_argument("-b", "--branchLength", dest="branchLength", required=False, type=float, default=0,
 					help="A minimum branch length. By default is 0.")
 
-parser.add_argument("-confidence", "--confidence", dest="confidence", required=False, type=float, default=0,
+parser.add_argument("-c", "--confidence", dest="confidence", required=False, type=float, default=0,
 					help="Minimum support values at nodes. By default is 0.")
 
 parser.add_argument("-n", "--tips", dest="tips", required=False, default=1, type=int,
