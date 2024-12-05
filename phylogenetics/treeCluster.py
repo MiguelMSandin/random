@@ -3,7 +3,7 @@
 import argparse
 from Bio import Phylo
 
-parser = argparse.ArgumentParser(description="Clusters a phylogenetic tree into subclades based on branch lengths, support and number of tips, ignoring the root node.")
+parser = argparse.ArgumentParser(description="Clusters a phylogenetic tree into subclades based on branch lengths, support, number of tips and/or relative branch lengths, ignoring the root node.")
 
 # Add the arguments to the parser
 requiredArgs = parser.add_argument_group('required arguments')
@@ -19,6 +19,9 @@ parser.add_argument("-c", "--confidence", dest="confidence", required=False, typ
 
 parser.add_argument("-n", "--tips", dest="tips", required=False, default=1, type=int,
 					help="Minimum number of tips in given clade. By default is 1.")
+
+parser.add_argument("-r", "--relativeLength", dest="relativeLength", required=False, default=0, type=float,
+					help="The relative branch length of a node regarding the average branch lengths within the node. By default is 0, which represents that a node has to have a branch length 0%% higher than the average branch lengths whithin the given node.")
 
 # parser.add_argument("-f", "--format", dest="formaTree", required=False, default='newick',
 # 					help="The tree file format: accepted formats are: newick (default), nexus, nexml, phyloxml or cdao.")
@@ -48,6 +51,7 @@ subclades = 0
 passLength = 0
 passConfidence = 0
 passTips = 0
+passRelative = 0
 pressenceLength = set()
 pressenceConfidence = set()
 internalNodes = 0
@@ -57,31 +61,44 @@ for clade in T.get_nonterminals():
 		testLength = False
 		testConfidence = False
 		testTips = False
+		testRelative = False
 		avoidLength = False
 		avoidConfidence = False
+		avoidRelative = False
 		if clade.branch_length is not None:
 			pressenceLength.add(1)
 			if clade.branch_length >= args.branchLength:
-			# if clade.branch_length >= 0:
 				testLength = True
 				passLength += 1
 		else:
-			pressenceLength.add(0)
 			avoidLength = True
+			pressenceLength.add(0)
 		if clade.confidence is not None:
 			pressenceConfidence.add(1)
 			if clade.confidence >= args.confidence:
-			# if clade.confidence >= 0:
 				testConfidence = True
 				passConfidence += 1
 		else:
 			avoidConfidence = True
 			pressenceConfidence.add(0)
 		if clade.count_terminals() >= args.tips:
-		# if clade.count_terminals() >= 1:
 			testTips = True
 			passTips += 1
-		if (testLength or avoidLength) and (testConfidence or avoidConfidence) and testTips:
+		if args.relativeLength != 0 and clade.branch_length is not None:
+			import statistics
+			lengths = list()
+			for sclade in clade.get_nonterminals():
+				lengths.append(sclade.branch_length)
+			for sclade in clade.get_terminals():
+				lengths.append(sclade.branch_length)
+			averageLength = statistics.mean(lengths)
+			relAverageLength = averageLength + averageLength * args.relativeLength
+			if clade.branch_length > relAverageLength:
+				testRelative = True
+				passRelative += 1
+		else:
+			avoidRelative = True
+		if (testLength or avoidLength) and (testConfidence or avoidConfidence) and testTips and (testRelative or avoidRelative):
 			subclades += 1
 			if args.export is None:
 				clade.name = "subclade" + str(subclades)
@@ -91,14 +108,16 @@ for clade in T.get_nonterminals():
 # Exporting values ---------------------------------------------------------------------------------
 print("  From", internalNodes, "internal nodes,", subclades, "passed all thresholds")
 if sum(pressenceLength) == 1:
-	print("    Nodes with branch lengths above ", args.branchLength, ": \t", passLength, sep="")
+	print("    Nodes with branch lengths above ", args.branchLength, ": \t\t", passLength, sep="")
 else:
 	print("    Branch lengths not found in tree and therefore were ignored")
 if sum(pressenceConfidence) == 1:
-	print("    Nodes with confidence above ", args.confidence, ": \t\t", passConfidence, sep="")
+	print("    Nodes with confidence above ", args.confidence, ": \t\t\t", passConfidence, sep="")
 else:
 	print("    Confidence values not found in tree and therefore were ignored")
-print("    Nodes with more than ", args.tips, " tips: \t\t", passTips, sep="")
+print("    Nodes with more than ", args.tips, " tips: \t\t\t", passTips, sep="")
+if sum(pressenceLength) == 1 and args.relativeLength != 0:
+	print("    Nodes with ", args.relativeLength*100, "% higher relative branch length: \t", passRelative, sep="")
 if args.output is not None:
 	with open(args.output, "w") as outfile:
 		for clade in T.get_nonterminals():
