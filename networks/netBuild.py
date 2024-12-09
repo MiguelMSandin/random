@@ -24,6 +24,9 @@ parser.add_argument("-c", "--cover", dest="cover", required=False, default=None,
 parser.add_argument("-e", "--evalue", dest="evalue", required=False, default=None,
 					help="Applies a maximal evalue threshold to establish a connection between nodes, in addition to the identity and cover, if selected, thresholds.")
 
+parser.add_argument("-I", "--identityPosition", dest="identityPosition", required=False, default=3, type=int,
+					help="The positional column of the identity value. Default=4 (in the fourth column).")
+
 parser.add_argument("-k", "--clean", dest="cleaning", required=False, action="store_true", default=None,
 					help="If selected, the input file is cleaned from reciprocal (A-B = B-A) and/or equal (A-A) hits before creating the network file.")
 
@@ -99,7 +102,7 @@ for i in args.identity:
 			data = line[:-1].split("\t")
 			seq1 = data[0]
 			seq2 = data[1]
-			seqid = data[3]
+			seqid = data[args.identityPosition-1]
 			if (seq1 != seq2) and (int(float(seqid)) >= int(float(i))):
 				statement1=True
 			else:
