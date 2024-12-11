@@ -25,6 +25,9 @@ parser.add_argument("-o", "--output", dest="file_out", required=False, default=N
 parser.add_argument("-F", "--format", dest="format", required=False, default="newick",
 					help="Tree file format (newick, nexus, nexml, phyloxml or cdao), default='newick'.")
 
+parser.add_argument("-s", "--sort", dest="sort", required=False, action="store_true",
+					help="If selected, will sort the tree branches according to the number of tips before reordering the fasta file.")
+
 parser.add_argument("-v", "--verbose", dest="verbose", required=False, action="store_false",
 					help="If selected, will not print information to the console.")
 
@@ -52,6 +55,10 @@ if args.tree is not None:
 	if args.verbose:
 		print("  Reading tree file")
 	T = Phylo.read(args.tree, args.format)
+	if args.sort:
+		if args.verbose:
+			print("    Sorting nodes by number of tips")
+		T.ladderize()
 	for line in T.get_terminals():
 		tmp = line.name
 		tmp = tmp.strip("'")
