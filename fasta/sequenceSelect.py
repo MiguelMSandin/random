@@ -17,8 +17,8 @@ parser.add_argument("-o", "--output", dest="file_out", required=False, default=N
 parser.add_argument("-l", "--list", dest="listSeq", required=False, default=None,
 					help="List of sequences to be selected. This must be a different file with each sequence name in a different line.")
 
-parser.add_argument("-p", "--pattern", dest="pattern", required=False, default=None,
-					help="Pattern to be matched for selection of the sequences. When using this option in combination with '--action keep', it might be faster to use 'grep -A 1 PATTERN FILE_IN > FILE_OUT' if each sequence from the input file is in a single line.")
+parser.add_argument("-p", "--pattern", dest="pattern", required=False, default=None, nargs="+",
+					help="Pattern(s) to be matched for selection of the sequences. When using this option in combination with '--action keep', it might be faster to use 'grep -A 1 PATTERN FILE_IN > FILE_OUT' if each sequence from the input file is in a single line.")
 
 parser.add_argument("-a", "--action", dest="action", required=False, default='keep',
 					choices=['k', 'keep', 'r', 'remove'],
@@ -56,18 +56,20 @@ with open(outFile, "a") as outfile:
 					SeqIO.write([i], outfile, "fasta")
 					seq_out += 1
 			if args.pattern is not None:
-				if args.pattern not in i.id:
-					SeqIO.write([i], outfile, "fasta")
-					seq_out += 1
+				for pattern in args.pattern:
+					if pattern not in i.id:
+						SeqIO.write([i], outfile, "fasta")
+						seq_out += 1
 		if args.action == "keep" or args.action == "k":
 			if args.listSeq is not None:
 				if i.id in listSeq:
 					SeqIO.write([i], outfile, "fasta")
 					seq_out += 1
 			if args.pattern is not None:
-				if args.pattern in i.id:
-					SeqIO.write([i], outfile, "fasta")
-					seq_out += 1
+				for pattern in args.pattern:
+					if pattern in i.id:
+						SeqIO.write([i], outfile, "fasta")
+						seq_out += 1
 
 if args.verbose:
 	if args.listSeq is not None:
