@@ -4,14 +4,16 @@ import argparse
 import re
 import sys
 
-parser = argparse.ArgumentParser(description="Builds the consensus sequence of an alignment.")
+parser = argparse.ArgumentParser(description="Builds a consensus sequence of an alignment.")
 
 # Add the arguments to the parser
-parser.add_argument("-f", "--file", dest="inFile", required=True,
+requiredArgs = parser.add_argument_group('required arguments')
+
+requiredArgs.add_argument("-f", "--file", dest="inFile", required=True,
                     help="An aligned fasta file.")
 
 parser.add_argument("-o", "--output", dest="outFile", required=False, default=None,
-                    help="The output name of the file to write the consensus sequence (in fasta format). If the file exists, it will append the consensus sequence at the end of the file. By default, the consensus sequence will be printed in the console.")
+                    help="The output fasta file name. If the file exists, the consensus sequence will be appended at the end of the file. By default, the consensus sequence will be printed to the console.")
 
 parser.add_argument("-t", "--threshold", dest="threshold", required=False, action='store', type=float,
 					default=0.7,
@@ -29,7 +31,7 @@ parser.add_argument("-a", "--ambiguities", dest="ambiguities", required=False, a
                     help="If selected, ambiguites will be set to 'N' and not the IUPAC bases.")
 
 parser.add_argument("-m", "--most", dest="most", required=False, action="store_true",
-                    help="If selected, the most abundant sequence at each position will be used instead of the IUPAC code.")
+                    help="If selected, the most abundant base at each position will be used instead of the IUPAC code.")
 
 parser.add_argument("-r", "--removeGaps", dest="removeGaps", required=False, action="store_true",
                     help="If selected, gaps in the consensus sequence will be remove.")
@@ -173,17 +175,23 @@ if args.verbose:
 		print("    Of which are ambiguous:", len(consensusOut)-len(re.sub("[^ACTG-]", "", consensusOut)))
 	if args.removeGaps is False:
 		print("    Of which are gaps:     ", consensusOut.count("-"))
-	print("  Consensus sequence:\n")
+	if args.outFile is None:
+		print("  Consensus sequence:")
+		print("")
 
 if args.outFile is not None:
 	f = open(args.outFile, "a")
 	tmp = re.sub("\\.[^\\.]+$", "", args.inFile)
-	f.write(str(">" + str(tmp) + "_consensus_t" + str(args.threshold) + "_b" + str(args.baseThreshold) + "_g" + str(args.gaps) + ext + "\n"))
+	f.write(str(">" + str(tmp) + "_consensus_t" + str(round(args.threshold*100)) + "_b" + str(round(args.baseThreshold*100)) + "_g" + str(round(args.gaps*100)) + "\n"))
 	f.write(str(str(consensusOut) + "\n"))
 	f.close()
+	if args.verbose:
+		print("  Consensus sequence exported to:", args.outFile)
 else:
 	print(str(consensusOut))
 
 # __________________________________________________________________________________________________
 if args.verbose:
-	print("\nDone")
+	if args.outFile is None:
+		print("")
+	print("Done")
