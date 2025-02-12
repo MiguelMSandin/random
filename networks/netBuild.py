@@ -24,7 +24,7 @@ parser.add_argument("-c", "--cover", dest="cover", required=False, default=None,
 parser.add_argument("-e", "--evalue", dest="evalue", required=False, default=None,
 					help="Applies a maximal evalue threshold to establish a connection between nodes, in addition to the identity and cover, if selected, thresholds.")
 
-parser.add_argument("-I", "--identityPosition", dest="identityPosition", required=False, default=3, type=int,
+parser.add_argument("-I", "--identityPosition", dest="identityPosition", required=False, default=4, type=int,
 					help="The positional column of the identity value. Default=4 (in the fourth column).")
 
 parser.add_argument("-k", "--clean", dest="cleaning", required=False, action="store_true", default=None,
@@ -95,22 +95,25 @@ for i in args.identity:
 		E=""
 	print("  Creating a network file with '", i, "%' similarity threshold", c, e, sep="")
 	tmp = out + "_" + "i" + i + C + E + ".net"
+	countin = 0
+	countout = 0
 	with open(tmp, "w") as outfile:
 		if args.addHeaders:
 			print("source\ttarget\tid", file=outfile)
 		for line in open(input_file):
+			countin += 1
 			data = line[:-1].split("\t")
 			seq1 = data[0]
 			seq2 = data[1]
 			seqid = data[args.identityPosition-1]
-			if (seq1 != seq2) and (int(float(seqid)) >= int(float(i))):
+			if float(seqid) >= float(i):
 				statement1=True
 			else:
 				statement1=False
 			if args.cover is not None:
 				cover1 = 100.0 * (int(data[6])-int(data[5])) / int(data[7])
 				cover2 = 100.0 * (int(data[9])-int(data[8])) / int(data[10])
-				if (cover1 >= int(args.cover)) and (cover2 >= int(float(args.cover))):
+				if (cover1 >= int(args.cover)) and (cover2 >= float(args.cover)):
 					statement2=True
 				else:
 					statement2=False
@@ -118,15 +121,18 @@ for i in args.identity:
 				statement2=None
 			if args.evalue is not None:
 				ev = data[2]
-				if (int(float(ev)) <= int(float(args.evalue))):
+				if (float(ev) <= float(args.evalue)):
 					statement3=True
 				else:
 					statement3=False
 			else:
 				statement3=None
 			if statement1 and (statement2 or statement2==None) and (statement3 or statement3==None):
-				lineOut = str(seq1) + "\t" + str(seq2) + "\t" + str(seqid)  
+				countout += 1
+				lineOut = str(seq1) + "\t" + str(seq2) + "\t" + str(seqid)
 				print(lineOut, file=outfile)
 	print("  Network file exported to: '", tmp, "'", sep="")
+	print("    Nodes in:\t", countin, sep="")
+	print("    Nodes out:\t", countout, "\t(", round(countout/countin*100, 1), "%)", sep="")
 
 print("Done")
