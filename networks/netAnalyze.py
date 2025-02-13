@@ -14,7 +14,7 @@ requiredArgs.add_argument("-f", "--file", dest="file_in", required=True,
                     help="Input file. A network file with three columns: 'qseqid sseqid id'.")
 
 parser.add_argument("-o", "--output", dest="file_out", required=False, default=None,
-                    help="Output file. Returns two files: 'output_network.net' and 'output_nodes.net' with the properties of the network and the statistics for each node respectively. By default will add '_network.net' and '_nodes.net' to the input file after removing the extension.")
+                    help="Output file. Returns two files: 'output_network.log' and 'output_nodes.log' with the properties of the network and the statistics for each node respectively. By default will add '_stats.log' and '_nodeStats.log' to the input file after removing the extension.")
 
 args = parser.parse_args()
 
@@ -23,8 +23,8 @@ if args.file_out is None:
 else:
 	out = args.file_out
 
-outNetwork = out + "_network.net"
-outNodes = out + "_nodes.net"
+outNetwork = out + "stats.log"
+outNodes = out + "_nodeStats.log"
 
 print("\n  Reading network", flush=True)
 G=nx.read_edgelist(args.file_in, delimiter="\t", data=(("id",float),))
