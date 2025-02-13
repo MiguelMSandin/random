@@ -14,7 +14,7 @@ requiredArgs.add_argument("-f", "--file", dest="file_in", required=True,
                     help="Input file. A network file with three columns: 'qseqid sseqid id'.")
 
 parser.add_argument("-o", "--output", dest="file_out", required=False, default=None,
-                    help="Output file. Returns two files: 'output_stats.log' and 'output_nodeStats.log' with the properties of the network and the statistics for each node respectively. By default will add '_stats.log' and '_nodeStats.log' to the input file after removing the extension.")
+                    help="Output file. Returns two files: 'output_stats.log' and 'output_statsNode.log' with the properties of the network and the statistics for each node respectively. By default will add '_stats.log' and '_statsNode.log' to the input file after removing the extension.")
 
 args = parser.parse_args()
 
@@ -23,10 +23,10 @@ if args.file_out is None:
 else:
 	out = args.file_out
 
-outNetwork = out + "stats.log"
-outNodes = out + "_nodeStats.log"
+outNetwork = out + "_stats.log"
+outNodes = out + "_statsNode.log"
 
-print("\n  Reading network", flush=True)
+print("  Reading network", flush=True)
 G=nx.read_edgelist(args.file_in, delimiter="\t", data=(("id",float),))
 
 nodes=list(G.nodes())
@@ -39,33 +39,27 @@ count = 0
 for CC in CCs:
     count = count + 1
 
-print("\n  Calculating properties of the network")
+print("  Calculating properties of the network")
 with open(outNetwork, "w") as outfile:
     print(("Input file: " + "\t" + str(args.file_in)), file=outfile, flush=True)
     # Number of nodes
-    print("    Number of nodes", end="", flush=True)
     print(("Number of nodes" + "\t" + str(len(nodes))), file=outfile, flush=True)
     # Number of edges
-    print(": done \n    Number of edges", end="", flush=True)
     print(("Number of edges" + "\t" + str(len(edges))), file=outfile, flush=True)
     # Average number of neighbours 
-    print(": done \n    Connectivity", end="", flush=True)
     tmp = dict(nx.degree(G))
     tmp = tmp.values()
     tmp = st.mean(tmp)  
     print(("Connectivity" + "\t" + str(tmp)), file=outfile, flush=True)
     #print(("Connectivity" + "\t" + str(nx.average_degree_connectivity(G))), file=outfile)
     # Clustering coefficient: E/((N(N-1))/2)
-    print(": done \n    Clustering coefficient", end="", flush=True)
     print(("Clustering coefficient" + "\t" + str(nx.density(G))), file=outfile, flush=True)
     # Connected components
-    print(": done \n    Connected components", end="", flush=True)
     print(("Connected components" + "\t" + str(count)), file=outfile, flush=True)
-    print(": done\n", flush=True)
 
 if count > 1:
-    print("  There are '", count, "' connected components (CC). Analyzing each one of them individually as an independent network:", sep="", flush=True)
-    outNetworkCCs = out + "_network_CCs"
+    print("  Calculating properties of", count, "connected components (CCs)", flush=True)
+    outNetworkCCs = out + "_statsCCs.log"
     #CCs = nx.connected_component_subgraphs(G)  # When using a 'networkx' version below 2.1
     CCs = (G.subgraph(CCs) for CCs in nx.connected_components(G))
     c = 0
@@ -79,11 +73,10 @@ if count > 1:
             tmp = dict(nx.degree(CC))
             tmp = tmp.values()
             connec = st.mean(tmp)
-            densit = nx.density(CC)          
+            densit = nx.density(CC)
             print((str(c) + "\t" + str(nnodes) + "\t" + str(nedges) + "\t" + str(connec) + "\t" + str(densit)), file=outfile, flush=True)
-        print("\n", flush=True)
 
-print("  Calculating properties of the nodes", flush=True)
+print("\n  Calculating properties of the nodes", flush=True)
 #CCs = nx.connected_component_subgraphs(G)  # When using a 'networkx' version below 2.1
 CCs = (G.subgraph(CCs) for CCs in nx.connected_components(G))
 with open(outNodes, "w") as outfile:
