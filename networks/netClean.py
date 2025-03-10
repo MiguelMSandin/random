@@ -32,7 +32,7 @@ args = parser.parse_args()
 if args.file_out is None:
 	out = re.sub("\\.[^\\.]+$", "_clean.net", args.file_in)
 else:
-	out = args.out
+	out = args.file_out
 
 if re.search(r"\.gz$", args.file_in) is not None and args.compress is None:
 	print("  You have provided a compressed file and haven't selected the compress option (-c/--compressed)", flush=True)
