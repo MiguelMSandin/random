@@ -4,7 +4,7 @@ import argparse
 import networkx as nx
 import re
 
-parser = argparse.ArgumentParser(description="Extracts all maximal cliques in a network.")
+parser = argparse.ArgumentParser(description="Extracts all maximal cliques in a network, and exports a tab delimited table with the node and the given clique they belong to, ordered arbitrarily.")
 
 # Add the arguments to the parser
 requiredArgs = parser.add_argument_group('required arguments')
@@ -32,6 +32,10 @@ if args.file_out is None:
 else:
 	out = args.file_out
 
+print("    Minimal clique size:", args.size, flush=True)
+if args.pattern is not None:
+	print("    Cliques containing: ", *args.pattern, flush=True)
+
 # Reading network  ---------------------------------------------------------------------------------
 print("  Reading network", flush=True)
 G=nx.read_edgelist(args.file_in, delimiter="\t", data=(("id",float),))
@@ -57,20 +61,23 @@ with open(out, "w") as outfile:
 	exported = 0
 	for clique in cliques:
 		count += 1
-		export = False
 		if len(clique) >= args.size:
-			export = True
+			testSize = True
+		else:
+			testSize = False
 		if args.pattern is not None:
 			for p in args.pattern:
 				if any(p in n for n in clique):
-					export = True
+					testPattern = True
 				else:
-					export = False
-		if export:
+					testPattern = False
+		else:
+			testPattern = True
+		if testSize and testPattern:
 			exported += 1
 			for n in clique:
 				print(n + "\t" + str(exported), file=outfile)
 
-print("    Total cliques:\t", count, sep="", flush=True)
+print("    Total cliques found:\t", count, sep="", flush=True)
 print("    Total exported cliques:\t", exported, sep="", flush=True)
 print("Done", flush=True)
