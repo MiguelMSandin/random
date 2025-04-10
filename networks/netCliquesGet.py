@@ -12,8 +12,8 @@ requiredArgs = parser.add_argument_group('required arguments')
 requiredArgs.add_argument("-f", "--file", dest="file_in", required=True,
 					help="Net file. A file with three columns, origin node, destination node and identity value.")
 
-parser.add_argument("-s", "--size", dest="size", required=False, default=2, type=int,
-					help="A minimal number of nodes for a clique to be considered. By default=2.")
+parser.add_argument("-s", "--size", dest="size", required=False, default=3, type=int,
+					help="A minimal number of nodes for a clique to be considered. By default=3.")
 
 parser.add_argument("-p", "--pattern", dest="pattern", required=False, nargs="+", default=None,
 					help="A pattern to be search within the nodes of the clique. At least one node should contain the pattern.")
@@ -113,7 +113,6 @@ with open(out, "w") as outfile:
 			if new:
 				neighbours.append(tmp)
 		neighbours.sort(key=lambda x:[len(x), x[0]], reverse=True)
-		nodesOut = set()
 		exported = 0
 		ni = 0
 		for n in neighbours:
@@ -128,12 +127,11 @@ with open(out, "w") as outfile:
 				clique = list(itertools.chain(*clique))
 				export = True
 				for node in clique:
-					if node in nodesOut or node not in nodes:
+					if node not in nodes:
 						export = False
 				if export:
 					exported += 1
 					for node in clique:
-						nodesOut.add(node)
 						print(node + "\t" + str(exported), file=outfile, flush=True)
 		print("", flush=True)
 
