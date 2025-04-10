@@ -110,7 +110,7 @@ with open(out, "w") as outfile:
 			for n in neighbours:
 				if n == tmp:
 					new = False
-			if new:
+			if new and len(tmp) >= args.size:
 				neighbours.append(tmp)
 		neighbours.sort(key=lambda x:[len(x), x[0]], reverse=True)
 		exported = 0
