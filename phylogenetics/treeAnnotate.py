@@ -98,6 +98,9 @@ if args.error > 0:
 						annotations[annot] = True
 					continue
 			continue
+	for annot, val in annotations.items():
+		if not val:
+			print("      Annotation", annot, "not found")
 else:
 	print("  Extracting Last Common Ancestor nodes")
 	lca = {}
